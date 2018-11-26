@@ -2,6 +2,9 @@ const articleLog = require('./articleLog')
 const { expect, should } = require('chai')
 const mongoose = require('mongoose')
 
+// console.log('\n\n\n **'+ process.env.NODE_ENV +'** \n\n\n')
+// shows NODE_ENV as test
+
 describe('articleLog', ()=>{
 
     it('has 4 properties and correct data types', ()=>{
