@@ -19,28 +19,14 @@ describe('POST /article', ()=>{
             .expect(res => {
                 expect(res.title).to.equal(title)
             })
-            // .end((err, res) => {
-            //     if(err) return done(err)
-
-            //     expect(res.added).to.equal(true);
-
-            //     // console.log('res:',res)
-
-            //     // ArticleLog
-            //     //     .find({title: 'testTitle'})
-            //     //     .then(article => {
-            //     //         expect(article.length).to.equal(1)
-            //     //         done()
-            //     //     })
-            //     //     .catch(e =>done(e) )
-                
-            // });
             .end()
         
         ArticleLog
             .find()
             .then(data => {
                 expect(data.articleSaved).to.equal(true)
+                expect(data.title).to.equal(title)
+                expect(data.url).to.equal(url)
                 done()
             })
             .catch(done())
