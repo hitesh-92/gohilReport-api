@@ -14,9 +14,10 @@ describe('POST /article', ()=>{
             url: 'www.testsite.com'
         })
 
-        request(app)
+        return request(app)
             .post('/article')
             .send({newArticle})
+            .expect(201)
             .end((err, res) => {
                 if(err) return done(err)
 
@@ -28,6 +29,8 @@ describe('POST /article', ()=>{
                         done()
                     }).catch(e => done(e));
             });
+
+        
 
         // ArticleLog.findById(newArticle._id).then(data => {
         //     expect(data.title).to.equal('testTitle')
