@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 //Schema for each article log
 const articleLogSchema = mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
+    _id: mongoose.Types.ObjectId,
     title: {
         type: String,
         required: true,
@@ -13,8 +13,8 @@ const articleLogSchema = mongoose.Schema({
         required: true
     },
     createdAt: {
-        type: Date,
-        default: Date.now
+        type: String,
+        default: new Date().getTime()
     }
 })
 
