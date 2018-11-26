@@ -6,7 +6,7 @@ describe('articleLog', ()=>{
 
     it('has 4 properties and correct data types', ()=>{
         let article = new articleLog({
-            _id: mongoose.Types.ObjectId(),
+            _id: new mongoose.Types.ObjectId(),
             title: 'testTitle',
             url: 'www.testsite.com'
         });
