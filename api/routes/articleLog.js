@@ -17,10 +17,20 @@ router.post('/', Authenticate, (req,res,next) => {
         url: 'http://testsite.com'
     })
 
-    //save created article to database
-    article.save().then(data => {
-        res.status(201).send({log})
-    })
+    //save created article to database and return response
+    article
+        .save()
+        .then(articleData => {
+            res.status(201).send({
+                articleData,
+                added: true
+            })
+
+        })
+        .catch(e => res.status(400).send(e) )
 
 })
 
+
+
+module.exports = router;
