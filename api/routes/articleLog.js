@@ -3,31 +3,42 @@ const express = require('express')
 const router = express.Router()
 const ArticleLog = require('../models/articleLog')
 const Authenticate = require('../middleware/auth')
-const mongoose = require('mongoose')
-
-const Article = require('../models/articleLog')
+const {mongoose} = require('../../db/mongoose')
 
 
-router.post('/', Authenticate, (req,res,next) => {
+
+router.post('/', Authenticate, (req, res, next) => {
 
     //create new ArticleLog
     const article = new ArticleLog({
         _id: new mongoose.Types.ObjectId(),
-        title: 'testTitle',
-        url: 'http://testsite.com'
+        title: req.body.title,
+        url: req.body.url
     })
 
+    console.log(article)
+   
     //save created article to database and return response
     article
         .save()
-        .then(articleData => {
+        .then(log => {
+
+        console.log('** SAVE **')
+
             res.status(201).send({
-                articleData,
-                added: true
+                createdArticle:{
+                    _id: log._id,
+                    title: log.title,
+                    url: log.url,
+                    createdAt: log.createdAt
+                },
+                articleSaved: true
             })
 
         })
-        .catch(e => res.status(400).send(e) )
+        .catch(e => res.status(400).send({e, articleSaved: false}) )
+
+
 
 })
 
