@@ -1,0 +1,11 @@
+{
+    "development": {
+      "PORT": 8100,
+      "MONGODB_URI": "mongodb://localhost:27017/gReport"
+    },
+
+    "test": {
+      "PORT": 8080,
+      "MONGODB_URI": "mongodb://localhost:27017/gReport-test"
+    }
+}
