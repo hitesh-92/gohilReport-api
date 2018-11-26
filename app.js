@@ -6,6 +6,6 @@ const articleLogRoutes = require('./api/routes/articleLog')
 
 app.get('/', (req,res) => res.send({name:'HiteshGohil'}) )
 
-app.use('/article', articleLogRoutes)
+// app.use('/article', articleLogRoutes)
 
-module.exports = app;
+module.exports = {app};
