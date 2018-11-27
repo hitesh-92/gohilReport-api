@@ -9,6 +9,7 @@ if(env === 'development' || env === 'test'){
     Object.keys(envConfig).forEach(key => {
         process.env[key] = envConfig[key];
     });
+    console.log('-- env set --', envConfig)
 }
 
 //log env details on server start
@@ -17,3 +18,7 @@ console.log(
     `port:${process.env.PORT} | ` +
     `db_uri: ${process.env.MONGODB_URI}`
 );
+
+
+// const ENV = require('dotenv')
+// ENV.config()

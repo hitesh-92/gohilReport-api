@@ -1,8 +1,9 @@
-const {mongoose} = require('./db/mongoose')
+require('./server/config.js')
 
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const {mongoose} = require('./db/mongoose')
 
 const articleLogRoutes = require('./api/routes/articleLog')
 
@@ -19,4 +20,6 @@ app.use((req, res, next) => {
     next(error);
 });
 
-module.exports = app
+app.listen(process.env.PORT);
+
+module.exports = {app}
