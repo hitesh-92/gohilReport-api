@@ -22,7 +22,8 @@ router.post('/', Authenticate, (req, res, next) => {
         url: req.body.url
     })
 
-    // console.log(article)
+    // console.log('123')
+    // console.log('CREATED: ', article)
    
     //save created article to database and return response
     article
