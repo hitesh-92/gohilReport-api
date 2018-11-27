@@ -5,7 +5,13 @@ const ArticleLog = require('../models/articleLog')
 const Authenticate = require('../middleware/auth')
 const {mongoose} = require('../../db/mongoose')
 
-
+router.get('/', Authenticate, (req, res) => {
+    res
+      .status(200)
+      .send({
+          message: 'working'
+      })
+})
 
 router.post('/', Authenticate, (req, res, next) => {
 
@@ -16,14 +22,12 @@ router.post('/', Authenticate, (req, res, next) => {
         url: req.body.url
     })
 
-    console.log(article)
+    // console.log(article)
    
     //save created article to database and return response
     article
         .save()
         .then(log => {
-
-        console.log('** SAVE **')
 
             res.status(201).send({
                 createdArticle:{
