@@ -10,8 +10,10 @@ if(env === 'development' || env === 'test'){
         process.env[key] = envConfig[key];
     });
 }
-var uri = process.env.MONGODB_URI
-console.log(uri)
-console.log(typeof uri)
 
-console.log(`env: ${env} | port:${process.env.PORT} | db_uri:${uri}`);
+//log env details on server start
+console.log(
+    `env: ${env} | ` +
+    `port:${process.env.PORT} | ` +
+    `db_uri: ${process.env.MONGODB_URI}`
+);
