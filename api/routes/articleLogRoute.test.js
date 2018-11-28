@@ -11,38 +11,21 @@ var todaysDate = () => {
 }
 
 
-describe("articleLog Route", ()=>{
+describe("articleLog Routes", ()=>{
 
-  describe("/article GET '/'", ()=>{
+  describe("GET '/article/'", ()=>{
+
+    // '/' should retrieve all logs to be displayed
 
     it('should return status 200', function(){
-
-      // request(app)
-      //   .get("/article")
-      //   .expect(200)
-      //   .end( function(err, res){
-      //     if(err) done(err)
-      //   done()
-      // })
 
       return request(app)
         .get('/article/')
         .expect(200)
-        
 
     })
   
     it('should return "message":"working"', () => {
-
-      // request(app)
-      //   .get('/article/')
-      //   .expect(200)
-      //   .end((err, response) => {
-      //     if(err) done(err)
-  
-      //     expect(response.res.text).to.equal('{"message":"working"}')
-      //     done()
-      //   })
 
       return request(app)
         .get('/article/')
@@ -55,21 +38,12 @@ describe("articleLog Route", ()=>{
   
   })// GET
   
-  describe("/article POST '/'", ()=>{
+  describe("POST '/article/'", ()=>{
 
     it('should have status 201', ()=>{
 
       let title = 'return201'
       let url = 'www.201.com'
-
-      // request(app)
-      //   .post('article/')
-      //   .send({
-      //     title: 'status(201)',
-      //     url: 'www.201.com'
-      //   })
-      //   .expect(201)
-      //   .end(done())
 
       return request(app)
         .post('/article/')
@@ -80,23 +54,12 @@ describe("articleLog Route", ()=>{
         })
         .catch(e => console.log(e))
 
-
-
     })//
   
-    it('return 400 if bad data sent', () => {
+    it('send bad data; status 400 and articleSaved to be false', () => {
 
       let title = false
       let url = undefined
-
-      // request(app)
-      //   .post('article/')
-      //   .send({
-      //     title: true, 
-      //     url: false
-      //   })
-      //   .expect(400)
-      //   .end(done())
 
       return request(app)
         .post('/article/')
@@ -107,15 +70,9 @@ describe("articleLog Route", ()=>{
         })
         .catch(e => console.log(e))
 
-
     })//
   
     it('should have response with articleSaved: true', ()=>{
-
-      // const data = {
-      //   title: 'articleSaved:true',
-      //   url: 'www.test.com'
-      // }
 
       let title = 'articleSaved:true'
       let url = 'www.test.com'
@@ -127,17 +84,6 @@ describe("articleLog Route", ()=>{
           expect(res.body.articleSaved).to.be.true
 
         }).catch((e) => console.log(e))
-
-      // request(app)
-      //   .post(`/article/`)
-      //   .send({title, url})
-      //   .expect(201)
-      //   .expect(res => {
-      //     let saved = res.body.articleCreated
-      //     assert.ok(saved === true)
-      //     expect(saved).to.be.true
-      //   })
-      //   .end(done())
 
     })//
   
