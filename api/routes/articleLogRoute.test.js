@@ -5,42 +5,58 @@ const mongoose = require('../../db/mongoose')
 const request =  require('supertest')
 const assert = require('assert')
 
+var todaysDate = () => {
+  let date = new Date()
+  return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`
+}
 
 
 describe("articleLog Route", ()=>{
 
   describe("/article GET '/'", ()=>{
 
-    it('should return status 200', function(done){
-      request(app)
-        .get("/article")
+    it('should return status 200', function(){
+
+      // request(app)
+      //   .get("/article")
+      //   .expect(200)
+      //   .end( function(err, res){
+      //     if(err) done(err)
+      //   done()
+      // })
+
+      return request(app)
+        .get('/article/')
         .expect(200)
-        .end( function(err, res){
-          if(err) done(err)
-        done()
-      })
+        
+
     })
   
     it('should return "message":"working"', () => {
 
-      
-
-      request(app)
-        .get('/article/')
-        .expect(200)
-        .end((err, response) => {
-          if(err) done(err)
+      // request(app)
+      //   .get('/article/')
+      //   .expect(200)
+      //   .end((err, response) => {
+      //     if(err) done(err)
   
-          expect(response.res.text).to.equal('{"message":"working"}')
-          done()
+      //     expect(response.res.text).to.equal('{"message":"working"}')
+      //     done()
+      //   })
+
+      return request(app)
+        .get('/article/')
+        .then(res => {
+          expect(res.body.message).to.equal('working')
         })
+        .catch(e => console.log(e))
 
     })//
   
   })// GET
   
   describe("/article POST '/'", ()=>{
-  
+
     it('should have status 201', ()=>{
 
       let title = 'return201'
@@ -127,49 +143,30 @@ describe("articleLog Route", ()=>{
   
     it('save new Article, find in db using response _id', ()=>{
 
-      // let title = 'found using _id'
-      // let url = 'www.sameple.com'
-      // let articleId;
+      let title = 'found using _id'
+      let url = 'www.findMyID.com'
+      let articleId;
 
-      // return request(app)
-      //     .post('/article/')
-      //     .send({title, url})
-      //     .then(res => {
-      //       assert(res.body.articleSaved == true)
+      return request(app)
+        .post('/article/')
+        .send({title, url})
+        .then(res => {
+          articleId = res.body.createdArticle._id
+          expect(articleId).to.have.lengthOf(24)
 
-      //       articleId =  res.body.createdArticle._id
+          ArticleLog
+            .findById(articleId)
+            .then(log => {
+              expect(log.title).to.equal(title)
+              expect(log.url).to.equal(url)
+            })
+            .catch(e => console.log(e))
 
-      //       ArticleLog
-      //         .findById(articleId)
-      //         .then(log => {
-      //           // assert.ok(log.title == title)
-      //           // assert.ok(log.url == url)
-      //           expect(log.title).to.equal(title)
-      //           expect(log.url).to.equal(url)
-      //         })
-      //     })
-
-      // return request(app)
-      //   .post('/article/')
-      //   .send({title,url})
-      //   .then((res) => {
-      //     // if(err) return err
-
-      //     console.log(res.body)
-      //     assert(res.body.createdArticle._id.length == 24)
-      //   })
-
+        })
+        .catch(e =>  console.log(e))
 
     })//
 
-    /*
-    it('response should have correct createdArticle', ()=>{})
-    */
-
-    it('should pass', ()=>{
-      expect(true).to.be.true
-    })
-  
   })//POST
 
 })//articleLog Route

@@ -8,10 +8,14 @@ const mongoose = require('mongoose')
 describe('articleLog', ()=>{
 
     it('has 4 properties with correct data types', ()=>{
+
+        let title = 'testData'
+        let url = 'www.checkThis.com'
+
         let article = new articleLog({
             _id: new mongoose.Types.ObjectId(),
-            title: 'testTitle',
-            url: 'www.testsite.com'
+            title,
+            url
         });
 
         expect(typeof article.title).to.equal('string')
