@@ -5,12 +5,6 @@ const mongoose = require('../../db/mongoose')
 const request =  require('supertest')
 const assert = require('assert')
 
-var todaysDate = () => {
-  let date = new Date()
-  return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`
-}
-
-
 describe("articleLog Routes", ()=>{
 
   describe("GET '/article/'", ()=>{
