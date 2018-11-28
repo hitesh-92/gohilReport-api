@@ -7,7 +7,7 @@ const mongoose = require('mongoose')
 
 describe('articleLog', ()=>{
 
-    it('has 4 properties and correct data types', ()=>{
+    it('has 4 properties with correct data types', ()=>{
         let article = new articleLog({
             _id: new mongoose.Types.ObjectId(),
             title: 'testTitle',
