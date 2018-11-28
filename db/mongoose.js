@@ -14,7 +14,7 @@ mongoose.Promise = global.Promise
 mongoose
   .connect(process.env.MONGODB_URI, {useNewUrlParser: true})
   // .then(()=> console.log('MongoDB Connected'))
-  // .catch(console.log)
+  // .catch(e => console.log(e))
 
 
 module.exports = { mongoose }

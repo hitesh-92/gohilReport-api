@@ -20,6 +20,11 @@ app.use((req, res, next) => {
     next(error);
 });
 
-app.listen(process.env.PORT);
+// app.listen(process.env.PORT);
+if (require.main === module){
+    app.listen(process.env.PORT, ()=>{
+        console.log('TESTING')
+    });
+}
 
 module.exports = {app}
