@@ -7,7 +7,7 @@ const assert = require('assert')
 
 describe("articleLog Routes", ()=>{
 
-  describe("GET '/article/'", ()=>{
+  describe("GET /article/", ()=>{
 
     // '/' should retrieve all logs to be displayed
 
@@ -26,9 +26,15 @@ describe("articleLog Routes", ()=>{
         .then(res => {
           expect(res.body.message).to.equal('working')
         })
-        .catch(e => console.log(e))
+        .catch(e => {
+          throw new Error(e)
+        })
 
     })//
+  
+  })// GET
+
+  describe("GET /article/:articleLogID", ()=>{
 
     it('retrieve saved ArticleLog using _id', ()=>{
 
@@ -47,11 +53,26 @@ describe("articleLog Routes", ()=>{
         .catch(e => {
           throw new Error(e)
         })
-    })
+    })//
+
+    it('send bad ID get back 404status and found:false', ()=>{
+      const badID = '0000005d65cb4d1840ae8306'
+
+      return request(app)
+        .get(`/article/${badID}`)
+        .then(response => {
+          const res = response.body
+          expect(res.found).to.be.false
+          expect(res._id).to.equal(badID)
+        })
+        .catch(e => {
+          throw new Error(e)
+        })
+    })//
+
+  })//GET /:articleLogID
   
-  })// GET
-  
-  describe("POST '/article/'", ()=>{
+  describe("POST /article/", ()=>{
 
     it('should have status 201', ()=>{
 
@@ -127,6 +148,12 @@ describe("articleLog Routes", ()=>{
     })//
 
   })//POST
+
+  // describe("DELETE /article/", ()=>{
+
+  //   it('should delete articleLog from dat')
+
+  // })
 
 })//articleLog Route
 

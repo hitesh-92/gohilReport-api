@@ -5,7 +5,11 @@ const ArticleLog = require('../models/articleLog')
 const Authenticate = require('../middleware/auth')
 const {mongoose} = require('../../db/mongoose')
 
-router.get('/', Authenticate, (req, res) => {
+
+//tesing - send back messge
+//
+//send back data for all articles to be displayed
+router.get('/', (req, res) => {
     res
       .status(200)
       .send({
@@ -13,9 +17,10 @@ router.get('/', Authenticate, (req, res) => {
       })
 })
 
+
 //retrieve log from databse using _id provided with request
 //send back the log with title,url,createdAt and _id provided with request
-router.get('/:articleLogID', Authenticate, (req, res) => {
+router.get('/:articleLogID', (req, res) => {
 
     const articleID = req.params.articleLogID
 
@@ -41,6 +46,10 @@ router.get('/:articleLogID', Authenticate, (req, res) => {
 
 })
 
+
+//save new article to database
+//use data passed with request (title and url / create new ObjectId)
+//send back data including created articleLog
 router.post('/', Authenticate, (req, res, next) => {
 
     //create new ArticleLog
@@ -50,9 +59,6 @@ router.post('/', Authenticate, (req, res, next) => {
         url: req.body.url
     })
 
-    // console.log('123')
-    // console.log('CREATED: ', article)
-   
     //save created article to database and return response
     article
         .save()
@@ -71,8 +77,6 @@ router.post('/', Authenticate, (req, res, next) => {
 
         })
         .catch(e => res.status(400).send({e, articleSaved: false}) )
-
-
 
 })
 
