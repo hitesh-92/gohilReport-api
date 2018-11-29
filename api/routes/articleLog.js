@@ -87,14 +87,42 @@ router.post('/', Authenticate, (req, res, next) => {
 //Authenticate; only user should be able to delete log from database
 //use id passed passed with request
 //if not able to delete send 404
-/*
 router.delete('/:articleLogID', Authenticate, (req, res, next) => {
 
     const articleID = req.body.articleLogID
+    const validID = mongoose.Types.ObjectId.isValid(articleID)
 
+    if(!validID) return res.status(404).send({deleted: false, error: 'Bad article id'})
+
+    ArticleLog
+      .findByIdAndRemove({ _id: articleID })
+      .exec()
+      .then(data => {
+
+        //article not found
+        if(!data){
+            return res
+                .status(405)
+                .send({
+                    deleted: false, 
+                    error: 'Invalid request to delete'
+                })
+        }
+
+        //success
+        res
+            .status(200)
+            .send({
+                delete: true
+            })
+
+      })
+      .catch(e => {
+            res.status(500).send({error: e, deleted: false})
+      })
 
 
 })
-*/
+
 
 module.exports = router;

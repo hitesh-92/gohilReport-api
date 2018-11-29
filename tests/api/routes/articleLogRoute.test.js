@@ -183,22 +183,53 @@ describe("articleLog Routes", ()=>{
   
     })//POST
   
-    /*
-    describe("DELETE /article/", ()=>{
+    describe("DELETE /article/:articleLogID", ()=>{
   
       it('should return status 200', ()=>{
+
+        //response has property 'deleted' which is true
   
-        const articleId = '5bfff00bef46b223780a5f67'
+        const articleId = articles[0]._id
+        const hexID = articleId.toHexString()
   
         return request(app)
-          .delete(`/article/${articleId}`)
+          .delete(`/article/${hexID}`)
           .expect(200)
+          .then(res => {
+              
+              expect(res.body.deleted).to.be.true 
+          })
+          .catch(e => {
+              throw new Error(e)
+          })
   
+      })//
+
+      it('send bad _id have status 404', ()=>{
+
+        //send fakeID
+        //status 404
+        //response has property 'deleted' which is false
+
+        const badID = '0000000f7cad342ac046ca91'
+
+        return request(app)
+            .delete(`/article/${badID}`)
+            .expect(404)
+            .then(res => {
+
+                expect(res.body.deleted).to.be.false
+
+            })
+            .catch(e => {
+                throw new Error(e)
+            })
+
       })//
       
   
     })//DELETE
-    */
+    
   
   })//articleLog Route
   
