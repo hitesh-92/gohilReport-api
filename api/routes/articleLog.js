@@ -7,7 +7,6 @@ const {mongoose} = require('../../db/mongoose')
 
 
 //tesing - send back messge
-//
 //send back data for all articles to be displayed
 router.get('/', (req, res) => {
     res
@@ -18,7 +17,7 @@ router.get('/', (req, res) => {
 })
 
 
-//retrieve log from databse using _id provided with request
+//retrieve log from databse using id provided with request
 //send back the log with title,url,createdAt and _id provided with request
 router.get('/:articleLogID', (req, res) => {
 
@@ -48,9 +47,12 @@ router.get('/:articleLogID', (req, res) => {
 
 
 //save new article to database
+//Authenticate; only user should be able to save new articles
 //use data passed with request (title and url / create new ObjectId)
 //send back data including created articleLog
 router.post('/', Authenticate, (req, res, next) => {
+
+//!!!!!! CHECK TO MAKE SURE NO SPACES IN URL BEFORE SAVING
 
     //create new ArticleLog
     const article = new ArticleLog({
@@ -81,5 +83,18 @@ router.post('/', Authenticate, (req, res, next) => {
 })
 
 
+//delete articleLog
+//Authenticate; only user should be able to delete log from database
+//use id passed passed with request
+//if not able to delete send 404
+/*
+router.delete('/:articleLogID', Authenticate, (req, res, next) => {
+
+    const articleID = req.body.articleLogID
+
+
+
+})
+*/
 
 module.exports = router;

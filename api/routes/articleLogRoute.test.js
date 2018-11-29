@@ -149,11 +149,22 @@ describe("articleLog Routes", ()=>{
 
   })//POST
 
-  // describe("DELETE /article/", ()=>{
+  /*
+  describe("DELETE /article/", ()=>{
 
-  //   it('should delete articleLog from dat')
+    it('should return status 200', ()=>{
 
-  // })
+      const articleId = '5bfff00bef46b223780a5f67'
+
+      return request(app)
+        .delete(`/article/${articleId}`)
+        .expect(200)
+
+    })//
+    
+
+  })//DELETE
+  */
 
 })//articleLog Route
 
