@@ -11,7 +11,7 @@ describe("articleLog Routes", ()=>{
 
     // '/' should retrieve all logs to be displayed
 
-    it('should return status 200', function(){
+    it('should return status 200', ()=>{
 
       return request(app)
         .get('/article/')
@@ -29,6 +29,25 @@ describe("articleLog Routes", ()=>{
         .catch(e => console.log(e))
 
     })//
+
+    it('retrieve saved ArticleLog using _id', ()=>{
+
+      id = '5bffcc5d65cb4d1840ae8306'
+
+      return request(app)
+        .get(`/article/${id}`)
+        .then(res => {
+          const log = res.body
+
+          expect(log.found).to.be.true
+          expect(log.data.title).to.equal('return201')
+          expect(log.data.url).to.equal('www.201.com')
+          expect(log.data.createdAt).to.equal('1543490652868')
+        })
+        .catch(e => {
+          throw new Error(e)
+        })
+    })
   
   })// GET
   

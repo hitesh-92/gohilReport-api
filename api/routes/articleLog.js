@@ -13,6 +13,34 @@ router.get('/', Authenticate, (req, res) => {
       })
 })
 
+//retrieve log from databse using _id provided with request
+//send back the log with title,url,createdAt and _id provided with request
+router.get('/:articleLogID', Authenticate, (req, res) => {
+
+    const articleID = req.params.articleLogID
+
+    ArticleLog
+      .findById(articleID)
+      .select('title url createdAt')
+      .exec()
+      .then(log => {
+
+        //case for log not found
+        if(!log) return res.status(404).send({found: false, _id: articleID})
+
+        //success case
+        res
+          .status(200)
+          .send({
+              found: true,
+              data: log
+          })
+
+      })
+      .catch(e => res.send(500).send({e, message: 'Attempt to find article not made'}))
+
+})
+
 router.post('/', Authenticate, (req, res, next) => {
 
     //create new ArticleLog
@@ -28,7 +56,8 @@ router.post('/', Authenticate, (req, res, next) => {
     //save created article to database and return response
     article
         .save()
-        .then(log => {
+        .then(log => 
+        {
 
             res.status(201).send({
                 createdArticle:{
