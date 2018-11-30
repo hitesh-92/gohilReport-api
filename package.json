@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "SET \"NODE_ENV=test\" && mocha api/**/*.test.js",
-    "testing": "SET \"NODE_ENV=test\" && mocha tests/**/*.test.js"
+    "test": "SET \"NODE_ENV=test\" && mocha tests/**/*.test.js"
   },
   "author": "Hitesh",
   "license": "ISC",
