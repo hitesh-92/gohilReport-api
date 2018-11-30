@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 // app.listen(process.env.PORT);
 if (require.main === module){
     app.listen(process.env.PORT, ()=>{
-        console.log('TESTING')
+        console.log('DEV')
     });
 }
 

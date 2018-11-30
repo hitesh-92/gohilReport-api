@@ -185,19 +185,19 @@ describe("articleLog Routes", ()=>{
   
     describe("DELETE /article/:articleLogID", ()=>{
   
-      it('should return status 200', ()=>{
+      it('should delete and exisitng article', ()=>{
 
         //response has property 'deleted' which is true
   
-        const articleId = articles[0]._id
+        const articleId = articles[1]._id
         const hexID = articleId.toHexString()
   
         return request(app)
           .delete(`/article/${hexID}`)
           .expect(200)
           .then(res => {
-              
-              expect(res.body.deleted).to.be.true 
+              // expect(res.body.deleted).to.be.true
+              assert.equal(res.body.deleted, true)
           })
           .catch(e => {
               throw new Error(e)
@@ -205,32 +205,56 @@ describe("articleLog Routes", ()=>{
   
       })//
 
-      it('send bad _id have status 404', ()=>{
+      it('send bad fake _id have status 404', ()=>{
 
-        //send fakeID
+        //send bad fakeID
         //status 404
         //response has property 'deleted' which is false
 
-        const badID = '0000000f7cad342ac046ca91'
+        const badID = '!000000f7cad342ac046AAAA'
 
         return request(app)
             .delete(`/article/${badID}`)
             .expect(404)
             .then(res => {
+                const data = res.body
 
-                expect(res.body.deleted).to.be.false
-
+                expect(data.deleted).to.be.false
+                assert.equal(data.error, 'Bad article id')
             })
             .catch(e => {
                 throw new Error(e)
             })
 
       })//
-      
-  
+
+      it('send good fake _id have status 404', ()=>{
+
+        //send good fakeID
+        //stauts 404
+        //response proprety error: Invalid rewuest to delete
+
+        const badID = '1a00aaa111aaaa1111a111a1'
+
+        return request(app)
+            .delete(`/article/${badID}`)
+            .expect(404)
+            .then(res => {
+
+              const data =  res.body
+
+              expect(data.deleted).to.be.false
+              assert.equal(data.error, 'Invalid request to delete')
+
+            })
+            .catch(e => {
+              throw new Error(e)
+            })
+
+      })
+
     })//DELETE
     
-  
-  })//articleLog Route
+})//articleLog Route
   
   
