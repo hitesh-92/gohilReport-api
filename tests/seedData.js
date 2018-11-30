@@ -16,14 +16,19 @@ const articles = [
     }
 ]
 
+//changed when done() called. Tests passing.
+// const seedArticles=(done)=>{ArticleLog.deleteMany({}).then(()=>{ return ArticleLog.insertMany(articles) }).then(()=>done())};
+
 const seedArticles = (done) => {
     ArticleLog
     //   .remove({}) //deprecated
       .deleteMany({})
       .then(()=>{
-          return ArticleLog.insertMany(articles)
+          ArticleLog.insertMany(articles)
+          done()
       })
-      .then(()=> done())
+    //   .then(()=> done())
 };
+
 
 module.exports = {articles, seedArticles}

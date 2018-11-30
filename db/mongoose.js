@@ -12,7 +12,10 @@ mongoose.Promise = global.Promise
 
 //had to call this after setting env variables
 mongoose
-  .connect(process.env.MONGODB_URI, {useNewUrlParser: true})
+  .connect(process.env.MONGODB_URI, {
+          useNewUrlParser: true,
+          // useCreateIndex: true,
+        })
   // .then(()=> console.log('MongoDB Connected'))
   // .catch(e => console.log(e))
 

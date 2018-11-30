@@ -3,6 +3,7 @@ const ArticleLog = require('../../../api/models/articleLog')
 const mongoose = require('mongoose')
 const assert = require('assert')
 
+
 describe("MODEL articleLog", ()=>{
 
     it('create new log with 4 properties', ()=>{
@@ -27,7 +28,6 @@ describe("MODEL articleLog", ()=>{
         assert.equal(typeof article.url, 'string')
         assert.equal(typeof article.createdAt, 'string')
         assert.equal(typeof article._id, 'object')
-
 
     })//
 

@@ -8,9 +8,10 @@ const {articles, seedArticles} = require('../../seedData')
 
 beforeEach(seedArticles)
 
+
 describe("articleLog Routes", ()=>{
 
-    describe("GET /article/", ()=>{
+  describe("GET /article/", ()=>{
   
       // '/' should retrieve all logs to be displayed
   
