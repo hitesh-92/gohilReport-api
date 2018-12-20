@@ -3,45 +3,68 @@ const express = require('express')
 const router = express.Router()
 const ArticleLog = require('../models/articleLog')
 const Authenticate = require('../middleware/auth')
-const {mongoose} = require('../../db/mongoose')
+const mongoose = require('mongoose')
 
 
 //tesing - send back messge
 //send back data for all articles to be displayed
 router.get('/', (req, res) => {
-    res
-      .status(200)
-      .send({
-          message: 'working'
-      })
+    res.status(200)
+        .send({
+            message: 'working'
+        })
 })
 
 
 //retrieve log from databse using id provided with request
 //send back the log with title,url,createdAt and _id provided with request
-router.get('/:articleLogID', (req, res) => {
+router.get('/:articleId', (req, res) => {
 
-    const articleID = req.params.articleLogID
+    const requestId = req.params.articleId
 
-    ArticleLog
-      .findById(articleID)
-      .select('title url createdAt')
-      .exec()
-      .then(log => {
+    //invalidID
+    const validID = mongoose.Types.ObjectId.isValid(requestId)
+    if (!validID){
+        const response = {
+            found: null,
+            requestId,
+            status: 'Invalid Article ID' 
+        }
+        return res.status(400).json(response)
+    }
 
-        //case for log not found
-        if(!log) return res.status(404).send({found: false, _id: articleID})
+    ArticleLog.findById(requestId)
+        .select('title url createdAt')
+        .exec()
+        .then(log => {
+            console.log('****LOG: \n', log)
+            console.log('****ID: \n', requestId)
 
-        //success case
-        res
-          .status(200)
-          .send({
-              found: true,
-              data: log
-          })
+            //response object
+            const response = {
+                time: new Date().toLocaleString(),
+                requestId,
+                found: false,
+                data: log
+            }
 
-      })
-      .catch(e => res.send(500).send({e, message: 'Attempt to find article not made'}))
+            if(log == null){
+                console.log('***log == null')
+                return res.status(404).json(response)
+            }
+
+            //success case
+            response.found = true
+            return res.status(200).json(response)
+        })
+        .catch(e => {
+            const response = {
+                error: e,
+                status: 'Attempt to find article not made. Contact',
+                found: undefined
+            }
+            res.status(500).json(response)
+        })
 
 })
 
@@ -66,7 +89,6 @@ router.post('/', Authenticate, (req, res, next) => {
         .save()
         .then(log => 
         {
-
             res.status(201).send({
                 createdArticle:{
                     _id: log._id,
@@ -76,7 +98,6 @@ router.post('/', Authenticate, (req, res, next) => {
                 },
                 articleSaved: true
             })
-
         })
         .catch(e => res.status(400).send({e, articleSaved: false}) )
 

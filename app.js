@@ -3,7 +3,7 @@ require('./server/config.js')
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-const {mongoose} = require('./db/mongoose')
+const mongoose = require('./db/mongoose')
 
 const articleLogRoutes = require('./api/routes/articleLog')
 
@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 // app.listen(process.env.PORT);
 if (require.main === module){
     app.listen(process.env.PORT, ()=>{
-        console.log('DEV')
+        console.log('DEV: ', new Date().toLocaleTimeString())
     });
 }
 

@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "SET \"NODE_ENV=test\" && mocha tests/**/*.test.js"
+    "start": "nodemon app.js",
+    "test": "clear && SET \"NODE_ENV=test\" && mocha tests/**/*.test.js",
+    "test-watch": "nodemon --exec \"npm test\""
   },
   "author": "Hitesh",
   "license": "ISC",

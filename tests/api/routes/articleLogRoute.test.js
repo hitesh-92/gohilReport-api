@@ -3,13 +3,13 @@ const ArticleLog = require('../../../api/models/articleLog')
 const request = require('supertest')
 const {expect} = require('chai')
 const assert = require('assert')
-
 const {articles, seedArticles} = require('../../seedData')
 
-beforeEach(seedArticles)
+describe("articleLog Routes", ()=>{ 
 
-
-describe("articleLog Routes", ()=>{
+  beforeEach(function(){
+    seedArticles()
+  })
 
   describe("GET /article/", ()=>{
   
@@ -17,7 +17,7 @@ describe("articleLog Routes", ()=>{
   
       it('should return status 200', ()=>{
   
-        return request(app)
+         return request(app)
           .get('/article/')
           .expect(200)
   
@@ -28,39 +28,30 @@ describe("articleLog Routes", ()=>{
         return request(app)
           .get('/article/')
           .then(res => {
-            expect(res.body.message).to.equal('working')
-          })
-          .catch(e => {
-            throw new Error(e)
+            expect(res.body.message).to.equal('working')            
           })
   
       })//
     
     })// GET
-  
+
     describe("GET /article/:articleLogID", ()=>{
   
-      it('retrieve saved ArticleLog using _id', ()=>{
-  
-        id = articles[0]._id
-  
+      it.only('retrieve saved ArticleLog using _id', ()=>{
+
+        const id = articles[0]._id
+        const uri = `/article/${id}`
+
+        console.log('***test id: ', id)
+
         return request(app)
-          .get(`/article/${id}`)
+          .get(uri)
+          .expect(200)
           .then(res => {
-            //returns data object, pickout log
-            const log = res.body.data
-
-            assert.equal(log.title, articles[0].title)
-            assert.equal(log.url, articles[0].url)
-            assert.equal(log.createdAt, articles[0].createdAt)
-
-            //if successful found will be true 
-            assert.equal(res.body.found, true)
-
+            console.log(res)
+            console.log(000000000000000000)
           })
-          .catch(e => {
-            throw new Error(e)
-          })
+          // .catch(e => console.log(e))
 
       })//
   
@@ -80,9 +71,6 @@ describe("articleLog Routes", ()=>{
             //returns the id used when making request
             expect(res._id).to.equal(badID)
 
-          })
-          .catch(e => {
-            throw new Error(e)
           })
       })//
   
@@ -107,7 +95,6 @@ describe("articleLog Routes", ()=>{
             expect(res.body.articleSaved).to.be.true
 
           })
-          .catch(e => console.log(e))
   
       })//
     
@@ -128,7 +115,6 @@ describe("articleLog Routes", ()=>{
             //response will have articleSaved set to false
             expect(res.body.articleSaved).to.be.false
           })
-          .catch(e => console.log(e))
   
       })//
     
@@ -147,7 +133,7 @@ describe("articleLog Routes", ()=>{
             //successful request will have articleSaved set to true
             expect(res.body.articleSaved).to.be.true
   
-          }).catch((e) => console.log(e))
+          })
   
       })//
     
@@ -175,10 +161,8 @@ describe("articleLog Routes", ()=>{
                 expect(log.title).to.equal(title)
                 expect(log.url).to.equal(url)
               })
-              .catch(e => console.log(e))
   
           })
-          .catch(e =>  console.log(e))
   
       })//
   
@@ -200,9 +184,6 @@ describe("articleLog Routes", ()=>{
               // expect(res.body.deleted).to.be.true
               assert.equal(res.body.deleted, true)
           })
-          .catch(e => {
-              throw new Error(e)
-          })
   
       })//
 
@@ -222,9 +203,6 @@ describe("articleLog Routes", ()=>{
 
                 expect(data.deleted).to.be.false
                 assert.equal(data.error, 'Bad article id')
-            })
-            .catch(e => {
-                throw new Error(e)
             })
 
       })//
@@ -247,9 +225,6 @@ describe("articleLog Routes", ()=>{
               expect(data.deleted).to.be.false
               assert.equal(data.error, 'Invalid request to delete')
 
-            })
-            .catch(e => {
-              throw new Error(e)
             })
 
       })

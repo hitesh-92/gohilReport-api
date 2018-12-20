@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 // needs name of column
 // needs a last updated value
 // needs to hold articles in order
+// article IDs to be held in array
 
 const columnSchema = mongoose.Schema({
     _id: mongoose.Types.ObjectId,
@@ -19,9 +20,10 @@ const columnSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    // articles: {
-    //     type: Array
-    // }
+    articleIDs: {
+        type: Object,
+        required: true
+    }
 })
 
 

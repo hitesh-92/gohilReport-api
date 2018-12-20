@@ -10,7 +10,8 @@ const articleLogSchema = mongoose.Schema({
     },
     url: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     createdAt: {
         type: String,

@@ -9,12 +9,12 @@ if(env === 'development' || env === 'test'){
     Object.keys(envConfig).forEach(key => {
         process.env[key] = envConfig[key];
     });
-    // console.log('-- env set --', envConfig)
 }
 
 //log env details on server start
 console.log(
     `env: ${env} | ` +
     `port:${process.env.PORT} | ` +
-    `db_uri: ${process.env.MONGODB_URI}`
+    `db_uri: ${process.env.MONGODB_URI} | ` +
+    new Date().toLocaleTimeString()
 );
