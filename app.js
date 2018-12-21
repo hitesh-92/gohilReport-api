@@ -1,9 +1,11 @@
 require('./server/config.js')
+require('./db/mongoose')
 
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-const mongoose = require('./db/mongoose')
+// const mongoose = 
+// require('./db/mongoose')
 
 const articleLogRoutes = require('./api/routes/articleLog')
 
@@ -20,11 +22,6 @@ app.use((req, res, next) => {
     next(error);
 });
 
-// app.listen(process.env.PORT);
-if (require.main === module){
-    app.listen(process.env.PORT, ()=>{
-        console.log('DEV: ', new Date().toLocaleTimeString())
-    });
-}
+app.listen(process.env.PORT);
 
 module.exports = {app}

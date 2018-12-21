@@ -6,10 +6,8 @@ const {articles} = require('../../seedData')
 describe('MODEL column', ()=>{
 
     it('create new column', ()=>{
-        const data = [
-            articles[0]._id,
-            articles[1]._id
-        ]
+        
+        const data = articles.map(log => log._id)
 
         const testCol = new Column({
 

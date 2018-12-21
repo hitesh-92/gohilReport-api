@@ -4,7 +4,7 @@ const router = express.Router()
 const ArticleLog = require('../models/articleLog')
 const Authenticate = require('../middleware/auth')
 const mongoose = require('mongoose')
-
+const {ObjectId} = require('mongodb')
 
 //tesing - send back messge
 //send back data for all articles to be displayed
@@ -22,7 +22,7 @@ router.get('/:articleId', (req, res) => {
 
     const requestId = req.params.articleId
 
-    //invalidID
+    //invalid ID
     const validID = mongoose.Types.ObjectId.isValid(requestId)
     if (!validID){
         const response = {
@@ -33,23 +33,25 @@ router.get('/:articleId', (req, res) => {
         return res.status(400).json(response)
     }
 
-    ArticleLog.findById(requestId)
+    const findId = ObjectId.createFromHexString(requestId)
+
+    ArticleLog.findById(findId)
         .select('title url createdAt')
         .exec()
         .then(log => {
-            console.log('****LOG: \n', log)
-            console.log('****ID: \n', requestId)
+            // console.log(`Log: ${log}`)
+            // console.log(`requestId: ${requestId}`)
 
             //response object
-            const response = {
+            let response = {
                 time: new Date().toLocaleString(),
                 requestId,
                 found: false,
                 data: log
             }
 
+            // no document returned from find request
             if(log == null){
-                console.log('***log == null')
                 return res.status(404).json(response)
             }
 

@@ -3,13 +3,12 @@ const ArticleLog = require('../../../api/models/articleLog')
 const request = require('supertest')
 const {expect} = require('chai')
 const assert = require('assert')
-const {articles, seedArticles} = require('../../seedData')
+const {articles, seedArticles, deleteArticles} = require('../../seedData')
 
-describe("articleLog Routes", ()=>{ 
+beforeEach(deleteArticles)
+beforeEach( () => seedArticles(articles))
 
-  beforeEach(function(){
-    seedArticles()
-  })
+describe("articleLog Routes", ()=>{   
 
   describe("GET /article/", ()=>{
   
@@ -33,203 +32,198 @@ describe("articleLog Routes", ()=>{
   
       })//
     
-    })// GET
+  })// GET
 
-    describe("GET /article/:articleLogID", ()=>{
-  
-      it.only('retrieve saved ArticleLog using _id', ()=>{
+  describe("GET /article/:articleLogID", ()=>{
 
-        const id = articles[0]._id
-        const uri = `/article/${id}`
+    it('retrieve saved ArticleLog using _id', ()=>{
 
-        console.log('***test id: ', id)
+      const id = articles[0]._id
+      const hex_id = id.toHexString()
+      const uri = `/article/${hex_id}`
 
-        return request(app)
-          .get(uri)
-          .expect(200)
-          .then(res => {
-            console.log(res)
-            console.log(000000000000000000)
-          })
-          // .catch(e => console.log(e))
+      return request(app)
+        .get(uri)
+        .expect(200)
 
-      })//
-  
-      it('send bad ID get back 404status and found:false', ()=>{
+    })//
 
-        //send fake id
-        const badID = '0000005d65cb4d1840ae8306'
-  
-        return request(app)
-          .get(`/article/${badID}`)
-          .then(response => {
-            const res = response.body
+    it('send bad ID get back 404status and found:false', ()=>{
 
-            //found propery should be false
-            expect(res.found).to.be.false
+      //send fake id
+      // const badID = '0000005d65cb4d1840ae8306'
+      const badID = '123456'
 
-            //returns the id used when making request
-            expect(res._id).to.equal(badID)
+      return request(app)
+        .get(`/article/${badID}`)
+        .then(response => {
+          const res = response.body
 
-          })
-      })//
-  
-    })//GET /:articleLogID
-    
-    describe("POST /article/", ()=>{
-  
-      it('should have status 201', ()=>{
+          //found propery should be null
+          assert.equal(res.found, null)
 
-        //http 201 status for created
-  
-        let title = 'return201'
-        let url = 'www.201.com'
-  
-        return request(app)
-          .post('/article/')
-          .send({title, url})
-          .expect(201)
-          .then(res => {
+          //returns the id used when making request
+          expect(res.requestId).to.equal(badID)
 
-            //articlSaved property will be if successful
-            expect(res.body.articleSaved).to.be.true
+        })
+    })//
 
-          })
+  })//GET /:articleLogID
   
-      })//
-    
-      it('send bad data; status 400 and articleSaved to be false', () => {
-        
-        //send object with values not strings
-        //parsed they should be rejected
+  describe("POST /article/", ()=>{
 
-        let title = false
-        let url = undefined
-  
-        return request(app)
-          .post('/article/')
-          .send({title, url})
-          .expect(400)
-          .then(res => {
+    it('should have status 201', ()=>{
 
-            //response will have articleSaved set to false
-            expect(res.body.articleSaved).to.be.false
-          })
-  
-      })//
-    
-      it('should have response with articleSaved: true', ()=>{
+      //http 201 status for created
 
-        // articleSaved property, easy to test if article has been saved
-  
-        let title = 'articleSaved:true'
-        let url = 'www.test.com'
-  
-        return request(app)
-          .post('/article/')
-          .send({title, url})
-          .then(res => {
+      let title = 'return201'
+      let url = 'www.201.com'
 
-            //successful request will have articleSaved set to true
-            expect(res.body.articleSaved).to.be.true
-  
-          })
-  
-      })//
-    
-      it('save new Article, find in db using response _id', ()=>{
+      return request(app)
+        .post('/article/')
+        .send({title, url})
+        .expect(201)
+        .then(res => {
 
-        //send request to create new ArticleLog
-        //get _id from response
-        //use _id to search database for record
-        //if successful ensure title,url are the same
-  
-        const title = 'found using _id'
-        const url = 'www.findMyID.com'
-        let articleId;
-  
-        return request(app)
-          .post('/article/')
-          .send({title, url})
-          .then(res => {
-            articleId = res.body.createdArticle._id
-            expect(articleId).to.have.lengthOf(24)
-  
-            ArticleLog
-              .findById(articleId)
-              .then(log => {
-                expect(log.title).to.equal(title)
-                expect(log.url).to.equal(url)
-              })
-  
-          })
-  
-      })//
-  
-    })//POST
-  
-    describe("DELETE /article/:articleLogID", ()=>{
-  
-      it('should delete and exisitng article', ()=>{
+          //articlSaved property will be if successful
+          expect(res.body.articleSaved).to.be.true
 
-        //response has property 'deleted' which is true
+        })
+
+    })//
   
-        const articleId = articles[1]._id
-        const hexID = articleId.toHexString()
+    it('send bad data; status 400 and articleSaved to be false', () => {
+      
+      //send object with values not strings
+      //parsed they should be rejected
+
+      let title = false
+      let url = undefined
+
+      return request(app)
+        .post('/article/')
+        .send({title, url})
+        .expect(400)
+        .then(res => {
+
+          //response will have articleSaved set to false
+          expect(res.body.articleSaved).to.be.false
+        })
+
+    })//
   
-        return request(app)
-          .delete(`/article/${hexID}`)
-          .expect(200)
-          .then(res => {
-              // expect(res.body.deleted).to.be.true
-              assert.equal(res.body.deleted, true)
-          })
+    it('should have response with articleSaved: true', ()=>{
+
+      // articleSaved property, easy to test if article has been saved
+
+      let title = 'articleSaved:true'
+      let url = 'www.test.com'
+
+      return request(app)
+        .post('/article/')
+        .send({title, url})
+        .then(res => {
+
+          //successful request will have articleSaved set to true
+          expect(res.body.articleSaved).to.be.true
+
+        })
+
+    })//
   
-      })//
+    it('save new Article, find in db using response _id', ()=>{
 
-      it('send bad fake _id have status 404', ()=>{
+      //send request to create new ArticleLog
+      //get _id from response
+      //use _id to search database for record
+      //if successful ensure title,url are the same
 
-        //send bad fakeID
-        //status 404
-        //response has property 'deleted' which is false
+      const title = 'found using _id'
+      const url = 'www.findMyID.com'
+      let articleId;
 
-        const badID = '!000000f7cad342ac046AAAA'
+      return request(app)
+        .post('/article/')
+        .send({title, url})
+        .then(res => {
+          articleId = res.body.createdArticle._id
+          expect(articleId).to.have.lengthOf(24)
 
-        return request(app)
-            .delete(`/article/${badID}`)
-            .expect(404)
-            .then(res => {
-                const data = res.body
-
-                expect(data.deleted).to.be.false
-                assert.equal(data.error, 'Bad article id')
+          ArticleLog
+            .findById(articleId)
+            .then(log => {
+              expect(log.title).to.equal(title)
+              expect(log.url).to.equal(url)
             })
 
-      })//
+        })
 
-      it('send good fake _id have status 404', ()=>{
+    })//
 
-        //send good fakeID
-        //stauts 404
-        //response proprety error: Invalid rewuest to delete
+  })//POST
 
-        const badID = '1a00aaa111aaaa1111a111a1'
+  describe("DELETE /article/:articleLogID", ()=>{
 
-        return request(app)
-            .delete(`/article/${badID}`)
-            .expect(404)
-            .then(res => {
+    it('should delete and exisitng article', ()=>{
 
-              const data =  res.body
+      //response has property 'deleted' which is true
+
+      const articleId = articles[1]._id
+      const hexID = articleId.toHexString()
+
+      return request(app)
+        .delete(`/article/${hexID}`)
+        .expect(200)
+        .then(res => {
+            // expect(res.body.deleted).to.be.true
+            assert.equal(res.body.deleted, true)
+        })
+
+    })//
+
+    it('send bad fake _id have status 404', ()=>{
+
+      //send bad fakeID
+      //status 404
+      //response has property 'deleted' which is false
+
+      const badID = '!000000f7cad342ac046AAAA'
+
+      return request(app)
+          .delete(`/article/${badID}`)
+          .expect(404)
+          .then(res => {
+              const data = res.body
 
               expect(data.deleted).to.be.false
-              assert.equal(data.error, 'Invalid request to delete')
+              assert.equal(data.error, 'Bad article id')
+          })
 
-            })
+    })//
 
-      })
+    it('send good fake _id have status 404', ()=>{
 
-    })//DELETE
+      //send good fakeID
+      //stauts 404
+      //response proprety error: Invalid rewuest to delete
+
+      const badID = '1a00aaa111aaaa1111a111a1'
+
+      return request(app)
+          .delete(`/article/${badID}`)
+          .expect(404)
+          .then(res => {
+
+            const data =  res.body
+
+            expect(data.deleted).to.be.false
+            assert.equal(data.error, 'Invalid request to delete')
+
+          })
+
+    })
+
+  })//DELETE
     
 })//articleLog Route
   

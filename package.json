@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js",
-    "test": "clear && SET \"NODE_ENV=test\" && mocha tests/**/*.test.js",
-    "test-watch": "nodemon --exec \"npm test\""
+    "start": "clear && node app.js",
+    "test": "cls && SET \"NODE_ENV=test\" && mocha --timeout 5000 tests/**/*.test.js",
+    "test-watch": "nodemon --exec \"npm test\"",
+    "start-watch": "nodemon --exec \"npm start\""
   },
   "author": "Hitesh",
   "license": "ISC",
@@ -14,11 +15,12 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "mongodb": "^3.1.10",
-    "mongoose": "^5.3.13"
+    "mongoose": "^5.4.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
+    "superagent": "^4.0.0",
     "supertest": "^3.3.0"
   }
 }

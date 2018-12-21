@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 
-//use enviorment process to determine db connect
 const db_uri = process.env.MONGODB_URI
 
 const options = {
@@ -8,8 +7,13 @@ const options = {
   useCreateIndex: true, //found on GitHub. check initial seedArticles in seedData.js
 }
 
-mongoose.connect(db_uri, options);
 mongoose.Promise = global.Promise;
 
+mongoose.connect(db_uri, options);
+
+/*
+  TESTING
+*/
+mongoose.set('debug', false)
 
 module.exports = { mongoose }
