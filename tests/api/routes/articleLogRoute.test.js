@@ -3,10 +3,14 @@ const ArticleLog = require('../../../api/models/articleLog')
 const request = require('supertest')
 const {expect} = require('chai')
 const assert = require('assert')
-const {articles, seedArticles, deleteArticles} = require('../../seedData')
+const {articles, seedArticles, deleteArticles, testDelete, testSeed} = require('../../seedData')
 
-beforeEach(deleteArticles)
-beforeEach( () => seedArticles(articles))
+// beforeEach( ()=> deleteArticles())
+beforeEach( () => testDelete(ArticleLog) )
+
+// beforeEach( () => seedArticles(articles))
+beforeEach( () => testSeed(ArticleLog, articles) )
+
 
 describe("articleLog Routes", ()=>{   
 
@@ -164,7 +168,7 @@ describe("articleLog Routes", ()=>{
 
   describe("DELETE /article/:articleLogID", ()=>{
 
-    it('should delete and exisitng article', ()=>{
+    it('should delete exisitng article', ()=>{
 
       //response has property 'deleted' which is true
 

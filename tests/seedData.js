@@ -48,15 +48,19 @@ const columns = [
 
 const deleteArticles = () => {
     return new Promise((resolve, reject) => {
-        ArticleLog.deleteMany({}).then(() => resolve())
-        .catch(e => reject(e))
+        ArticleLog
+            .deleteMany({})
+            .then(() => resolve())
+            .catch(e => reject(e))
     })
 }
 
 const seedArticles = (data) => {
     return new Promise((resolve, reject) => {
-        ArticleLog.insertMany(data).then(() => resolve())
-        .catch(e => reject(e))
+        ArticleLog
+            .insertMany(data)
+            .then(() => resolve())
+            .catch(e => reject(e))
     })
 }
 
@@ -64,17 +68,62 @@ const seedArticles = (data) => {
 /* 
     Column beforeEach hooks
 */
-const seedColumns = (done) => {
-    Column.deleteMany({}).then(() => {
-        return Column.insertMany(columns[0]).then(() => {
-            done()
-        })
-    }).catch(e => console.log(e))
+
+const deleteColumn = () => {
+    return new Promise((resolve, reject) => {
+        Column.deleteMany({})
+            .then(() => resolve())
+            .catch(() => reject(e))
+    })
 }
+
+const seedColumns = (data) => {
+    return new Promise((resolve, reject) => {
+        Column
+            .insertMany(data)
+            .then(() => resolve())
+            .catch(e => reject(e))
+    })
+}
+
+/*
+    SEED EITHER MODEL
+*/
+
+const testDelete = MODEL => {
+    return new Promise((resolve, reject) => {
+        MODEL
+            .deleteMany({})
+            .then(() => resolve())
+            .catch(e => reject(e))
+    })
+}
+
+const testSeed = function(MODEL, data){
+    return new Promise((resolve, reject) => {
+        MODEL
+            .insertMany(data)
+            .then(() => resolve())
+            .catch(e => reject(e))
+    })
+}
+
+// did not work. bind() issue?
+// const testSeed = (MODEL, data) => {
+//     return new Promise((resolve, reject) => {
+//         MODEL
+//             .insertMany(data)
+//             .then(() => resolve())
+//             .catch(e => reject(e))
+//     })
+// }
+
 
 module.exports = {
     articles,
     columns,
     seedArticles,
-    deleteArticles
+    deleteArticles,
+    testDelete,
+    testSeed
 }

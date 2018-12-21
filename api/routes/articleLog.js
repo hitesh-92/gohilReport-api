@@ -18,6 +18,13 @@ router.get('/', (req, res) => {
 
 //retrieve log from databse using id provided with request
 //send back the log with title,url,createdAt and _id provided with request
+/* 
+    found property:
+    null = Invalid ID
+    false = no article found
+    true = article found
+    undefined = server error
+*/ 
 router.get('/:articleId', (req, res) => {
 
     const requestId = req.params.articleId
