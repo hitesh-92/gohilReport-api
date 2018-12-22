@@ -51,36 +51,6 @@ const buildArticleData = (data) => {
     return result;
 };
 
-const articles = buildArticleData(articleData)
-
-// const articles = [
-//     {
-//         // _id: new mongoose.Types.ObjectId(),
-//         _id: new ObjectId(),
-//         createdAt: "1543499781111",
-//         title: 'test Article 1',
-//         url: 'http://www.testarticleone.co'
-//     },
-//     {
-//         _id: new ObjectId(),
-//         createdAt: '1543498582222',
-//         title: 'two test tweet tweed',
-//         url: 'http://sseecondd.com'
-//     },
-//     {
-//         _id: new ObjectId(),
-//         createdAt: '1545290573333',
-//         title: 'three thrid triad train',
-//         url: 'http://thirrrd.com'
-//     },
-//     {
-//         _id: new ObjectId(),
-//         createdAt: '1545290554444',
-//         title: 'four fire free fear',
-//         url: 'http://fore.com'
-//     }
-// ]
-
 // Column
 
 const buildColumnData = (data) => {
@@ -109,6 +79,10 @@ const buildColumnData = (data) => {
     return [columnOne, columnTwo]
 };
 
+/* 
+    BUILD DATA
+*/
+const articles = buildArticleData(articleData)
 const columns = buildColumnData(articles)
 
 /*

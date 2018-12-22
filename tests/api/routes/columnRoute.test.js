@@ -1,4 +1,5 @@
 const {app} =  require('../../../app')
+const mongoose = require('mongoose')
 
 const request = require('supertest')
 const {expect} = require('chai')
@@ -24,15 +25,46 @@ describe('column/ Routes', () => {
 
     describe('GET /', () => {
 
-        it('work', () => {
+        it('return message', () => {
             return request(app)
             .get('/column/')
             .expect(200)
             .then(res => {
-                assert.equal(res.body.title, 'ColumnTitle')
+                assert.equal(res.body.message, 'Please select column')
             })
         })
     })
-    
 
+    describe('GET /:column', () => {
+
+        it.only('should find column and return articles', () => {
+            return request(app)
+            .get('/column/right')
+            .expect(200)
+            .then(response => {
+                const res = response.body
+
+                // correct column
+                const requestedColumn = res.requestedColumn
+                assert.equal(requestedColumn, 'right')
+
+                // both articles retrieved
+                const columnIDs = res.columnData.articleIDs
+                assert.equal(columnIDs[0], res.articles[0]._id)
+                assert.equal(columnIDs[1], res.articles[1]._id)
+
+            })
+        })
+
+        it("fail to find column 'noColumn'", () => {
+            return request(app)
+            .get('/column/noColumn')
+            .expect(404)
+            .then(res => {
+                console.log(res.body)
+            })
+        })
+
+    })
+    
 });//Column Routes

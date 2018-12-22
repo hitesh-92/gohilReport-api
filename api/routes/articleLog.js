@@ -97,23 +97,29 @@ router.post('/', Authenticate, (req, res, next) => {
     })
 
     //save created article to database and return response
-    article
-        .save()
-        .then(log => {
-            const response = {
-                createdArticle: log,
-                articleSaved: true
-            }
-            res.status(201).json(response)
-        })
-        .catch(e =>{
-            const response = {
-                error: e,
-                articleSaved: false,
-                createdArticle: null
-            }
-            res.status(400).json(response)
-        })
+    article.save()
+    .then(log => {
+        const response = {
+            createdArticle: log,
+            articleSaved: true
+        }
+        res.status(201).json(response)
+    })
+    .catch(e =>{
+        const response = {
+            error: e,
+            articleSaved: false,
+            createdArticle: null
+        }
+        res.status(400).json(response)
+    })
+    .catch(e => {
+        const response = {
+            error: e,
+            status: 'Attempt to save article not made. Contact'
+        }
+        res.status(500).json(response)
+    })
 
 })
 
