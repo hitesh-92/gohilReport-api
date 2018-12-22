@@ -3,18 +3,19 @@ const ArticleLog = require('../../../api/models/articleLog')
 const request = require('supertest')
 const {expect} = require('chai')
 const assert = require('assert')
-const {articles, seedArticles, deleteArticles, testDelete, testSeed} = require('../../seedData')
+const {articles, testDelete, testSeed} = require('../../seedData')
 
-// beforeEach( ()=> deleteArticles())
+/* 
+  HOOOKS 
+  resolved test bug
+  split into seperate functions
+*/
 beforeEach( () => testDelete(ArticleLog) )
-
-// beforeEach( () => seedArticles(articles))
 beforeEach( () => testSeed(ArticleLog, articles) )
 
+describe("article/ Routes", ()=>{   
 
-describe("articleLog Routes", ()=>{   
-
-  describe("GET /article/", ()=>{
+  describe("GET /", ()=>{
   
       // '/' should retrieve all logs to be displayed
   
@@ -38,7 +39,7 @@ describe("articleLog Routes", ()=>{
     
   })// GET
 
-  describe("GET /article/:articleLogID", ()=>{
+  describe("GET /:articleId", ()=>{
 
     it('retrieve saved ArticleLog using _id', ()=>{
 
@@ -54,8 +55,6 @@ describe("articleLog Routes", ()=>{
 
     it('send bad ID get back 404status and found:false', ()=>{
 
-      //send fake id
-      // const badID = '0000005d65cb4d1840ae8306'
       const badID = '123456'
 
       return request(app)
@@ -74,7 +73,7 @@ describe("articleLog Routes", ()=>{
 
   })//GET /:articleLogID
   
-  describe("POST /article/", ()=>{
+  describe("POST /", ()=>{
 
     it('should have status 201', ()=>{
 
@@ -166,7 +165,7 @@ describe("articleLog Routes", ()=>{
 
   })//POST
 
-  describe("DELETE /article/:articleLogID", ()=>{
+  describe("DELETE /:articleId", ()=>{
 
     it('should delete exisitng article', ()=>{
 
@@ -179,13 +178,17 @@ describe("articleLog Routes", ()=>{
         .delete(`/article/${hexID}`)
         .expect(200)
         .then(res => {
-            // expect(res.body.deleted).to.be.true
-            assert.equal(res.body.deleted, true)
+          assert.equal(res.body.deleted, true)
+
+          return ArticleLog.findById(articleId)
+        })
+        .then(doc =>{
+          assert.equal(doc, null)
         })
 
     })//
 
-    it('send bad fake _id have status 404', ()=>{
+    it('send invalid _id have status 404', ()=>{
 
       //send bad fakeID
       //status 404
@@ -205,7 +208,7 @@ describe("articleLog Routes", ()=>{
 
     })//
 
-    it('send good fake _id have status 404', ()=>{
+    it('send fake _id have status 404', ()=>{
 
       //send good fakeID
       //stauts 404
