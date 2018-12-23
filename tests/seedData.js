@@ -34,7 +34,7 @@ const articleData = [
 
 const buildArticleData = (data) => {
     
-    const result = new Array()
+    const articlesArray = new Array()
 
     data.forEach(log => {
 
@@ -45,19 +45,20 @@ const buildArticleData = (data) => {
             createdAt: log.createdAt
         })
 
-        result.push(article)
+        articlesArray.push(article)
 
     })
-    return result;
+    return articlesArray;
 };
 
 // Column
 
 const buildColumnData = (data) => {
     /*
-        data param to be the articles array
+        data param to be the articles array from buildArticleData
     */
 
+    //! change this to accept more articles dynamically
     const all_ids = data.map(each => each._id)
     const columnOneData = [ all_ids[0], all_ids[1] ]
     const columnTwoData = [ all_ids[2], all_ids[3] ]

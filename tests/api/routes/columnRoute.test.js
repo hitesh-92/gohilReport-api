@@ -35,9 +35,9 @@ describe('column/ Routes', () => {
         })
     })
 
-    describe('GET /:column', () => {
+    describe.only('GET /:column', () => {
 
-        it.only('should find column and return articles', () => {
+        it('find column and return articles using column.articleIDs', () => {
             return request(app)
             .get('/column/right')
             .expect(200)
@@ -53,6 +53,7 @@ describe('column/ Routes', () => {
                 assert.equal(columnIDs[0], res.articles[0]._id)
                 assert.equal(columnIDs[1], res.articles[1]._id)
 
+                
             })
         })
 
@@ -60,8 +61,12 @@ describe('column/ Routes', () => {
             return request(app)
             .get('/column/noColumn')
             .expect(404)
-            .then(res => {
-                console.log(res.body)
+            .then(response => {
+                const res = response.body
+
+                assert.equal(res.requestedColumn, 'noColumn')
+                assert.equal(res.columnData, null)
+                assert.equal(res.message, 'Column not found')
             })
         })
 
