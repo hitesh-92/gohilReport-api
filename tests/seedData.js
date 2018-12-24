@@ -32,14 +32,14 @@ const articleData = [
     }
 ];
 
-const buildArticleData = (data) => {
+const buildArticleData = (MODEL, ID, data) => {
     
     const articlesArray = new Array()
 
     data.forEach(log => {
 
-        const article = new ArticleLog({
-            _id: new ObjectId(),
+        const article = new MODEL({
+            _id: new ID(),
             title: log.title,
             url: log.url,
             createdAt: log.createdAt
@@ -53,7 +53,7 @@ const buildArticleData = (data) => {
 
 // Column
 
-const buildColumnData = (data) => {
+const buildColumnData = (MODEL, ID, data) => {
     /*
         data param to be the articles array from buildArticleData
     */
@@ -63,15 +63,15 @@ const buildColumnData = (data) => {
     const columnOneData = [ all_ids[0], all_ids[1] ]
     const columnTwoData = [ all_ids[2], all_ids[3] ]
 
-    const columnOne = new Column({
-        _id: new ObjectId(),
+    const columnOne = new MODEL({
+        _id: new ID(),
         title: 'left',
         lastUpdated: new Date().getTime(),
         articleIDs: columnOneData
     })
 
-    const columnTwo = new Column({
-        _id: new ObjectId(),
+    const columnTwo = new MODEL({
+        _id: new ID(),
         title: 'right',
         lastUpdated: new Date().getTime(),
         articleIDs: columnTwoData
@@ -83,8 +83,8 @@ const buildColumnData = (data) => {
 /* 
     BUILD DATA
 */
-const articles = buildArticleData(articleData)
-const columns = buildColumnData(articles)
+const articles = buildArticleData(ArticleLog, ObjectId, articleData)
+const columns = buildColumnData(Column, ObjectId, articles)
 
 /*
     HOOKS beforeEach
@@ -109,4 +109,8 @@ const testSeed = function(MODEL, data){
 };
 // arrow function did not work. bind issue? had to use old
 
-module.exports = { articles, columns, testDelete, testSeed }
+module.exports = { 
+    articles, columns, 
+    testDelete, testSeed,
+    buildArticleData, buildColumnData
+}
