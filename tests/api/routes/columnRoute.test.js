@@ -33,7 +33,7 @@ describe('column/ Routes', () => {
                 assert.equal(res.body.message, 'Please select column')
             })
         })
-    })
+    })//GET '/'
 
     describe.only('GET /:column', () => {
 
@@ -42,25 +42,39 @@ describe('column/ Routes', () => {
             .get('/column/right')
             .expect(200)
             .then(response => {
-                const res = response.body
+                let res = response.body
+                console.log(res)
 
-                // correct column
-                const requestedColumn = res.requestedColumn
-                assert.equal(requestedColumn, 'right')
 
-                // both articles retrieved
-                const columnIDs = res.columnData.articleIDs
-                assert.equal(columnIDs[0], res.articles[0]._id)
-                assert.equal(columnIDs[1], res.articles[1]._id)
+                /* FIRST
+                assert.equal(res.requestedColumn, 'right')
+                */
 
-                
+                /* SECOND / THIRD
+                assert.equal(res.requestedColumn, 'right')
+                assert.equal(res.message, 'success')
+                assert.equal(res.error, false)
+                */
+
+                /* FOURTH */
+                const seedColumn = columns[1]
+
+                assert.equal(res.error, false)
+
+                //response columnData id matches seeded column data
+                assert.equal(seedColumn._id, res.columnData._id)
+
+                //response article ids match seeded articles
+                assert.equal(res.articles[0]._id, articles[2]._id)
+                assert.equal(res.articles[1]._id, articles[3]._id)
+
             })
-        })
+        })//
 
-        it("fail to find column 'noColumn'", () => {
+        it("not find column 'noColumn'", () => {
             return request(app)
             .get('/column/noColumn')
-            .expect(404)
+            .expect(400)
             .then(response => {
                 const res = response.body
 
@@ -70,6 +84,6 @@ describe('column/ Routes', () => {
             })
         })
 
-    })
+    })//GET '/:column'
     
 });//Column Routes

@@ -1,10 +1,69 @@
-const router = require('express').Router()
+const express = require('express')
+const router = express.Router()
 const Authenticate = require('../middleware/auth')
 
 const ArticleLog = require('../models/articleLog')
 const Column = require('../models/column')
 
 const ObjectId = require('mongoose').Types.ObjectId
+
+// TypeError: Converting circular structure to JSON
+// bad bad bad 
+class Data {
+    constructor() {
+        this.columnData;
+        this.articles;
+        this.message;
+        this.requestedColumn;
+    }
+
+    addRequestedColumn(title){
+        this.requestedColumn = title;
+    }
+
+    addColumnData(data){
+        this.columnData = data
+    }
+
+    getIdsToFind(){
+        const idsToFind = new Array
+        const ids = this.columnData.articleIDs
+        ids.forEach(id => {
+            idsToFind.push({_id: id})
+        })
+        return idsToFind
+    }
+
+    addArticles(data){
+        this.articles = data
+    }
+
+    addMessage(text){
+        this.message =  text
+    }
+
+    addError(err){
+        this.error = err
+    }
+
+    buildResponse(){
+        const data = {
+            columnData: this.columnData || null,
+            time: new Date().getTime(),
+            message: this.message || 'success',
+            requestedColumn: this.requestedColumn,
+            articles: this.articles,
+            error: this.error || false
+        }
+        return data
+    }
+
+    
+}
+
+Data.prototype.toString = function DataToString() {
+    return `${this.columnData}`
+}
 
 /*
     GET /
@@ -24,41 +83,54 @@ router.get('/', Authenticate, (req,res) => {
 // set up check to ony allow 'right,middle,left,alert' columns
 router.get('/:column', Authenticate, (req, res) => {
 
-    const title = req.params.column
 
-    // TypeError: Converting circular structure to JSON
-    let response = new Object()
+    let title = req.params.column
+
+    let data = new Data()
 
     Column.findOne({title})
-    .then(data => {
-        response.requestedColumn = title
-        response.columnData = data
+    .then(singleColumn => {
 
-        //fail case
-        if(data == null){
-            response.message = 'Column not found'
-            return res.status(404).json(response)
+        data.addRequestedColumn(title)
+
+        data.addColumnData(singleColumn)
+
+        if(singleColumn == null){
+            data.addMessage('Column not found')
+            return
+        }
+        
+        const queryIDs = data.getIdsToFind()
+        return queryIDs
+    })
+    .then(ids => ArticleLog.find({_id: {$in: ids} }) )
+    .then(articles => {
+
+        if(articles) data.addArticles(articles)
+
+        let status;
+
+        if(data.columnData == null){
+            data.addError(true)
+            status = 400
+        } else {
+            status = 200
         }
 
-        // create array of IDs to query DB
-        let idsToFind = new Array();
+        const response = data.buildResponse()
 
-        data.articleIDs.forEach(id => {
-            idsToFind.push({_id: id})
-        })
+        res.status(status).json(response)
 
-        return ArticleLog.find({_id: {$in: idsToFind} })
     })
-    .then(data => {
-        response.articles = data
-        res.status(200).json(response)
-    })
-    .catch(error => {
-        response.error =  error
-        response.message = 'Column not found. Try again or Contact'
-        res.status(404).json(response)
+    .catch(e => {
+        data.addError(true)
+        const response = data.buildResponse()
+        res.status(500).json(response)
     })
 
-})
+
+
+
+})//GET /:column
 
 module.exports = router;
