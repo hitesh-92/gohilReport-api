@@ -75,7 +75,7 @@ router.get('/', Authenticate, (req,res) => {
 
 /*
     GET /:column
-*/
+
 // return data for a single column (useful for alert section)
 // set up check to ony allow 'right,middle,left,alert' columns
 router.get('/:column', Authenticate, (req, res) => {
@@ -127,6 +127,72 @@ router.get('/:column', Authenticate, (req, res) => {
     })
 
 })//GET /:column
+*/
+
+router.get('/:column', Authenticate, (req, res) => {
+
+    let title = req.params.column
+
+    let data = {
+        time: new Date().getTime(),
+        requestedColumn: title,
+        columnData: new Object,
+    }
+
+    //returns array of ids to find in db
+    const getIdsToFind = (ids) => {
+        const idsArr = new Array
+        ids.forEach(id => idsArr.push({_id: id}))
+        return idsArr
+    }
+
+
+    Column.findOne({title})
+    .then(singleColumn => {
+
+        data.columnData = singleColumn
+
+        //return if no column found
+        if(singleColumn == null) return
+
+        //return articles ids to query db
+        const queryIDs = getIdsToFind(singleColumn.articleIDs)
+        return queryIDs
+    })
+    .then(ids => ArticleLog.find({_id: {$in: ids} }) )
+    .then(articles => {
+        
+        //add to response data if successful
+        if(articles) data.articles = articles
+
+        //condition response status
+        let status;
+
+        if(data.columnData == null){
+            data.message = 'Column not found'
+            data.error = true 
+            status = 400
+        } else {
+            status = 200
+            data.error = false
+        }
+
+        res.status(status).json(data)
+
+    })
+    .catch(e => {
+        data.error = true
+        data.message = 'Please column entered is correct'
+        res.status(500).json(data)
+    })
+
+})//GET /:column
+
+
+
+
+
+
 
 /* 
     POST

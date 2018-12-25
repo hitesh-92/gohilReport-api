@@ -40,7 +40,7 @@ describe('column/ Routes', () => {
         })
     })//GET '/'
 
-    describe('GET /:column', () => {
+    describe.only('GET /:column', () => {
 
         it('find column and return articles using column.articleIDs', () => {
             return request(app)
@@ -79,7 +79,7 @@ describe('column/ Routes', () => {
 
     })//GET '/:column'
 
-    describe.only('POST /', () => {
+    describe('POST /', () => {
 
         it('save new column and find it', () => {
 
