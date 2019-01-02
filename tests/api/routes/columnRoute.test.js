@@ -7,14 +7,17 @@ const {expect} = require('chai')
 const assert = require('assert')
 
 const {
-    articles, columns, 
-    testDelete, testSeed,
-    buildArticleData, buildColumnData
+    articles,
+    columns,
+    testDelete,
+    testSeed,
+    buildArticleData
 } = require('../../seedData')
 
 const ArticleLog = require('../../../api/models/articleLog')
 const Column = require('../../../api/models/column')
 
+//TEST FOR DUPLICATE ENTRIES IN POST ROUTES
 
 /*
     HOOKS
@@ -40,9 +43,9 @@ describe('column/ Routes', () => {
         })
     })//GET '/'
 
-    describe.only('GET /:column', () => {
+    describe('GET /:column', () => {
 
-        it('find column and return articles using column.articleIDs', () => {
+        it('find column and return articles', () => {
             return request(app)
             .get('/column/right')
             .expect(200)
@@ -68,6 +71,7 @@ describe('column/ Routes', () => {
             .get('/column/noColumn')
             .expect(400)
             .then(response => {
+
                 const res = response.body
 
                 assert.equal(res.requestedColumn, 'noColumn')
@@ -99,31 +103,87 @@ describe('column/ Routes', () => {
                 articleIDs: testArticleIDs
             }
 
-            //post 1 column
+            //post with data
             return request(app)
             .post('/column/')
             .send(postColumnData)
             .set('Accept', 'application/json')
             .expect(200)
             .then(response => {
+
                 const res = response.body
                 const column = res.createdColumn
+
                 //test response
                 assert.equal(column.articleIDs.length, 4)
                 assert.equal(res.title, postColumnData.title)
                 assert.equal(res.message, 'success')
+
                 //search for column using newly created column id from response
-                const id = ObjectId.createFromHexString(column._id) 
+                const id = ObjectId.createFromHexString(column._id)
+
                 Column.findById(id)
                 .then(savedColumn => {
+                    
                     //make sure data is same as test data
                     assert.equal(savedColumn.title, postColumnData.title)
                     assert.equal(savedColumn.articleIDs.length, testArticles.length)
+
                 })
             })
 
         })//
 
-    })
+        /* TEST FOR ERROR(S) */
+
+    })//POST '/'
+
+    describe('PATCH /', () => {
+
+        it('update articleIDs of first seed column', () => {
+
+            //create new articlesIDs to update
+            const articleIDsData = [
+                {title: 'one1', url: 'http://one1.com'},
+                {title: 'two2', url: 'http://two2.com'},
+                {title: 'three3', url: 'http://three3.com'},
+                {title: 'four4', url: 'http://four4.com'}
+            ]
+            const testArticles = buildArticleData(ArticleLog, ObjectId, articleIDsData)
+            const testArticleIDs = testArticles.map(article => article._id)
+
+            const sendData = {
+                ids: testArticleIDs
+            }
+            
+            return request(app)
+            .patch('/column/left')
+            .send(sendData)
+            .set('Accept', 'application/json')
+            .expect(200)
+            .then(response => {
+                const res = response.body                
+                // console.log('---\n', res)
+
+                //return updatedColumn, msg:success, error:false,
+                assert.equal(res.newArticleIDs.length, 6)
+                assert.equal(res.message, 'success')
+
+            })
+
+        });//
+
+        it.only('should return 404 if column not found', () => {
+
+            //create data to send
+            const sendData = {
+                ids: new ObjectId()
+            }
+
+        })
+        
+        it('should return 400 if bad data sent', () => {})
+
+    })//PATCH '/'
     
 });//Column Routes
