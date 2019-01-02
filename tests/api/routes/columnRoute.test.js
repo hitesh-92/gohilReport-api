@@ -173,11 +173,11 @@ describe('column/ Routes', () => {
 
         });//
 
-        it.only('should return 404 if column not found', () => {
+        it('should return 404 if column not found', () => {
 
             //create data to send
             const sendData = {
-                ids: new ObjectId()
+                ids: [new ObjectId()]
             }
 
             return request(app)
@@ -186,16 +186,36 @@ describe('column/ Routes', () => {
             .set('Accept', 'application/json')
             .expect(404)
             .then(response => {
-
                 const res = response.body
-
                 assert.equal(res.error.message, 'Invalid Column Requested')
-                
             })
 
         })
         
-        it('should return 400 if bad data sent', () => {})
+        it.only('should return 400 if bad data sent', () => {
+
+            const sendData = {
+                ids: [
+                    new ObjectId(),
+                    new ObjectId(),
+                    '5c2d0555c9d6872c78874081', //good id
+                    '5c2d0555c9d6872c7887408'   //bad id
+                ]
+            }
+            
+            //create data to send
+            // const fakeIDs = [new ObjectId(), new ObjectId()]
+            // const sendData = {
+            //     ids: fakeIDs
+            // }
+
+            return request(app)
+            .patch('/column/right')
+            .send(sendData)
+            .set('Accept', 'application/json')
+            .expect(400)
+
+        })
 
     })//PATCH '/'
     

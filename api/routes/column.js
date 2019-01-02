@@ -215,7 +215,7 @@ router.patch('/:column', Authenticate, (req,res) => {
         this.newArticleIDs = [...currentIDs, ...this.columnsArticlesToEnter]
     }
     Data.prototype.dataToUpdate = function getDataToInsert(){
-        //return column id and ArticleLog body to be updated
+        //create array with _id and Column log body to be updated
         const toSave = [
             this.columnSelected._id,
             {
@@ -224,7 +224,7 @@ router.patch('/:column', Authenticate, (req,res) => {
                 articleIDs: this.newArticleIDs
             }
         ]
-
+        //save to object and return
         this.articleLogSaved = toSave
         return toSave
     }
@@ -234,6 +234,19 @@ router.patch('/:column', Authenticate, (req,res) => {
     Data.prototype.columnNotFound = function addNewError(){
         this.error.message = 'Invalid Column Requested'
     }
+    Data.prototype.invalidIDProvided = function rejectID(){
+        this.error.articleIDs = true
+        this.error.message = 'Invalid article ID provided. Check entry'
+    }
+
+    //filter id(s) and check if valid
+    // function to check if id is ObjectID
+    const checkId = id => ObjectId.isValid(id) == true
+    // filter array using the checkId function
+    const fitleredIDs = columnArticlesToEnter.filter(id => checkId(id))
+    // filteredIDs length should be same as columnArticlesToEnter
+    const IDsValid = fitleredIDs.length == columnArticlesToEnter.length
+
 
     let data = new Data(columnArticlesToEnter)
     data.addColumnSelected(columnSelected)
@@ -241,9 +254,10 @@ router.patch('/:column', Authenticate, (req,res) => {
     //find requested column in db
     Column.find({title: columnSelected})
     .then(columnData => {
-
+    
         // case for column not found
         if(columnData.length == 0) return data.columnNotFound()
+        if(IDsValid == false) return data.invalidIDProvided()
 
         const column = columnData[0]
 
@@ -257,7 +271,7 @@ router.patch('/:column', Authenticate, (req,res) => {
 
     })
     .then(info => {
-
+        
         if(info == undefined) return
 
         // console.log(0)
@@ -281,7 +295,10 @@ router.patch('/:column', Authenticate, (req,res) => {
         //set res status and execute response + send data Object
         let status
 
-        if (saveResponse === undefined){
+        if(saveResponse == undefined && data.error.articleIDs){
+            status = 400
+        }
+        else if (saveResponse === undefined){
             status = 404
         }
         else if(saveResponse.ok == 1) {
