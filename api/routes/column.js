@@ -231,22 +231,19 @@ router.patch('/:column', Authenticate, (req,res) => {
     Data.prototype.addMessage = function saveMessage(message){
         this.message = message
     }
-    // Data.prototype.columnNotFound = function addNewError(){
-    //     this.error = true
-    //     this.error.message = 'No column found by given name'
-    // }
+    Data.prototype.columnNotFound = function addNewError(){
+        this.error.message = 'Invalid Column Requested'
+    }
 
     let data = new Data(columnArticlesToEnter)
     data.addColumnSelected(columnSelected)
-
-    // console.log(data)
     
     //find requested column in db
     Column.find({title: columnSelected})
     .then(columnData => {
 
-        //case for column not found
-        // if(columnData.length == 0) return data.columnNotFound()
+        // case for column not found
+        if(columnData.length == 0) return data.columnNotFound()
 
         const column = columnData[0]
 
@@ -261,6 +258,10 @@ router.patch('/:column', Authenticate, (req,res) => {
     })
     .then(info => {
 
+        if(info == undefined) return
+
+        // console.log(0)
+
         //sort data from info array
         const id = info[0], body = info[1]
 
@@ -272,16 +273,22 @@ router.patch('/:column', Authenticate, (req,res) => {
 
     })
     .then(saveResponse => {
+        // console.log(saveResponse)
+        // console.log(data)
 
-        //saveResponse: { n: 1, nModified: 1, ok: 1 }
+        //saveResponse: { n: 1, nModified: 1, ok: 1 } //status:200
         
         //set res status and execute response + send data Object
-        let status;
+        let status
 
-        if(saveResponse.ok == 1) {
+        if (saveResponse === undefined){
+            status = 404
+        }
+        else if(saveResponse.ok == 1) {
             status = 200
             data.addMessage('success')
         }
+        // else if (saveResponse == undefined) console.log(true)
         
         res.status(status).send(data)
 

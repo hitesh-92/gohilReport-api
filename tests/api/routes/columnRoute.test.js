@@ -180,6 +180,19 @@ describe('column/ Routes', () => {
                 ids: new ObjectId()
             }
 
+            return request(app)
+            .patch('/column/noColumn')
+            .send(sendData)
+            .set('Accept', 'application/json')
+            .expect(404)
+            .then(response => {
+
+                const res = response.body
+
+                assert.equal(res.error.message, 'Invalid Column Requested')
+                
+            })
+
         })
         
         it('should return 400 if bad data sent', () => {})
