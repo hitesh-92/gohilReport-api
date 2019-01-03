@@ -12,7 +12,7 @@ const ObjectId = require('mongoose').Types.ObjectId
     GET /
 */
 // make this return object with data for all 3 columns
-router.get('/', Authenticate, (req,res) => {
+router.get('/', (req,res) => {
 
     const response = {
         message: 'Please select column'
@@ -330,11 +330,20 @@ router.delete('/:column', Authenticate, (req,res) => {
 
     Column.findOneAndDelete({title: columnSelected})
     .then(log => {
-        
-        data.message = 'success'
-        data.deleted = true
 
-        res.status(200).send(data)
+        let status
+        
+        if(log == null){
+            status = 400
+            data.message = 'Invalid Column Provided'
+        } else {
+            status = 200
+            data.message = 'success'            
+            data.deleted = true
+        }
+
+
+        res.status(status).send(data)
 
     })
 

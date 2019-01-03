@@ -213,9 +213,9 @@ describe('column/ Routes', () => {
 
     })//PATCH '/'
 
-    describe('DELETE /:column', () => {
+    describe.only('DELETE /:column', () => {
 
-        it.only('delete a column with 200 response', () => {
+        it('delete a column with 200 response status', () => {
 
             return request(app)
             .delete('/column/right')
@@ -225,6 +225,21 @@ describe('column/ Routes', () => {
 
                 assert.equal(res.message, 'success')
                 assert.equal(res.deleted, true)
+
+            })
+
+        })//
+
+        it('reject wrong column with 400 status', () => {
+
+            return request(app)
+            .delete('/column/noColumn')
+            .expect(400)
+            .then(response => {
+                const res = response.body
+
+                assert.equal(res.message, 'Invalid Column Provided')
+                assert.equal(res.deleted, false)
 
             })
 
