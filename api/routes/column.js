@@ -21,6 +21,7 @@ router.get('/', Authenticate, (req,res) => {
     res.status(200).json(response)
 });
 
+
 /*
     GET /:column
 */
@@ -312,5 +313,32 @@ router.patch('/:column', Authenticate, (req,res) => {
     })
 
 })//PATCH /:column
+
+
+/*
+    DELETE
+*/
+//
+router.delete('/:column', Authenticate, (req,res) => {
+
+    const columnSelected = req.params.column
+
+    let data = {
+        deleteRequest: columnSelected,
+        deleted: false
+    }
+
+    Column.findOneAndDelete({title: columnSelected})
+    .then(log => {
+        
+        data.message = 'success'
+        data.deleted = true
+
+        res.status(200).send(data)
+
+    })
+
+})//DELETE
+
 
 module.exports = router;

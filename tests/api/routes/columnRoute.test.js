@@ -190,9 +190,9 @@ describe('column/ Routes', () => {
                 assert.equal(res.error.message, 'Invalid Column Requested')
             })
 
-        })
+        })//
         
-        it.only('should return 400 if bad data sent', () => {
+        it('should return 400 if bad data sent', () => {
 
             const sendData = {
                 ids: [
@@ -203,20 +203,33 @@ describe('column/ Routes', () => {
                 ]
             }
             
-            //create data to send
-            // const fakeIDs = [new ObjectId(), new ObjectId()]
-            // const sendData = {
-            //     ids: fakeIDs
-            // }
-
             return request(app)
             .patch('/column/right')
             .send(sendData)
             .set('Accept', 'application/json')
             .expect(400)
 
-        })
+        })//
 
     })//PATCH '/'
+
+    describe('DELETE /:column', () => {
+
+        it.only('delete a column with 200 response', () => {
+
+            return request(app)
+            .delete('/column/right')
+            .expect(200)
+            .then(response => {
+                const res = response.body
+
+                assert.equal(res.message, 'success')
+                assert.equal(res.deleted, true)
+
+            })
+
+        })//
+
+    })//DELETE '/:column'
     
 });//Column Routes
