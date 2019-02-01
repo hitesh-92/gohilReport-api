@@ -213,7 +213,7 @@ describe('column/ Routes', () => {
 
     })//PATCH '/'
 
-    describe.only('DELETE /:column', () => {
+    describe('DELETE /:column', () => {
 
         it('delete a column with 200 response status', () => {
 

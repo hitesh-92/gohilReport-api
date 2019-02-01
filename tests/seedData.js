@@ -1,6 +1,6 @@
-const Column = require('../api/models/column')
-const ArticleLog = require('../api/models/articleLog')
-const ObjectId = require('mongoose').Types.ObjectId
+const Column = require('../api/models/column');
+const ArticleLog = require('../api/models/articleLog');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 
 /*
@@ -34,7 +34,7 @@ const articleData = [
 
 const buildArticleData = (MODEL, ID, data) => {
     
-    const articlesArray = new Array()
+    const articlesArray = [];
 
     data.forEach(log => {
 
@@ -43,11 +43,11 @@ const buildArticleData = (MODEL, ID, data) => {
             title: log.title,
             url: log.url,
             createdAt: log.createdAt
-        })
+        });
 
         articlesArray.push(article)
 
-    })
+    });
     return articlesArray;
 };
 
@@ -59,23 +59,23 @@ const buildColumnData = (MODEL, ID, data) => {
     */
 
     //! change this to accept more articles dynamically
-    const all_ids = data.map(each => each._id)
-    const columnOneData = [ all_ids[0], all_ids[1] ]
-    const columnTwoData = [ all_ids[2], all_ids[3] ]
+    const all_ids = data.map(each => each._id);
+    const columnOneData = [ all_ids[0], all_ids[1] ];
+    const columnTwoData = [ all_ids[2], all_ids[3] ];
 
     const columnOne = new MODEL({
         _id: new ID(),
         title: 'left',
         lastUpdated: new Date().getTime(),
         articleIDs: columnOneData
-    })
+    });
 
     const columnTwo = new MODEL({
         _id: new ID(),
         title: 'right',
         lastUpdated: new Date().getTime(),
         articleIDs: columnTwoData
-    })
+    });
 
     return [columnOne, columnTwo]
 };
@@ -83,8 +83,8 @@ const buildColumnData = (MODEL, ID, data) => {
 /* 
     BUILD DATA
 */
-const articles = buildArticleData(ArticleLog, ObjectId, articleData)
-const columns = buildColumnData(Column, ObjectId, articles)
+const articles = buildArticleData(ArticleLog, ObjectId, articleData);
+const columns = buildColumnData(Column, ObjectId, articles);
 
 /*
     HOOKS beforeEach
@@ -113,4 +113,4 @@ module.exports = {
     articles, columns, 
     testDelete, testSeed,
     buildArticleData, buildColumnData
-}
+};
