@@ -35,7 +35,11 @@ router.post('/signup', (req,res) => {
     })
     .catch(err => {
         console.log('catch:\n',err)
-        res.status(400).json({error: err, added: false})
+        res.status(400).json({
+            email: data.userEmail,
+            error: err,
+            added: false
+        })
     })
 
 });
