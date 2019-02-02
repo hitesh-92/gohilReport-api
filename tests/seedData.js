@@ -1,5 +1,6 @@
 const Column = require('../api/models/column');
 const ArticleLog = require('../api/models/articleLog');
+const User = require('../api/models/user');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 
@@ -80,11 +81,48 @@ const buildColumnData = (MODEL, ID, data) => {
     return [columnOne, columnTwo]
 };
 
+/*
+    USER
+*/
+
+const userData = [
+    {
+        email: 'one@one.co',
+        password: 'charchar0n3'
+    },
+    {
+        email: 'two@two.co',
+        password: 'tw3n7y2tw0z'
+    }
+]
+
+const buildUserData = (data) => {
+
+    let users = []
+
+    for (user of data){
+
+        const newUser = new User({
+            _id: new ObjectId(),
+            email: user.email,
+            password: user.password,
+            createdAt: Date.now()
+        })
+
+        users.push(newUser)
+
+    }
+
+    return users
+
+}
+
 /* 
     BUILD DATA
 */
 const articles = buildArticleData(ArticleLog, ObjectId, articleData);
 const columns = buildColumnData(Column, ObjectId, articles);
+const users = buildUserData(userData);
 
 /*
     HOOKS beforeEach
@@ -110,7 +148,7 @@ const testSeed = function(MODEL, data){
 // arrow function did not work. bind issue? had to use old
 
 module.exports = { 
-    articles, columns, 
+    articles, columns, users,
     testDelete, testSeed,
     buildArticleData, buildColumnData
 };

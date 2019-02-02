@@ -4,13 +4,19 @@ const {app} =  require('../../../app')
 const request = require('supertest')
 const assert = require('assert')
 
+// const {
+//     testSeed,
+//     testDelete,
+
+// }
+
 /*
     HOOKS
 */
+// beforeEach( () => doThis() )
 
-//
 
-describe.only("user/ Routes", () => {
+describe("user/ Routes", () => {
 
     describe("POST /signup" , () => {
 
@@ -37,9 +43,22 @@ describe.only("user/ Routes", () => {
                 assert.equal(body.added, true)
             })
 
-        })
+        });
 
-    })// POST /signup
+    })// /signup
+
+    describe("POST /login", () => {
+
+        it('login user', () => {
+
+            // const userData = {
+            //     email: 'test@user.com',
+            //     password: 'use4p4ssw0rdm4n4g3r'
+            // }
+
+        })//
+
+    })// /login
 
 })// user/ Routes
 

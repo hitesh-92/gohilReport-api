@@ -1,6 +1,6 @@
 const express = require('express')
 const User = require('../models/user')
-// const ObjectId = require('mongoose').Types.ObjectId
+
 const mongoose = require('mongoose')
 
 const Authenticate = require('../middleware/auth')
@@ -10,7 +10,7 @@ const router = express.Router()
     POST
 */
 //User sign up
-router.post('/signup', Authenticate, (req,res) => {
+router.post('/signup', (req,res) => {
 
     let data = {}
     data.userEmail = req.body.email
@@ -24,15 +24,11 @@ router.post('/signup', Authenticate, (req,res) => {
     })
 
     user.save()
-    .then(savedUser => {
-        // res.status(200).json({
-        //     email: savedUser.email,
-        //     added: true
-        // })
-    })
     .then(() => user.createAuthToken())
     .then(token => {
-        res.status(200).header('x-auth', token).json({
+        res.status(200)
+        .header('x-auth', token)
+        .json({
             email: data.userEmail,
             added: true
         })
