@@ -142,8 +142,21 @@ const testSeed = function(MODEL, data){
 };
 // arrow function did not work. bind issue? had to use old
 
+/*
+    SAVE USERS
+*/
+const testSeedUsers = (data) => {
+
+    const userOne = new User(data[0]).save()
+    const userTwo = new User(data[1]).save();
+
+    return Promise.all([userOne, userTwo])
+
+}
+
 module.exports = { 
     articles, columns, users,
-    testDelete, testSeed,
-    buildArticleData, buildColumnData
+    testDelete, testSeed, testSeedUsers,
+    buildArticleData, buildColumnData,
+    userData
 };

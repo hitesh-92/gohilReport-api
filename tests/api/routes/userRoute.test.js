@@ -4,6 +4,14 @@ const {app} =  require('../../../app')
 const request = require('supertest')
 const assert = require('assert')
 
+const {
+    users,
+    userData,
+    testDelete,
+    testSeed,
+    testSeedUsers
+} = require('../../seedData')
+
 // const {
 //     testSeed,
 //     testDelete,
@@ -13,10 +21,11 @@ const assert = require('assert')
 /*
     HOOKS
 */
-// beforeEach( () => doThis() )
+beforeEach( () => testDelete(User) )
+beforeEach( () => testSeedUsers(users) )
 
 
-describe("user/ Routes", () => {
+describe.only("user/ Routes", () => {
 
     describe("POST /signup" , () => {
 
@@ -51,10 +60,22 @@ describe("user/ Routes", () => {
 
         it('login user', () => {
 
-            // const userData = {
-            //     email: 'test@user.com',
-            //     password: 'use4p4ssw0rdm4n4g3r'
-            // }
+            const testUser = {
+                email: users[0].email,
+                password: users[0].password
+            }
+
+            return request(app)
+            .post('/user/login')
+            .send(testUser)
+            .expect(200)
+            .then(response => {
+                const header = response.header
+                const body = response.body
+
+                assert.equal(header['x-auth'].length > 15, true)
+                assert.equal(body.loggedIn, true)
+            })
 
         })//
 

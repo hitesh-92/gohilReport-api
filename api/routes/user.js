@@ -9,7 +9,7 @@ const router = express.Router()
 /*
     POST
 */
-//User sign up
+// User sign up
 router.post('/signup', (req,res) => {
 
     let data = {}
@@ -39,5 +39,32 @@ router.post('/signup', (req,res) => {
     })
 
 });
+
+
+// Login
+router.post('/login', (req,res) => {
+
+    let data = {}
+    data.email = req.body.email
+    data.password = req.body.password
+
+    User.findByCredentials(data.email, data.password)
+    .then(user => {return user.createAuthToken()})
+    .then(token => {
+        res.status(200)
+        .header('x-auth', token)
+        .json({
+            loggedIn: true
+        })
+    })
+    .catch(err => {
+        console.log(`ERROR:\n${err}`)
+        res.send(400).json({
+            loggedIn: false
+        })
+    })
+
+})
+
 
 module.exports = router;
