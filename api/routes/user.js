@@ -25,8 +25,15 @@ router.post('/signup', Authenticate, (req,res) => {
 
     user.save()
     .then(savedUser => {
-        res.status(200).json({
-            email: savedUser.email,
+        // res.status(200).json({
+        //     email: savedUser.email,
+        //     added: true
+        // })
+    })
+    .then(() => user.createAuthToken())
+    .then(token => {
+        res.status(200).header('x-auth', token).json({
+            email: data.userEmail,
             added: true
         })
     })

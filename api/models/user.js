@@ -59,12 +59,15 @@ UserSchema.methods.createAuthToken = function(){
     var user = this;
     const access = 'auth';
 
-    const tokenBody = {
-        _id: user._id.toHexString(),
-        access
-    }
+    const tokenData = {
+        data: {
+            _id: user._id.toHexString(),
+            access
+        },
+        exp: Math.floor(Date.now() / 1000) + (60 * 15)
+    };
 
-    const token = jwt.sign(tokenBody, proccess.env.xJWT).toString()
+    const token = jwt.sign(tokenData, process.env.xJWT).toString()
 
     user.tokens = user.tokens.concat({access, token})
 

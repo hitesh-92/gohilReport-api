@@ -29,12 +29,12 @@ describe.only("user/ Routes", () => {
             .send(userData)
             .expect(200)
             .then(response => {
-                const res = response.body
+                const body = response.body
+                const header = response.header
 
-                assert.equal(res.email, userData.email)
-                assert.equal(res.added, true)
-
-                console.log(process)
+                assert.equal(typeof header['x-auth'], 'string')
+                assert.equal(body.email, userData.email)
+                assert.equal(body.added, true)
             })
 
         })
