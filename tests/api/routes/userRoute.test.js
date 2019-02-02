@@ -33,6 +33,8 @@ describe.only("user/ Routes", () => {
 
                 assert.equal(res.email, userData.email)
                 assert.equal(res.added, true)
+
+                console.log(process)
             })
 
         })
