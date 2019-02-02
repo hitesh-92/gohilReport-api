@@ -54,27 +54,22 @@ const buildArticleData = (MODEL, ID, data) => {
 
 // Column
 
-const buildColumnData = (MODEL, ID, data) => {
-    /*
-        data param to be the articles array from buildArticleData
-    */
-
-    //! change this to accept more articles dynamically
+const buildColumnData = (data) => {
     const all_ids = data.map(each => each._id);
     const columnOneData = [ all_ids[0], all_ids[1] ];
     const columnTwoData = [ all_ids[2], all_ids[3] ];
 
-    const columnOne = new MODEL({
-        _id: new ID(),
+    const columnOne = new Column({
+        _id: new ObjectId(),
         title: 'left',
-        lastUpdated: new Date().getTime(),
+        lastUpdated: Date.now(),
         articleIDs: columnOneData
     });
 
-    const columnTwo = new MODEL({
-        _id: new ID(),
+    const columnTwo = new Column({
+        _id: new ObjectId(),
         title: 'right',
-        lastUpdated: new Date().getTime(),
+        lastUpdated: Date.now(),
         articleIDs: columnTwoData
     });
 
@@ -121,8 +116,8 @@ const buildUserData = (data) => {
     BUILD DATA
 */
 const articles = buildArticleData(ArticleLog, ObjectId, articleData);
-const columns = buildColumnData(Column, ObjectId, articles);
 const users = buildUserData(userData);
+const columns = buildColumnData(articles);
 
 /*
     HOOKS beforeEach
