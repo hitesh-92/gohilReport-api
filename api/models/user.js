@@ -13,6 +13,9 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
         minlength: 10
+    },
+    createdAt: {
+        type: String
     }
 
 })

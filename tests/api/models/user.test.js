@@ -7,7 +7,7 @@ const ObjectId = mongoose.Types.ObjectId
 
 const assert = require('assert')
 
-describe.only('MODEL user', () => {
+describe('MODEL user', () => {
 
     it('create new user', () => {
 
