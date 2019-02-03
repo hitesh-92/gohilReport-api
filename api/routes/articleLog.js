@@ -21,9 +21,8 @@ router.get('/', (req, res) => {
 /*
     GET /:id
 */
-//send back the log with: title, url, createdAt, _id, found
 /* 
-    found property:
+    response found property:
     null = Invalid ID
     false = no article found
     true = article found
@@ -85,10 +84,8 @@ router.get('/:articleId', (req, res) => {
 /*
     POST /
 */
-//Authenticate; only user should be able to save new articles
-//send back response with property createdArticle
 router.post('/', Authenticate, (req, res, next) => {
-
+console.log('HIT POST /article/')
     //create new ArticleLog
     const article = new ArticleLog({
         _id: new mongoose.Types.ObjectId(),
@@ -113,13 +110,6 @@ router.post('/', Authenticate, (req, res, next) => {
         }
         res.status(400).json(response)
     })
-    .catch(e => { //???????????????????????????
-        const response = {
-            error: e,
-            status: 'Attempt to save article not made. Contact'
-        }
-        res.status(500).json(response)
-    })
 
 })
 
@@ -128,10 +118,7 @@ router.post('/', Authenticate, (req, res, next) => {
     DELETE /:id
 */
 //delete articleLog
-//Authenticate; only user should be able to delete log from database
-//use id passed passed with request
-//send back object with a 'deleted' property, boolean
-//if not able to delete send 404
+//success: {'deleted':true}
 router.delete('/:articleId', Authenticate, (req, res, next) => {
 
     const articleID = req.params.articleId

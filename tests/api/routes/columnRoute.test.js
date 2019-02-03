@@ -17,18 +17,6 @@ const {
 const ArticleLog = require('../../../api/models/articleLog')
 const Column = require('../../../api/models/column')
 
-//TEST FOR DUPLICATE ENTRIES IN POST ROUTES
-
-/*
-    HOOKS
-*/
-beforeEach( () => testDelete(ArticleLog) )
-beforeEach( () => testSeed(ArticleLog, articles) )
-
-beforeEach( () => testDelete(Column) )
-beforeEach( () => testSeed(Column, columns) )
-
-
 describe('column/ Routes', () => {
 
     describe('GET /', () => {

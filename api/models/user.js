@@ -94,21 +94,26 @@ UserSchema.statics.findByCredentials = function(email, password){
 
 };
 
-UserSchema.statics.findByToken = token => {
+UserSchema.statics.findByToken = function(token){
+    console.log('FINDING TOKEN')
 
-    var User = this
-    let userData, decoded
-
-    userData.tokens.token = token
-    userData.tokens.access = 'auth'
+    var User = this;
+    let decoded;
 
     try {
+        console.log('TRYING')
         decoded = jwt.verify(token, process.env.xJWT)
-        userData._id = decoded._id
     }
-    catch (err){ return Promise.reject(err) }
+    catch (err){
+        console.log('ERROR', err)
+        return Promise.reject(err)
+    }
 
-    return User.findOne(userData);
+    return User.findOne({
+        '_id': decoded.data._id,
+        'tokens.access': 'auth',
+        'tokens.token': token
+    })
 };
 
 

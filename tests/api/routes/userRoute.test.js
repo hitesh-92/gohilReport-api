@@ -12,19 +12,6 @@ const {
     testSeedUsers
 } = require('../../seedData')
 
-// const {
-//     testSeed,
-//     testDelete,
-
-// }
-
-/*
-    HOOKS
-*/
-beforeEach( () => testDelete(User) )
-beforeEach( () => testSeedUsers(users) )
-
-
 describe("user/ Routes", () => {
 
     describe("POST /signup" , () => {

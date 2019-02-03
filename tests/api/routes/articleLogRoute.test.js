@@ -1,17 +1,15 @@
 const {app} =  require('../../../app')
+
+const {  
+  articles, 
+  users
+} = require('../../seedData')
 const ArticleLog = require('../../../api/models/articleLog')
+// const User = require('../../../api/models/user')
+
 const request = require('supertest')
 const {expect} = require('chai')
 const assert = require('assert')
-const {articles, testDelete, testSeed} = require('../../seedData')
-
-/* 
-  HOOOKS 
-  resolved test bug
-  split into seperate functions
-*/
-beforeEach( () => testDelete(ArticleLog) )
-beforeEach( () => testSeed(ArticleLog, articles) )
 
 describe("article/ Routes", ()=>{   
 
@@ -75,23 +73,31 @@ describe("article/ Routes", ()=>{
   
   describe("POST /", ()=>{
 
-    it('should have status 201', ()=>{
+    it.only('should have status 201', ()=>{
+      
+      let userData = {
+        email: users[0].email,
+        password: users[0].password
+      }
 
-      //http 201 status for created
-
-      let title = 'return201'
-      let url = 'www.201.com'
+      let articleData = {
+        title: 'return201',
+        url: 'www.201.com'
+      }
 
       return request(app)
+      .post('/user/login')
+      .send(userData)
+      .then(response => {
+        return request(app)
         .post('/article/')
-        .send({title, url})
+        .set('x-auth', response.header['x-auth'])
+        .send(articleData)
         .expect(201)
-        .then(res => {
-
-          //articlSaved property will be if successful
-          expect(res.body.articleSaved).to.be.true
-
-        })
+      })
+      .then(response => {
+        assert.equal(response.body.articleSaved, true)
+      })
 
     })//
   
