@@ -73,8 +73,8 @@ describe("article/ Routes", ()=>{
   
   describe("POST /", ()=>{
 
-    it.only('should have status 201', ()=>{
-      
+    it('create and save new article', ()=>{
+
       let userData = {
         email: users[0].email,
         password: users[0].password
@@ -103,137 +103,146 @@ describe("article/ Routes", ()=>{
   
     it('send bad data; status 400 and articleSaved to be false', () => {
       
-      //send object with values not strings
-      //parsed they should be rejected
-
-      let title = false
-      let url = undefined
+      let userData = {
+        email: users[0].email,
+        password: users[0].password
+      }
+      
+      let articleData = {
+        title: false,
+        url: undefined
+      }
 
       return request(app)
+      .post('/user/login')
+      .send(userData)
+      .then(response => {
+        return request(app)
         .post('/article/')
-        .send({title, url})
+        .set('x-auth', response.header['x-auth'])
+        .send(articleData)
         .expect(400)
-        .then(res => {
+      })
+      .then(response => {
+        const res = response.body
 
-          //response will have articleSaved set to false
-          expect(res.body.articleSaved).to.be.false
-        })
-
-    })//
-  
-    it('should have response with articleSaved: true', ()=>{
-
-      // articleSaved property, easy to test if article has been saved
-
-      let title = 'articleSaved:true'
-      let url = 'www.test.com'
-
-      return request(app)
-        .post('/article/')
-        .send({title, url})
-        .then(res => {
-
-          //successful request will have articleSaved set to true
-          expect(res.body.articleSaved).to.be.true
-
-        })
-
+        assert.equal(res.createdArticle, null)
+        assert.equal(res.articleSaved, false)
+      })
     })//
   
     it('save new Article, find in db using response _id', ()=>{
 
-      //send request to create new ArticleLog
-      //get _id from response
-      //use _id to search database for record
-      //if successful ensure title,url are the same
+      let userData = {
+        email: users[0].email,
+        password: users[0].password
+      }
 
-      const title = 'found using _id'
-      const url = 'www.findMyID.com'
+      let articleData = {
+        title: 'return 2019',
+        url: 'www.2019.com'
+      }
+
       let articleId;
 
       return request(app)
+      .post('/user/login')
+      .send(userData)
+      .then(response => {
+        return request(app)
         .post('/article/')
-        .send({title, url})
-        .then(res => {
-          articleId = res.body.createdArticle._id
-          expect(articleId).to.have.lengthOf(24)
+        .set('x-auth', response.header['x-auth'])
+        .send(articleData)
+        .expect(201)
+      })
+      .then(response => {
+        articleId = response.body.createdArticle._id
 
-          ArticleLog
-            .findById(articleId)
-            .then(log => {
-              expect(log.title).to.equal(title)
-              expect(log.url).to.equal(url)
-            })
-
+        ArticleLog.findById(articleId)
+        .then(log => {
+          assert.equal(log.title, articleData.title)
+          assert.equal(log.url, articleData.url)
         })
-
+      });
     })//
 
   })//POST
 
-  describe("DELETE /:articleId", ()=>{
+  describe.only("DELETE /:articleId", ()=>{
 
-    it('should delete exisitng article', ()=>{
-
-      //response has property 'deleted' which is true
+    it('should delete exisitng article', () => {
 
       const articleId = articles[1]._id
       const hexID = articleId.toHexString()
 
-      return request(app)
-        .delete(`/article/${hexID}`)
-        .expect(200)
-        .then(res => {
-          assert.equal(res.body.deleted, true)
+      let userData = {
+        email: users[0].email,
+        password: users[0].password
+      }
 
-          return ArticleLog.findById(articleId)
-        })
-        .then(doc =>{
-          assert.equal(doc, null)
-        })
+      return request(app)
+      .post('/user/login')
+      .send(userData)
+      .then(response => {
+        return request(app)
+        .delete(`/article/${hexID}`)
+        .set('x-auth', response.header['x-auth'])
+        .expect(200)
+      })
+      .then(response => {
+        assert.equal(response.body.deleted, true)
+      })
 
     })//
 
-    it('send invalid _id have status 404', ()=>{
-
-      //send bad fakeID
-      //status 404
-      //response has property 'deleted' which is false
+    it('send invalid _id have status 404', () => {
 
       const badID = '!000000f7cad342ac046AAAA'
 
-      return request(app)
-          .delete(`/article/${badID}`)
-          .expect(404)
-          .then(res => {
-              const data = res.body
+      let userData = {
+        email: users[0].email,
+        password: users[0].password
+      }
 
-              expect(data.deleted).to.be.false
-              assert.equal(data.error, 'Bad article id')
-          })
+      return request(app)
+      .post('/user/login')
+      .send(userData)
+      .then(response => {
+        return request(app)
+        .delete(`/article/${badID}`)
+        .set('x-auth', response.header['x-auth'])
+        .expect(404)
+      })
+      .then(response => {
+        assert.equal(response.body.deleted, false)
+        assert.equal(response.body.error, 'Bad article id')
+      })
 
     })//
 
-    it('send fake _id have status 404', ()=>{
-
-      //send good fakeID
-      //stauts 404
-      //response proprety error: Invalid rewuest to delete
+    it('send fake _id have status 404', () => {
 
       const badID = '1a00aaa111aaaa1111a111a1'
 
+      let userData = {
+        email: users[0].email,
+        password: users[0].password
+      }
+
       return request(app)
-          .delete(`/article/${badID}`)
-          .expect(404)
-          .then(res => {
-
-            const data =  res.body
-
-            expect(data.deleted).to.be.false
-            assert.equal(data.error, 'Invalid request to delete')
-
-          })
-
+      .post('/user/login')
+      .send(userData)
+      .then(response => {
+        return request(app)
+        .delete(`/article/${badID}`)
+        .set('x-auth', response.header['x-auth'])
+        .expect(404)
+      })
+      .then(response => {
+        assert.equal(response.body.deleted, false)
+        assert.equal(response.body.error, 'Invalid request to delete')
+      })
+      
     })
 
   })//DELETE

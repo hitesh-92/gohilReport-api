@@ -85,7 +85,6 @@ router.get('/:articleId', (req, res) => {
     POST /
 */
 router.post('/', Authenticate, (req, res, next) => {
-console.log('HIT POST /article/')
     //create new ArticleLog
     const article = new ArticleLog({
         _id: new mongoose.Types.ObjectId(),

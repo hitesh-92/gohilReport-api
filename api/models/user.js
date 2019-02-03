@@ -95,17 +95,14 @@ UserSchema.statics.findByCredentials = function(email, password){
 };
 
 UserSchema.statics.findByToken = function(token){
-    console.log('FINDING TOKEN')
-
     var User = this;
     let decoded;
 
     try {
-        console.log('TRYING')
         decoded = jwt.verify(token, process.env.xJWT)
     }
-    catch (err){
-        console.log('ERROR', err)
+    catch (err)
+    {
         return Promise.reject(err)
     }
 
