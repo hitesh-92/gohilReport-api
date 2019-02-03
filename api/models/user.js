@@ -94,6 +94,22 @@ UserSchema.statics.findByCredentials = function(email, password){
 
 };
 
+UserSchema.statics.findByToken = token => {
+
+    var User = this
+    let userData, decoded
+
+    userData.tokens.token = token
+    userData.tokens.access = 'auth'
+
+    try {
+        decoded = jwt.verify(token, process.env.xJWT)
+        userData._id = decoded._id
+    }
+    catch (err){ return Promise.reject(err) }
+
+    return User.findOne(userData);
+};
 
 
 module.exports = mongoose.model('user', UserSchema);

@@ -10,7 +10,7 @@ const ObjectId = mongoose.Types.ObjectId
 */
 //tesing - send back message:'working'
 //send back data for all articles to be displayed
-router.get('/', Authenticate, (req, res) => {
+router.get('/', (req, res) => {
     res.status(200)
         .send({
             message: 'working'

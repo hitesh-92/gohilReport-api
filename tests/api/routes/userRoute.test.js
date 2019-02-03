@@ -25,7 +25,7 @@ beforeEach( () => testDelete(User) )
 beforeEach( () => testSeedUsers(users) )
 
 
-describe.only("user/ Routes", () => {
+describe("user/ Routes", () => {
 
     describe("POST /signup" , () => {
 

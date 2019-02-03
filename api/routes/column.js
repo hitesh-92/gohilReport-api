@@ -26,7 +26,7 @@ router.get('/', (req,res) => {
     GET /:column
 */
 //get column by name
-router.get('/:column', Authenticate, (req, res) => {
+router.get('/:column', (req, res) => {
 
     let title = req.params.column
 
