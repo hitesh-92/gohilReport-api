@@ -5,7 +5,6 @@ const {
   users
 } = require('../../seedData')
 const ArticleLog = require('../../../api/models/articleLog')
-// const User = require('../../../api/models/user')
 
 const request = require('supertest')
 const {expect} = require('chai')
@@ -168,7 +167,7 @@ describe("article/ Routes", ()=>{
 
   })//POST
 
-  describe.only("DELETE /:articleId", ()=>{
+  describe("DELETE /:articleId", ()=>{
 
     it('should delete exisitng article', () => {
 
@@ -242,7 +241,7 @@ describe("article/ Routes", ()=>{
         assert.equal(response.body.deleted, false)
         assert.equal(response.body.error, 'Invalid request to delete')
       })
-      
+
     })
 
   })//DELETE

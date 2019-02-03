@@ -1,21 +1,20 @@
 const {app} =  require('../../../app')
+
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId
 
-const request = require('supertest')
-const {expect} = require('chai')
-const assert = require('assert')
-
 const {
+    users,
     articles,
     columns,
-    testDelete,
-    testSeed,
     buildArticleData
 } = require('../../seedData')
 
 const ArticleLog = require('../../../api/models/articleLog')
 const Column = require('../../../api/models/column')
+
+const request = require('supertest')
+const assert = require('assert')
 
 describe('column/ Routes', () => {
 
@@ -71,7 +70,7 @@ describe('column/ Routes', () => {
 
     })//GET '/:column'
 
-    describe('POST /', () => {
+    describe.only('POST /', () => {
 
         it('save new column and find it', () => {
 
@@ -91,38 +90,39 @@ describe('column/ Routes', () => {
                 articleIDs: testArticleIDs
             }
 
-            //post with data
-            return request(app)
-            .post('/column/')
-            .send(postColumnData)
-            .set('Accept', 'application/json')
-            .expect(200)
-            .then(response => {
+            let userData = {
+                email: users[0].email,
+                password: users[0].password
+              }
+        
+              return request(app)
+              .post('/user/login')
+              .send(userData)
+              .then(response => {
+                return request(app)
+                .post('/column')
+                .set('x-auth', response.header['x-auth'])
+                .set('Accept', 'application/json')
+                .send(postColumnData)
+                .expect(200)
+              })
+              .then(response => {
+                const res = response.body,
+                column = res.createdColumn
+                id = ObjectId.createFromHexString(column._id)
 
-                const res = response.body
-                const column = res.createdColumn
-
-                //test response
                 assert.equal(column.articleIDs.length, 4)
                 assert.equal(res.title, postColumnData.title)
                 assert.equal(res.message, 'success')
 
-                //search for column using newly created column id from response
-                const id = ObjectId.createFromHexString(column._id)
-
                 Column.findById(id)
                 .then(savedColumn => {
-                    
-                    //make sure data is same as test data
                     assert.equal(savedColumn.title, postColumnData.title)
                     assert.equal(savedColumn.articleIDs.length, testArticles.length)
-
                 })
-            })
+              })
 
         })//
-
-        /* TEST FOR ERROR(S) */
 
     })//POST '/'
 
