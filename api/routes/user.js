@@ -11,7 +11,7 @@ const router = express.Router()
 */
 // User sign up
 router.post('/signup', (req,res) => {
-
+console.log('HIT')
     let data = {}
     data.userEmail = req.body.email
     data.userPassword = req.body.password
