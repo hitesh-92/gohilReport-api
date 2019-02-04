@@ -5,10 +5,8 @@ const ObjectId = require('mongoose').Types.ObjectId;
 
 
 /*
-    DATA
+    ARTICLE
 */
-
-// Article
 
 const articleData = [
     {
@@ -33,26 +31,29 @@ const articleData = [
     }
 ];
 
-const buildArticleData = (MODEL, ID, data) => {
-    
-    const articlesArray = [];
+const buildArticleData = data => {
+
+    let articlesArray = [];
 
     data.forEach(log => {
 
-        const article = new MODEL({
-            _id: new ID(),
+        const article = new ArticleLog({
+            _id: new ObjectId(),
             title: log.title,
             url: log.url,
             createdAt: log.createdAt
         });
 
         articlesArray.push(article)
-
     });
+
     return articlesArray;
 };
 
-// Column
+
+/*
+    COLUMN
+*/
 
 const buildColumnData = (data) => {
     const all_ids = data.map(each => each._id);
@@ -115,12 +116,12 @@ const buildUserData = (data) => {
 /* 
     BUILD DATA
 */
-const articles = buildArticleData(ArticleLog, ObjectId, articleData);
+const articles = buildArticleData(articleData);
 const users = buildUserData(userData);
 const columns = buildColumnData(articles);
 
 /*
-    HOOKS beforeEach
+    HOOKS
 */
 
 const testDelete = MODEL => {
@@ -142,9 +143,6 @@ const testSeed = function(MODEL, data){
 };
 // arrow function did not work. bind issue? had to use old
 
-/*
-    SAVE USERS
-*/
 const testSeedUsers = (data) => {
 
     const userOne = new User(data[0]).save()

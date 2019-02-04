@@ -10,13 +10,17 @@ const {
     buildArticleData
 } = require('../../seedData')
 
-const ArticleLog = require('../../../api/models/articleLog')
 const Column = require('../../../api/models/column')
 
 const request = require('supertest')
 const assert = require('assert')
 
 describe('column/ Routes', () => {
+
+    const userData = {
+        email: users[0].email,
+        password: users[0].password
+    }
 
     describe('GET /', () => {
 
@@ -70,7 +74,7 @@ describe('column/ Routes', () => {
 
     })//GET '/:column'
 
-    describe.only('POST /', () => {
+    describe('POST /', () => {
 
         it('save new column and find it', () => {
 
@@ -81,7 +85,7 @@ describe('column/ Routes', () => {
                 { title: 'three', url: 'http://three.co', createdAt: '1543499787777' },
                 { title: 'four', url: 'http://four.co', createdAt: '1543499788888' }
             ]
-            const testArticles = buildArticleData(ArticleLog, ObjectId, fakeArticleData)
+            const testArticles = buildArticleData(fakeArticleData)
 
             const testArticleIDs = testArticles.map(article => article._id)
 
@@ -89,38 +93,33 @@ describe('column/ Routes', () => {
                 title: 'testTitlee',
                 articleIDs: testArticleIDs
             }
-
-            let userData = {
-                email: users[0].email,
-                password: users[0].password
-              }
         
-              return request(app)
-              .post('/user/login')
-              .send(userData)
-              .then(response => {
+            return request(app)
+            .post('/user/login')
+            .send(userData)
+            .then(response => {
                 return request(app)
                 .post('/column')
                 .set('x-auth', response.header['x-auth'])
                 .set('Accept', 'application/json')
                 .send(postColumnData)
                 .expect(200)
-              })
-              .then(response => {
-                const res = response.body,
-                column = res.createdColumn
-                id = ObjectId.createFromHexString(column._id)
+            })
+            .then(response => {
+            const res = response.body,
+            column = res.createdColumn
+            id = ObjectId.createFromHexString(column._id)
 
-                assert.equal(column.articleIDs.length, 4)
-                assert.equal(res.title, postColumnData.title)
-                assert.equal(res.message, 'success')
+            assert.equal(column.articleIDs.length, 4)
+            assert.equal(res.title, postColumnData.title)
+            assert.equal(res.message, 'success')
 
-                Column.findById(id)
-                .then(savedColumn => {
-                    assert.equal(savedColumn.title, postColumnData.title)
-                    assert.equal(savedColumn.articleIDs.length, testArticles.length)
-                })
-              })
+            Column.findById(id)
+            .then(savedColumn => {
+                assert.equal(savedColumn.title, postColumnData.title)
+                assert.equal(savedColumn.articleIDs.length, testArticles.length)
+            })
+            })
 
         })//
 
@@ -137,26 +136,28 @@ describe('column/ Routes', () => {
                 {title: 'three3', url: 'http://three3.com'},
                 {title: 'four4', url: 'http://four4.com'}
             ]
-            const testArticles = buildArticleData(ArticleLog, ObjectId, articleIDsData)
+            const testArticles = buildArticleData(articleIDsData)
             const testArticleIDs = testArticles.map(article => article._id)
 
             const sendData = {
                 ids: testArticleIDs
             }
-            
+
             return request(app)
-            .patch('/column/left')
-            .send(sendData)
-            .set('Accept', 'application/json')
-            .expect(200)
+            .post('/user/login')
+            .send(userData)
+            .then(response => {
+                return request(app)
+                .patch('/column/left')
+                .set('x-auth', response.header['x-auth'])
+                .set('Accept', 'application/json')
+                .send(sendData)
+                .expect(200)
+            })
             .then(response => {
                 const res = response.body                
-                // console.log('---\n', res)
-
-                //return updatedColumn, msg:success, error:false,
                 assert.equal(res.newArticleIDs.length, 6)
                 assert.equal(res.message, 'success')
-
             })
 
         });//
@@ -165,14 +166,20 @@ describe('column/ Routes', () => {
 
             //create data to send
             const sendData = {
-                ids: [new ObjectId()]
+                ids: [new ObjectId(), new ObjectId()]
             }
 
             return request(app)
-            .patch('/column/noColumn')
-            .send(sendData)
-            .set('Accept', 'application/json')
-            .expect(404)
+            .post('/user/login')
+            .send(userData)
+            .then(response => {
+                return request(app)
+                .patch('/column/noColumn')
+                .set('x-auth', response.header['x-auth'])
+                .set('Accept', 'application/json')
+                .send(sendData)
+                .expect(404)
+            })
             .then(response => {
                 const res = response.body
                 assert.equal(res.error.message, 'Invalid Column Requested')
@@ -190,47 +197,60 @@ describe('column/ Routes', () => {
                     '5c2d0555c9d6872c7887408'   //bad id
                 ]
             }
-            
-            return request(app)
-            .patch('/column/right')
-            .send(sendData)
-            .set('Accept', 'application/json')
-            .expect(400)
 
+            return request(app)
+            .post('/user/login')
+            .send(userData)
+            .then(response => {
+                return request(app)
+                .patch('/column/right')
+                .set('x-auth', response.header['x-auth'])
+                .set('Accept', 'application/json')
+                .send(sendData)
+                .expect(400)
+            })
+            .then(response => {
+                const res = response.body
+                assert.equal(res.error.message, 'Invalid article ID provided. Check entry')
+            })
         })//
 
     })//PATCH '/'
 
-    describe('DELETE /:column', () => {
+    describe.only('DELETE /:column', () => {
 
         it('delete a column with 200 response status', () => {
 
             return request(app)
-            .delete('/column/right')
-            .expect(200)
+            .post('/user/login')
+            .send(userData)
             .then(response => {
-                const res = response.body
-
-                assert.equal(res.message, 'success')
-                assert.equal(res.deleted, true)
-
+                return request(app)
+                .delete('/column/right')
+                .set('x-auth', response.header['x-auth'])
+                .expect(200)
             })
-
+            .then(response => {
+                assert.equal(response.body.message, 'success')
+                assert.equal(response.body.deleted, true)
+            })
         })//
 
         it('reject wrong column with 400 status', () => {
 
             return request(app)
-            .delete('/column/noColumn')
-            .expect(400)
+            .post('/user/login')
+            .send(userData)
             .then(response => {
-                const res = response.body
-
-                assert.equal(res.message, 'Invalid Column Provided')
-                assert.equal(res.deleted, false)
-
+                return request(app)
+                .delete('/column/noColumn')
+                .set('x-auth', response.header['x-auth'])
+                .expect(400)
             })
-
+            .then(response => {
+                assert.equal(response.body.message, 'Invalid Column Provided')
+                assert.equal(response.body.deleted, false)
+            })
         })//
 
     })//DELETE '/:column'

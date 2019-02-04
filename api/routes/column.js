@@ -195,6 +195,8 @@ router.post('/', Authenticate, (req, res) => {
 //
 router.patch('/:column', Authenticate, (req,res) => {
 
+    /* Very Bad */
+
     //data from request
     const columnSelected = req.params.column
     const columnArticlesToEnter = req.body.ids
@@ -208,13 +210,16 @@ router.patch('/:column', Authenticate, (req,res) => {
     Data.prototype.addColumnSelected = function addColumnSelected(columnSelected){
         this.columnSelected = columnSelected
     }
+
     Data.prototype.addColumnArticleIDs = function addColumnArticles(columnArticles){
         this.columnArticles = columnArticles
     }
+
     Data.prototype.concatArticles = function joinArticleIDs(){
         const currentIDs = this.columnSelected.articleIDs
         this.newArticleIDs = [...currentIDs, ...this.columnsArticlesToEnter]
     }
+    
     Data.prototype.dataToUpdate = function getDataToInsert(){
         //create array with _id and Column log body to be updated
         const toSave = [
@@ -229,12 +234,15 @@ router.patch('/:column', Authenticate, (req,res) => {
         this.articleLogSaved = toSave
         return toSave
     }
+
     Data.prototype.addMessage = function saveMessage(message){
         this.message = message
     }
+
     Data.prototype.columnNotFound = function addNewError(){
         this.error.message = 'Invalid Column Requested'
     }
+
     Data.prototype.invalidIDProvided = function rejectID(){
         this.error.articleIDs = true
         this.error.message = 'Invalid article ID provided. Check entry'
@@ -243,13 +251,16 @@ router.patch('/:column', Authenticate, (req,res) => {
     //filter id(s) and check if valid
     // function to check if id is ObjectID
     const checkId = id => ObjectId.isValid(id) == true
+
     // filter array using the checkId function
     const fitleredIDs = columnArticlesToEnter.filter(id => checkId(id))
+
     // filteredIDs length should be same as columnArticlesToEnter
     const IDsValid = fitleredIDs.length == columnArticlesToEnter.length
 
 
     let data = new Data(columnArticlesToEnter)
+
     data.addColumnSelected(columnSelected)
     
     //find requested column in db
@@ -275,8 +286,6 @@ router.patch('/:column', Authenticate, (req,res) => {
         
         if(info == undefined) return
 
-        // console.log(0)
-
         //sort data from info array
         const id = info[0], body = info[1]
 
@@ -288,8 +297,6 @@ router.patch('/:column', Authenticate, (req,res) => {
 
     })
     .then(saveResponse => {
-        // console.log(saveResponse)
-        // console.log(data)
 
         //saveResponse: { n: 1, nModified: 1, ok: 1 } //status:200
         
@@ -301,13 +308,14 @@ router.patch('/:column', Authenticate, (req,res) => {
         }
         else if (saveResponse === undefined){
             status = 404
+            // data.addMessage('')
+            // data.error.
         }
         else if(saveResponse.ok == 1) {
             status = 200
             data.addMessage('success')
         }
-        // else if (saveResponse == undefined) console.log(true)
-        
+
         res.status(status).send(data)
 
     })
