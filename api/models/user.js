@@ -80,18 +80,15 @@ UserSchema.statics.findByCredentials = function(email, password){
 
     return User.findOne({email})
     .then(user => {
-        
         if (!user) return Promise.reject()
 
         return new Promise((resolve, reject) => {
-            bcrypt.compare(password, user.password)
+            bcrypt.compare(String(password), String(user.password))
             .then(result => {
-                result === true ? resolve(user) : reject()
+                result === true ? resolve(user) : reject(false)
             })
         })
-
-    })
-
+    });
 };
 
 UserSchema.statics.findByToken = function(token){

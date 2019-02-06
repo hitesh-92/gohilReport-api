@@ -1,17 +1,18 @@
 const express = require('express')
+const router = express.Router()
+
 const User = require('../models/user')
 
 const mongoose = require('mongoose')
 
-const Authenticate = require('../middleware/auth')
-const router = express.Router()
+// const Authenticate = require('../middleware/auth')
 
 /*
     POST
 */
 // User sign up
 router.post('/signup', (req,res) => {
-console.log('HIT')
+    
     let data = {}
     data.userEmail = req.body.email
     data.userPassword = req.body.password
@@ -24,10 +25,11 @@ console.log('HIT')
     })
 
     user.save()
-    .then(() => user.createAuthToken())
-    .then(token => {
+    // .then(() => user.createAuthToken())
+    // .then(token => {
+    .then(user => {
         res.status(200)
-        .header('x-auth', token)
+        // .header('x-auth', token)
         .json({
             email: data.userEmail,
             added: true
@@ -53,8 +55,19 @@ router.post('/login', (req,res) => {
     data.password = req.body.password
 
     User.findByCredentials(data.email, data.password)
-    .then(user => {return user.createAuthToken()})
+    .then(user => {
+        if(!user) return false
+        return user.createAuthToken()
+    })
     .then(token => {
+
+        if(!token || token == null){
+            return res.sendStatus(400).json({
+                loggedIn: false,
+                message: 'User not found'
+            })
+        }
+
         res.status(200)
         .header('x-auth', token)
         .json({
@@ -62,9 +75,9 @@ router.post('/login', (req,res) => {
         })
     })
     .catch(err => {
-        console.log(`ERROR:\n${err}`)
-        res.send(400).json({
-            loggedIn: false
+        res.sendStatus(400).json({
+            loggedIn: false,
+            error: err || true
         })
     })
 
