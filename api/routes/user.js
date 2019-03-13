@@ -7,10 +7,7 @@ const mongoose = require('mongoose')
 
 // const Authenticate = require('../middleware/auth')
 
-/*
-    POST
-*/
-// User sign up
+
 router.post('/signup', (req,res) => {
     
     let data = {}
@@ -47,7 +44,6 @@ router.post('/signup', (req,res) => {
 });
 
 
-// Login
 router.post('/login', (req,res) => {
 
     let data = {}

@@ -5,30 +5,29 @@ const Authenticate = require('../middleware/auth')
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId
 
-/*
-    GET /
-*/
-//tesing - send back message:'working'
-//send back data for all articles to be displayed
+
 router.get('/', (req, res) => {
+    //tesing - send back message:'working'
+    //send back data for all articles to be displayed
+
     res.status(200)
-        .send({
-            message: 'working'
-        })
+    .send({
+        message: 'working'
+    })
 })
 
 
-/*
-    GET /:id
-*/
-/* 
-    response found property:
-    null = Invalid ID
-    false = no article found
-    true = article found
-    undefined = server error
-*/ 
 router.get('/:articleId', (req, res) => {
+
+    /* 
+        response reference:    
+    
+        response found property:
+        null = Invalid ID
+        false = no article found
+        true = article found
+        undefined = server error
+    */ 
 
     const requestId = req.params.articleId
 
@@ -81,10 +80,8 @@ router.get('/:articleId', (req, res) => {
 })
 
 
-/*
-    POST /
-*/
 router.post('/', Authenticate, (req, res, next) => {
+
     //create new ArticleLog
     const article = new ArticleLog({
         _id: new mongoose.Types.ObjectId(),
@@ -113,12 +110,10 @@ router.post('/', Authenticate, (req, res, next) => {
 })
 
 
-/*
-    DELETE /:id
-*/
-//delete articleLog
-//success: {'deleted':true}
 router.delete('/:articleId', Authenticate, (req, res, next) => {
+
+    //delete articleLog
+    //success: {'deleted':true}
 
     const articleID = req.params.articleId
 

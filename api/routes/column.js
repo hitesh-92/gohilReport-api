@@ -8,11 +8,8 @@ const Column = require('../models/column')
 const ObjectId = require('mongoose').Types.ObjectId
 
 
-/*
-    GET /
-*/
-// make this return object with data for all 3 columns
 router.get('/', (req,res) => {
+    //return object with data for all 3 columns
 
     const response = {
         message: 'Please select column'
@@ -22,10 +19,6 @@ router.get('/', (req,res) => {
 });
 
 
-/*
-    GET /:column
-*/
-//get column by name
 router.get('/:column', (req, res) => {
 
     let title = req.params.column
@@ -98,13 +91,9 @@ router.get('/:column', (req, res) => {
 
     })
 
-})//GET /:column
+})
 
 
-/* 
-    POST
-*/
-//create new column
 router.post('/', Authenticate, (req, res) => {
 
     //response object
@@ -186,13 +175,9 @@ router.post('/', Authenticate, (req, res) => {
         res.status(status).json(data)
     })
     
-})//POST /:data
+})
 
 
-/*
-    PATCH
-*/
-//
 router.patch('/:column', Authenticate, (req,res) => {
 
     /* Very Bad */
@@ -320,13 +305,9 @@ router.patch('/:column', Authenticate, (req,res) => {
 
     })
 
-})//PATCH /:column
+})
 
 
-/*
-    DELETE
-*/
-//
 router.delete('/:column', Authenticate, (req,res) => {
 
     const columnSelected = req.params.column
@@ -355,7 +336,7 @@ router.delete('/:column', Authenticate, (req,res) => {
 
     })
 
-})//DELETE
+})
 
 
 module.exports = router;
