@@ -7,10 +7,9 @@ const {
 const ArticleLog = require('../../../api/models/articleLog')
 
 const request = require('supertest')
-const {expect} = require('chai')
 const assert = require('assert')
 
-describe("article/ Routes", ()=>{   
+describe.only("article/ Routes", ()=>{   
 
   describe("GET /", ()=>{
   
@@ -29,7 +28,7 @@ describe("article/ Routes", ()=>{
         return request(app)
           .get('/article/')
           .then(res => {
-            expect(res.body.message).to.equal('working')            
+            assert.equal(res.body.message, 'working')         
           })
   
       })//
@@ -45,8 +44,8 @@ describe("article/ Routes", ()=>{
       const uri = `/article/${hex_id}`
 
       return request(app)
-        .get(uri)
-        .expect(200)
+      .get(uri)
+      .expect(200)
 
     })//
 
@@ -55,17 +54,17 @@ describe("article/ Routes", ()=>{
       const badID = '123456'
 
       return request(app)
-        .get(`/article/${badID}`)
-        .then(response => {
-          const res = response.body
+      .get(`/article/${badID}`)
+      .then(response => {
+        const res = response.body
 
-          //found propery should be null
-          assert.equal(res.found, null)
+        //found propery should be null
+        assert.equal(res.found, null)
 
-          //returns the id used when making request
-          expect(res.requestId).to.equal(badID)
+        //returns the id used when making request
+        assert.equal(res.requestId, badID)
 
-        })
+      })
     })//
 
   })//GET /:articleLogID
@@ -142,8 +141,6 @@ describe("article/ Routes", ()=>{
         url: 'www.2019.com'
       }
 
-      let articleId;
-
       return request(app)
       .post('/user/login')
       .send(userData)
@@ -155,7 +152,7 @@ describe("article/ Routes", ()=>{
         .expect(201)
       })
       .then(response => {
-        articleId = response.body.createdArticle._id
+        const articleId = response.body.createdArticle._id
 
         ArticleLog.findById(articleId)
         .then(log => {

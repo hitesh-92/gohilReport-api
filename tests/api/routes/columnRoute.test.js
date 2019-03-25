@@ -42,7 +42,6 @@ describe('column/ Routes', () => {
             .expect(200)
             .then(response => {
                 let res = response.body
-
                 const seedColumn = columns[1]
 
                 assert.equal(res.error, false)
@@ -53,7 +52,6 @@ describe('column/ Routes', () => {
                 //response article ids match seeded articles
                 assert.equal(res.articles[0]._id, articles[2]._id)
                 assert.equal(res.articles[1]._id, articles[3]._id)
-
             })
         })//
 
@@ -217,7 +215,7 @@ describe('column/ Routes', () => {
 
     })//PATCH '/'
 
-    describe.only('DELETE /:column', () => {
+    describe('DELETE /:column', () => {
 
         it('delete a column with 200 response status', () => {
 
