@@ -48,8 +48,6 @@ router.get('/:articleId', (req, res) => {
         .select('title url createdAt')
         .exec()
         .then(log => {
-            // console.log(`Log: ${log}`)
-            // console.log(`requestId: ${requestId}`)
 
             //response object
             let response = {

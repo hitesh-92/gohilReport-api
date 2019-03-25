@@ -9,7 +9,7 @@ const ArticleLog = require('../../../api/models/articleLog')
 const request = require('supertest')
 const assert = require('assert')
 
-describe.only("article/ Routes", ()=>{   
+describe("article/ Routes", ()=>{   
 
   describe("GET /", ()=>{
   

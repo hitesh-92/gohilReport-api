@@ -55,40 +55,28 @@ router.get('/:column', (req, res) => {
     })
     .then(ids => ArticleLog.find({_id: {$in: ids} }) )
     .then(articles => {
+        //condition response status
+        let status;
 
         //add to response data if successful
         if(articles) data.articles = articles
 
-        //condition response status
-        let status;
-
         if(data.columnData == null){
-
             data.message = 'Column not found'
-
             data.error = true 
-
             status = 400
-
         } else {
-
             status = 200
-
             data.error = false
-
         }
 
         res.status(status).json(data)
 
     })
     .catch(e => {
-
         data.error = true
-
         data.message = 'Error processing request'
-
         res.status(500).json(data)
-
     })
 
 })
@@ -98,12 +86,9 @@ router.post('/', Authenticate, (req, res) => {
 
     //response object
     let data = {
-        error: new Object,
-        title: new String,
-        articleIDs: new Array,
-        createdColumn: new Object,
-        time: new Date().getTime(),
-        message: new String
+        error: {},
+        createdColumn: {},
+        time: new Date().getTime()
     }
 
     //add info sent with request to data reponse object
@@ -114,39 +99,24 @@ router.post('/', Authenticate, (req, res) => {
     let articleIDsValid = true
 
     data.articleIDs.forEach(id => {
-
         let isValid = ObjectId.isValid(id)
-
         if(isValid == false) articleIDsValid = false
     })
 
-    if(articleIDsValid == false) data.error.articleIDs = 'Invalid Article ID(s) provided'
-
+    if(articleIDsValid === false) data.error.articleIDs = 'Invalid Article ID(s) provided'
 
     //validate title
     let titleValid =  true
-
     const badTitle = data.title == undefined || data.title.length < 1
-
     if(badTitle) titleValid = false
-
-    if(titleValid == false) data.error.title = 'Invalid Column Title'
-
-    
-    // if(titleValid==false || articleIDsValid==false) data.message = 'Please check error to see further details'
-    
+    if(titleValid == false) data.error.title = 'Invalid Column Title'   
 
     //create column
     const column = new Column({
-
         _id: new ObjectId(),
-
         lastUpdated: new Date().getTime(),
-
         title: data.title,
-
         articleIDs: data.articleIDs
-
     })
 
 
@@ -154,22 +124,13 @@ router.post('/', Authenticate, (req, res) => {
     column.save()
     .then(savedColumn => {
 
+        let status = 200
         data.createdColumn = savedColumn
-        
-        let status = new Number
+        data.message = 'success'
 
-        if(savedColumn){
-
-            data.message = 'success'
-
-            status = 200
-
-        } else {
-
+        if (!savedColumn){
+            stats = 400
             data.message = 'Please check error to see further details'
-
-            status = 400
-
         }
 
         res.status(status).json(data)
@@ -187,51 +148,61 @@ router.patch('/:column', Authenticate, (req,res) => {
     const columnArticlesToEnter = req.body.ids
 
     //Create Data Object
-    function Data(newArticles){
-        this.columnsArticlesToEnter = newArticles
-        this.error = new Object
+    class Data {
+
+        constructor(newArticles) {
+            this.columnsArticlesToEnter = newArticles;
+            this.error = {};
+        }
+
+        addColumnSelected(columnSelected) {
+            this.columnSelected = columnSelected;
+        }
+
+        addColumnArticleIDs(columnArticles) {
+            this.columnArticles = columnArticles;
+        }
+
+        concatArticles() {
+            const currentIDs = this.columnSelected.articleIDs;
+            this.newArticleIDs = [...currentIDs, ...this.columnsArticlesToEnter];
+        }
+
+        dataToUpdate() {
+            //create array with _id and Column log body to be updated
+            const toSave = [
+                this.columnSelected._id,
+                {
+                    title: this.columnSelected.title,
+                    lastUpdated: new Date().getTime(),
+                    articleIDs: this.newArticleIDs
+                }
+            ];
+            //save to object and return
+            this.articleLogSaved = toSave;
+            return toSave;
+        }
+
+        addMessage(message) {
+            this.message = message;
+        }
+
+        columnNotFound() {
+            this.error.message = 'Invalid Column Requested';
+        }
+
+        invalidIDProvided() {
+            this.error.articleIDs = true;
+            this.error.message = 'Invalid article ID provided. Check entry';
+        }
     }
 
-    Data.prototype.addColumnSelected = function addColumnSelected(columnSelected){
-        this.columnSelected = columnSelected
-    }
 
-    Data.prototype.addColumnArticleIDs = function addColumnArticles(columnArticles){
-        this.columnArticles = columnArticles
-    }
 
-    Data.prototype.concatArticles = function joinArticleIDs(){
-        const currentIDs = this.columnSelected.articleIDs
-        this.newArticleIDs = [...currentIDs, ...this.columnsArticlesToEnter]
-    }
     
-    Data.prototype.dataToUpdate = function getDataToInsert(){
-        //create array with _id and Column log body to be updated
-        const toSave = [
-            this.columnSelected._id,
-            {
-                title: this.columnSelected.title,
-                lastUpdated: new Date().getTime(),
-                articleIDs: this.newArticleIDs
-            }
-        ]
-        //save to object and return
-        this.articleLogSaved = toSave
-        return toSave
-    }
 
-    Data.prototype.addMessage = function saveMessage(message){
-        this.message = message
-    }
 
-    Data.prototype.columnNotFound = function addNewError(){
-        this.error.message = 'Invalid Column Requested'
-    }
 
-    Data.prototype.invalidIDProvided = function rejectID(){
-        this.error.articleIDs = true
-        this.error.message = 'Invalid article ID provided. Check entry'
-    }
 
     //filter id(s) and check if valid
     // function to check if id is ObjectID
@@ -256,53 +227,38 @@ router.patch('/:column', Authenticate, (req,res) => {
         if(columnData.length == 0) return data.columnNotFound()
         if(IDsValid == false) return data.invalidIDProvided()
 
-        const column = columnData[0]
-
         //add column to data
-        data.addColumnSelected(column)
+        data.addColumnSelected(columnData[0])
 
         //concat articleID arrays
         data.concatArticles()
 
         return data.dataToUpdate()
-
     })
     .then(info => {
         
         if(info == undefined) return
 
         //sort data from info array
-        const id = info[0], body = info[1]
+        const id = info[0], 
+              body = info[1]
 
         //update Column log
         return Column.updateOne(
             { _id: id },
             { $set: body }
         )
-
     })
     .then(saveResponse => {
 
         //saveResponse: { n: 1, nModified: 1, ok: 1 } //status:200
         
-        //set res status and execute response + send data Object
-        let status
-
-        if(saveResponse == undefined && data.error.articleIDs){
-            status = 400
-        }
-        else if (saveResponse === undefined){
-            status = 404
-            // data.addMessage('')
-            // data.error.
-        }
-        else if(saveResponse.ok == 1) {
-            status = 200
-            data.addMessage('success')
-        }
+        let status = 200
+        if(saveResponse == undefined && data.error.articleIDs) status = 400
+        else if (saveResponse === undefined) status = 404
+        else if(saveResponse.ok == 1) data.addMessage('success')
 
         res.status(status).send(data)
-
     })
 
 })
@@ -320,23 +276,18 @@ router.delete('/:column', Authenticate, (req,res) => {
     Column.findOneAndDelete({title: columnSelected})
     .then(log => {
 
-        let status
+        let status = 200
+        data.message = 'success'
         
         if(log == null){
             status = 400
             data.message = 'Invalid Column Provided'
-        } else {
-            status = 200
-            data.message = 'success'            
-            data.deleted = true
-        }
-
+        } 
+        else data.deleted = true
 
         res.status(status).send(data)
-
     })
 
 })
-
 
 module.exports = router;
