@@ -195,13 +195,15 @@ router.patch('/:column', Authenticate, (req,res) => {
             this.error.articleIDs = true;
             this.error.message = 'Invalid article ID provided. Check entry';
         }
+
+        addError(err){
+            this.error.info = err
+        }
     }
 
 
 
     
-
-
 
 
     //filter id(s) and check if valid
@@ -215,6 +217,9 @@ router.patch('/:column', Authenticate, (req,res) => {
     const IDsValid = fitleredIDs.length == columnArticlesToEnter.length
 
 
+
+
+
     let data = new Data(columnArticlesToEnter)
 
     data.addColumnSelected(columnSelected)
@@ -225,7 +230,7 @@ router.patch('/:column', Authenticate, (req,res) => {
     
         // case for column not found
         if(columnData.length == 0) return data.columnNotFound()
-        if(IDsValid == false) return data.invalidIDProvided()
+        else if(IDsValid == false) return data.invalidIDProvided()
 
         //add column to data
         data.addColumnSelected(columnData[0])
@@ -259,6 +264,10 @@ router.patch('/:column', Authenticate, (req,res) => {
         else if(saveResponse.ok == 1) data.addMessage('success')
 
         res.status(status).send(data)
+    })
+    .catch(err => {
+        data.addError(err)
+        res.status(500).send(data)
     })
 
 })
