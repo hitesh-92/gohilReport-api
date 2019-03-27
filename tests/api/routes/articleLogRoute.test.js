@@ -13,25 +13,14 @@ describe("article/ Routes", ()=>{
 
   describe("GET /", ()=>{
   
-      // '/' should retrieve all logs to be displayed
-  
-      it('should return status 200', ()=>{
-  
-         return request(app)
-          .get('/article/')
-          .expect(200)
-  
-      })
-    
-      it('should return "message":"working"', () => {
-  
-        return request(app)
-          .get('/article/')
-          .then(res => {
-            assert.equal(res.body.message, 'working')         
-          })
-  
-      })//
+    // '/' should retrieve all logs to be displayed
+
+    it('should get all columns with articleLogs', ()=>{
+
+      //get columns [left,center,right]
+      //put into an object
+
+    })
     
   })// GET
 

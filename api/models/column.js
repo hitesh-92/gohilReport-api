@@ -26,5 +26,4 @@ const columnSchema = mongoose.Schema({
     }
 })
 
-
-module.exports =  mongoose.model('column', columnSchema)
+module.exports = mongoose.model('column', columnSchema)

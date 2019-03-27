@@ -279,14 +279,14 @@ router.delete('/:column', Authenticate, (req,res) => {
 
     let data = {
         deleteRequest: columnSelected,
-        deleted: false
+        deleted: false,
+        message: 'success'
     }
 
     Column.findOneAndDelete({title: columnSelected})
     .then(log => {
 
         let status = 200
-        data.message = 'success'
         
         if(log == null){
             status = 400
