@@ -139,9 +139,23 @@ router.post('/', Authenticate, (req, res) => {
 })
 
 
-router.patch('/:column', Authenticate, (req,res) => {
+router.patch(':/column', Authenticate, (req,res) => {
 
-    /* Very Bad */
+    // rewrite test
+    // state how column object being sent to api looks like
+    // restructure the column.articleIDs to hold object
+
+    // const columnToUpdate = req.parms.column
+    // const updated
+
+
+
+})//
+
+
+
+/*
+router.patch('/:column', Authenticate, (req,res) => {
 
     //data from request
     const columnSelected = req.params.column
@@ -189,21 +203,19 @@ router.patch('/:column', Authenticate, (req,res) => {
 
         columnNotFound() {
             this.error.message = 'Invalid Column Requested';
+            return null
         }
 
         invalidIDProvided() {
             this.error.articleIDs = true;
             this.error.message = 'Invalid article ID provided. Check entry';
+            return null
         }
 
         addError(err){
             this.error.info = err
         }
     }
-
-
-
-    
 
 
     //filter id(s) and check if valid
@@ -217,12 +229,8 @@ router.patch('/:column', Authenticate, (req,res) => {
     const IDsValid = fitleredIDs.length == columnArticlesToEnter.length
 
 
-
-
-
+    //Create Data object
     let data = new Data(columnArticlesToEnter)
-
-    data.addColumnSelected(columnSelected)
     
     //find requested column in db
     Column.find({title: columnSelected})
@@ -242,11 +250,11 @@ router.patch('/:column', Authenticate, (req,res) => {
     })
     .then(info => {
         
-        if(info == undefined) return
+        if(info === undefined || info === null) return
 
         //sort data from info array
-        const id = info[0], 
-              body = info[1]
+        const id = info[0]
+        const body = info[1]
 
         //update Column log
         return Column.updateOne(
@@ -271,6 +279,7 @@ router.patch('/:column', Authenticate, (req,res) => {
     })
 
 })
+*/
 
 
 router.delete('/:column', Authenticate, (req,res) => {

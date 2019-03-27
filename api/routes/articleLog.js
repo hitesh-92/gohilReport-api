@@ -21,11 +21,13 @@ router.get('/:articleId', (req, res) => {
     const requestId = req.params.articleId
 
     //invalid ID
-    const validID = ObjectId.isValid(requestId)
-    if (!validID){
+    const invalidID = ObjectId.isValid(requestId) === false
+
+    if (invalidID){
         const response = {
             found: null,
             requestId,
+            message: 'invalid article id provided',
             status: 'Invalid Article ID' 
         }
         return res.status(400).json(response)
@@ -34,35 +36,36 @@ router.get('/:articleId', (req, res) => {
     const findId = ObjectId.createFromHexString(requestId)
 
     ArticleLog.findById(findId)
-        .select('title url createdAt')
-        .exec()
-        .then(log => {
+    .select('title url createdAt')
+    .exec()
+    .then(log => {
 
-            //response object
-            let response = {
-                time: new Date().toLocaleString(),
-                requestId,
-                found: false,
-                data: log
-            }
+        //response object
+        let response = {
+            time: new Date().toLocaleString(),
+            requestId,
+            found: true,
+            data: log
+        }
 
-            // no document returned from find request
-            if(log == null){
-                return res.status(404).json(response)
-            }
+        // no document returned from find request
+        if(log == null){
+            response.found = false
+            response.message = 'no article with given id found'
+            return res.status(404).json(response)
+        }
 
-            //success case
-            response.found = true
-            return res.status(200).json(response)
-        })
-        .catch(e => {
-            const response = {
-                error: e,
-                status: 'Attempt to find article not made. Contact',
-                found: undefined
-            }
-            res.status(500).json(response)
-        })
+        res.status(200).json(response)
+    })
+    .catch(e => {
+        const response = {
+            error: e,
+            status: 'Attempt to find article not made. Contact',
+            message: 'Error processing',
+            found: undefined
+        }
+        res.status(500).json(response)
+    })
 
 })
 

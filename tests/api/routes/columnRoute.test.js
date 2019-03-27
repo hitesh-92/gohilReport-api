@@ -125,6 +125,12 @@ describe('column/ Routes', () => {
 
     describe('PATCH /', () => {
 
+        it('should update columns ArticleIDs', () => {
+
+            
+        })
+
+        /*
         it('update articleIDs of first seed column', () => {
 
             //create new articlesIDs to update
@@ -212,6 +218,7 @@ describe('column/ Routes', () => {
                 assert.equal(res.error.message, 'Invalid article ID provided. Check entry')
             })
         })//
+        */
 
     })//PATCH '/'
 
