@@ -6,17 +6,6 @@ const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId
 
 
-router.get('/', (req, res) => {
-    //tesing - send back message:'working'
-    //send back data for all articles to be displayed
-
-    res.status(200)
-    .send({
-        message: 'working'
-    })
-})
-
-
 router.get('/:articleId', (req, res) => {
 
     /* 

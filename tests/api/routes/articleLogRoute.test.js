@@ -9,20 +9,7 @@ const ArticleLog = require('../../../api/models/articleLog')
 const request = require('supertest')
 const assert = require('assert')
 
-describe("article/ Routes", ()=>{   
-
-  describe("GET /", ()=>{
-  
-    // '/' should retrieve all logs to be displayed
-
-    it('should get all columns with articleLogs', ()=>{
-
-      //get columns [left,center,right]
-      //put into an object
-
-    })
-    
-  })// GET
+describe("article/ Routes", ()=>{
 
   describe("GET /:articleId", ()=>{
 
