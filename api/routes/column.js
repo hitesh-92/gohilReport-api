@@ -8,7 +8,7 @@ const Column = require('../models/column')
 const ObjectId = require('mongoose').Types.ObjectId
 
 
-router.get('/', (req,res) => {
+router.get('/', (_req,res) => {
 
     const data = {}
 
@@ -23,12 +23,14 @@ router.get('/', (req,res) => {
         }
     }
 
-    const getColumn = (column) => {
+    const getColumns = (column) => {
         return new Promise((resolve) => {
             const query = Column.where({title: column})
             resolve( query.findOne() )
         })
     }
+
+    // const getColumns = (title) => new Promise((resolve) => resolve(Column.where({title}).findOne()))
 
     const getArticles = (ids) => {
         let queryArr = []
@@ -39,7 +41,7 @@ router.get('/', (req,res) => {
         })
     }
 
-    const getArticleIds = (columns) => {
+    const getIDsArray = (columns) => {
         return [
             columns.left.articleIDs,
             columns.center.articleIDs,
@@ -49,12 +51,13 @@ router.get('/', (req,res) => {
 
     const columns = ['left','center','right']
 
-    const queryColumns = getAllQuerys(columns, getColumn)
+    const queryColumns = getAllQuerys(columns, getColumns)
 
     queryColumns().then(columns => {
         data.columns = columns
-        const queryArticles = getAllQuerys(getArticleIds(columns), getArticles)
-        return queryArticles()
+        // const queryArticles = getAllQuerys(getIDsArray(columns), getArticles)
+        // return queryArticles()
+        return getAllQuerys(getIDsArray(columns), getArticles)()
     })
     .then(articles => {
         data.leftArticles = articles.left
@@ -121,7 +124,7 @@ router.get('/:column', (req, res) => {
         res.status(status).json(data)
 
     })
-    .catch(e => {
+    .catch(_e => {
         data.error = true
         data.message = 'Error processing request'
         res.status(500).json(data)
@@ -188,7 +191,7 @@ router.post('/', Authenticate, (req, res) => {
 
 
 router.patch('/:column', Authenticate, (req,res) => {
-
+/*
     //data from request
     const columnSelected = req.params.column
     const columnArticlesToEnter = req.body.ids
@@ -309,6 +312,94 @@ router.patch('/:column', Authenticate, (req,res) => {
         data.addError(err)
         res.status(500).send(data)
     })
+
+*/
+
+
+
+    let data = {}
+
+    const columnTitle = req.params.column
+    const newArticleIDs = req.body.ids
+    
+    function updateColumn(column, idsArray){
+
+        const id = column._id
+        const body = {
+            title: column.title,
+            lastUpdated: new Date().getTime(),
+            articleIDs: idsArray
+        }
+
+        return async function(){
+            return Column.updateOne( {_id:id}, {$set:body} )
+        }
+        // return async () => Column.updateOne( {_id:id}, {$set:body} )
+    }
+
+    const validateIDs = (arr) => {
+
+        let badID = []
+
+        for (i in arr){
+            let id = arr[i]
+
+            const validID = ObjectId.isValid(id)
+            if( validID===false ) badID.push(id)
+        }
+
+
+        if ( badID.length===0 ) return true
+        else return false
+
+    }
+
+    //check for any invalid IDs
+    const ids_valid = validateIDs(newArticleIDs)
+    if( ids_valid===false ){    
+        data.error = { message: 'Invalid article ID provided. Check entry' }
+        res.status(400).send(data)
+        return
+    }
+
+    Column.find({title: columnTitle})
+    .then(column => {
+
+        // column not found
+        if(column.length === 0){
+            data.error = { message: 'Invalid Column Requested' }
+            return null
+        }
+
+        //create new IDs array to update column with
+        const newIDsArray = [...column[0].articleIDs, ...newArticleIDs]
+
+        data.column = column
+        data.newArticleIDs = newIDsArray
+
+        return updateColumn(column[0], newIDsArray)()
+    })
+    .then(response => {
+        let status = 200
+
+        console.log('#####', response)
+
+        if(response===null) status = 404
+        else data.message = 'success'
+        
+        res.status(status).send(data)
+    })
+
+
+
+
+
+
+    
+
+
+
+
 
 })
 
