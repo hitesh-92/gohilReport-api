@@ -191,131 +191,6 @@ router.post('/', Authenticate, (req, res) => {
 
 
 router.patch('/:column', Authenticate, (req,res) => {
-/*
-    //data from request
-    const columnSelected = req.params.column
-    const columnArticlesToEnter = req.body.ids
-
-    //Create Data Object
-    class Data {
-
-        constructor(newArticles) {
-            this.columnsArticlesToEnter = newArticles;
-            this.error = {};
-        }
-
-        addColumnSelected(columnSelected) {
-            this.columnSelected = columnSelected;
-        }
-
-        addColumnArticleIDs(columnArticles) {
-            this.columnArticles = columnArticles;
-        }
-
-        concatArticles() {
-            const currentIDs = this.columnSelected.articleIDs;
-            this.newArticleIDs = [...currentIDs, ...this.columnsArticlesToEnter];
-        }
-
-        dataToUpdate() {
-            //create array with _id and Column log body to be updated
-            const toSave = [
-                this.columnSelected._id,
-                {
-                    title: this.columnSelected.title,
-                    lastUpdated: new Date().getTime(),
-                    articleIDs: this.newArticleIDs
-                }
-            ];
-            //save to object and return
-            this.articleLogSaved = toSave;
-            return toSave;
-        }
-
-        addMessage(message) {
-            this.message = message;
-        }
-
-        columnNotFound() {
-            this.error.message = 'Invalid Column Requested';
-            return null
-        }
-
-        invalidIDProvided() {
-            this.error.articleIDs = true;
-            this.error.message = 'Invalid article ID provided. Check entry';
-            return null
-        }
-
-        addError(err){
-            this.error.info = err
-        }
-    }
-
-
-    //filter id(s) and check if valid
-    // function to check if id is ObjectID
-    const checkId = id => ObjectId.isValid(id) == true
-
-    // filter array using the checkId function
-    const fitleredIDs = columnArticlesToEnter.filter(id => checkId(id))
-
-    // filteredIDs length should be same as columnArticlesToEnter
-    const IDsValid = fitleredIDs.length == columnArticlesToEnter.length
-
-
-    //Create Data object
-    let data = new Data(columnArticlesToEnter)
-    
-    //find requested column in db
-    Column.find({title: columnSelected})
-    .then(columnData => {
-    
-        // case for column not found
-        if(columnData.length == 0) return data.columnNotFound()
-        else if(IDsValid == false) return data.invalidIDProvided()
-
-        //add column to data
-        data.addColumnSelected(columnData[0])
-
-        //concat articleID arrays
-        data.concatArticles()
-
-        return data.dataToUpdate()
-    })
-    .then(info => {
-        
-        if(info === undefined || info === null) return
-
-        //sort data from info array
-        const id = info[0]
-        const body = info[1]
-
-        //update Column log
-        return Column.updateOne(
-            { _id: id },
-            { $set: body }
-        )
-    })
-    .then(saveResponse => {
-
-        //saveResponse: { n: 1, nModified: 1, ok: 1 } //status:200
-        
-        let status = 200
-        if(saveResponse == undefined && data.error.articleIDs) status = 400
-        else if (saveResponse === undefined) status = 404
-        else if(saveResponse.ok == 1) data.addMessage('success')
-
-        res.status(status).send(data)
-    })
-    .catch(err => {
-        data.addError(err)
-        res.status(500).send(data)
-    })
-
-*/
-
-
 
     let data = {}
 
@@ -337,33 +212,32 @@ router.patch('/:column', Authenticate, (req,res) => {
         // return async () => Column.updateOne( {_id:id}, {$set:body} )
     }
 
+
     const validateIDs = (arr) => {
-
-        let badID = []
-
-        for (i in arr){
-            let id = arr[i]
-
-            const validID = ObjectId.isValid(id)
-            if( validID===false ) badID.push(id)
-        }
-
+        
+        const badID = arr.filter(id => ObjectId.isValid(id)===false)
 
         if ( badID.length===0 ) return true
-        else return false
-
+        else {
+            data.error = { invalidIDs : badID }
+            console.log('BAD ID = FALSE')
+            return false
+        }
     }
+
 
     //check for any invalid IDs
     const ids_valid = validateIDs(newArticleIDs)
-    if( ids_valid===false ){    
+
+    if( ids_valid===false ){
         data.error = { message: 'Invalid article ID provided. Check entry' }
         res.status(400).send(data)
-        return
+        return;
     }
 
     Column.find({title: columnTitle})
     .then(column => {
+        console.log('FOUND COLUMNNNN')
 
         // column not found
         if(column.length === 0){
@@ -389,18 +263,6 @@ router.patch('/:column', Authenticate, (req,res) => {
         
         res.status(status).send(data)
     })
-
-
-
-
-
-
-    
-
-
-
-
-
 })
 
 
