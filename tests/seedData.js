@@ -28,7 +28,18 @@ const articleData = [
         title: 'four fire free fear',
         url: 'http://fore.com',
         createdAt: '1545290554444'
-    }
+    },
+    {
+        title: 'foe fee flew five',
+        url: 'http://fivee.com',
+        createdAt: '1545290555555'
+    },
+    {
+        title: 'sax sea soi six',
+        url: 'http://sixsix.com',
+        createdAt: '1545290556666'
+    },
+    
 ];
 
 const buildArticleData = data => {
@@ -59,6 +70,7 @@ const buildColumnData = (data) => {
     const all_ids = data.map(each => each._id);
     const columnOneData = [ all_ids[0], all_ids[1] ];
     const columnTwoData = [ all_ids[2], all_ids[3] ];
+    const columnThreeData = [ all_ids[4], all_ids[5] ];
 
     const columnOne = new Column({
         _id: new ObjectId(),
@@ -74,7 +86,14 @@ const buildColumnData = (data) => {
         articleIDs: columnTwoData
     });
 
-    return [columnOne, columnTwo]
+    const columnThree = new Column({
+        _id: new ObjectId(),
+        title: 'center',
+        lastUpdated: Date.now(),
+        articleIDs: columnThreeData
+    });
+
+    return [columnOne, columnTwo, columnThree]
 };
 
 
