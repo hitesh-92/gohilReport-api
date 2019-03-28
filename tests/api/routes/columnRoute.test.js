@@ -127,7 +127,7 @@ describe('column/ Routes', () => {
 
     })//POST '/'
 
-    describe.only('PATCH /', () => {
+    describe('PATCH /', () => {
         
         it('update articleIDs of first seed column', () => {
 
@@ -189,7 +189,7 @@ describe('column/ Routes', () => {
 
         })//
         
-        it.only('should return 400 if bad data sent', () => {
+        it('should return 400 if bad data sent', () => {
 
             const sendData = {
                 ids: [

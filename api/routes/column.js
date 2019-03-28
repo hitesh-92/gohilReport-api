@@ -66,6 +66,10 @@ router.get('/', (_req,res) => {
 
         res.status(200).send(data)
     })
+    .catch(err => {
+        data.error = err
+        res.status(500).send(data)
+    })
 
 });
 
@@ -220,7 +224,6 @@ router.patch('/:column', Authenticate, (req,res) => {
         if ( badID.length===0 ) return true
         else {
             data.error = { invalidIDs : badID }
-            console.log('BAD ID = FALSE')
             return false
         }
     }
@@ -237,7 +240,6 @@ router.patch('/:column', Authenticate, (req,res) => {
 
     Column.find({title: columnTitle})
     .then(column => {
-        console.log('FOUND COLUMNNNN')
 
         // column not found
         if(column.length === 0){
@@ -256,8 +258,6 @@ router.patch('/:column', Authenticate, (req,res) => {
     .then(response => {
         let status = 200
 
-        console.log('#####', response)
-
         if(response===null) status = 404
         else data.message = 'success'
         
@@ -272,7 +272,7 @@ router.delete('/:column', Authenticate, (req,res) => {
 
     let data = {
         deleteRequest: columnSelected,
-        deleted: false,
+        deleted: true,
         message: 'success'
     }
 
@@ -281,12 +281,12 @@ router.delete('/:column', Authenticate, (req,res) => {
 
         let status = 200
         
-        if(log == null){
+        if(log === null){
             status = 400
             data.message = 'Invalid Column Provided'
-        } 
-        else data.deleted = true
-
+            data.deleted = false
+        }
+            
         res.status(status).send(data)
     })
 
