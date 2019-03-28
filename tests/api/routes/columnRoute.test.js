@@ -22,16 +22,19 @@ describe('column/ Routes', () => {
         password: users[0].password
     }
 
-    describe('GET /', () => {
+    describe.only('GET /', () => {
 
-        it('return message', () => {
+        it('return all column with articles', () => {
             return request(app)
             .get('/column/')
             .expect(200)
-            .then(res => {
-                assert.equal(res.body.message, 'Please select column')
+            .then(response => {
+                const res = response.body
+                assert.equal(res.left.title, 'left')
+                assert.equal(res.right.title, 'right')
             })
         })
+
     })//GET '/'
 
     describe('GET /:column', () => {

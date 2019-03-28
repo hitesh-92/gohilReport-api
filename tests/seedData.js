@@ -77,10 +77,8 @@ const buildColumnData = (data) => {
     return [columnOne, columnTwo]
 };
 
-/*
-    USER
-*/
 
+// USER
 const userData = [
     {
         email: 'one@one.co',

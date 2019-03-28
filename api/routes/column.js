@@ -10,12 +10,33 @@ const ObjectId = require('mongoose').Types.ObjectId
 
 router.get('/', (req,res) => {
     //return object with data for all 3 columns
+    // const response={message: 'Please select column'}
+    // res.status(200).json(response)
 
-    const response = {
-        message: 'Please select column'
+    const getColumn = (column) => {
+        return new Promise((resolve) => {
+            const query = Column.where({title: column})
+            resolve( query.findOne() )
+        })
     }
 
-    res.status(200).json(response)
+    const leftColumn = () => getColumn('left')
+    const centerColumn = () => getColumn('center')
+    const rightColumn = () => getColumn('right')
+
+    async function getAll(){
+        
+        const columnReqs = [leftColumn(), centerColumn(), rightColumn()]
+        const [left, center, right] = await Promise.all(columnReqs)
+
+        console.log(left)
+        console.log(center)
+        console.log(right)
+
+    }
+
+    const done = getAll()
+
 });
 
 
@@ -32,7 +53,7 @@ router.get('/:column', (req, res) => {
     //returns array of ids to find in db
     const getIdsToFind = (ids) => {
 
-        const idsArr = new Array
+        let idsArr = []
 
         ids.forEach(id => idsArr.push({_id: id}))
 
@@ -139,22 +160,6 @@ router.post('/', Authenticate, (req, res) => {
 })
 
 
-router.patch(':/column', Authenticate, (req,res) => {
-
-    // rewrite test
-    // state how column object being sent to api looks like
-    // restructure the column.articleIDs to hold object
-
-    // const columnToUpdate = req.parms.column
-    // const updated
-
-
-
-})//
-
-
-
-/*
 router.patch('/:column', Authenticate, (req,res) => {
 
     //data from request
@@ -279,7 +284,6 @@ router.patch('/:column', Authenticate, (req,res) => {
     })
 
 })
-*/
 
 
 router.delete('/:column', Authenticate, (req,res) => {
