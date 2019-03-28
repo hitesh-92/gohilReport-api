@@ -12,14 +12,31 @@ router.get('/', (req,res) => {
 
     const data = {}
 
-    const setUpRequest = (ids) => (fn) => {
-        //if array var name IS NOT 'req' func breaks down
-        //create array of promises ready to .exe
-        let req = []
+    function getAllQuerys(ids, fn){
+        let reqs = []
         ids.forEach(id => {
-            req.push( fn(id) )
+            reqs.push( fn(id) )
         })
-        return req
+        return async function(){
+            const [left, center, right] = await Promise.all(reqs)
+            return {left,center,right}
+        }
+    }
+
+    const getColumn = (column) => {
+        return new Promise((resolve) => {
+            const query = Column.where({title: column})
+            resolve( query.findOne() )
+        })
+    }
+
+    const getArticles = (ids) => {
+        let queryArr = []
+        ids.forEach(id => queryArr.push({_id: id}))
+
+        return new Promise((resolve) => {
+            resolve( ArticleLog.find({_id: {$in:queryArr} }) )
+        })
     }
 
     const getArticleIds = (columns) => {
@@ -30,42 +47,14 @@ router.get('/', (req,res) => {
         ]
     }
 
-    async function getAllColumns(columns){
-
-        const getColumn = (column) => {
-            return new Promise((resolve) => {
-                const query = Column.where({title: column})
-                resolve( query.findOne() )
-            })
-        }
-
-        const columnReqs = setUpRequest(columns)(getColumn)
-        const [left, center, right] = await Promise.all(columnReqs)
-        return {left,center,right}
-    }
-
-    async function getAllArticles(articleIDs){
-
-        const getArticles = (ids) => {
-            let queryArr = []
-            ids.forEach(id => queryArr.push({_id: id}))
-
-            return new Promise((resolve) => {
-                resolve( ArticleLog.find({_id: {$in:queryArr} }) )
-            })
-        }
-
-        const articlesReqs = setUpRequest(articleIDs)(getArticles)
-        const [left, center, right] = await Promise.all(articlesReqs)
-        return {left, center, right}
-    }
-
     const columns = ['left','center','right']
 
-    getAllColumns(columns)
-    .then(columns => {
+    const queryColumns = getAllQuerys(columns, getColumn)
+
+    queryColumns().then(columns => {
         data.columns = columns
-        return getAllArticles(getArticleIds(columns))
+        const queryArticles = getAllQuerys(getArticleIds(columns), getArticles)
+        return queryArticles()
     })
     .then(articles => {
         data.leftArticles = articles.left
@@ -74,7 +63,6 @@ router.get('/', (req,res) => {
 
         res.status(200).send(data)
     })
-
 
 });
 
