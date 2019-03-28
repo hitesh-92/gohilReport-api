@@ -14,6 +14,7 @@ router.get('/', (req,res) => {
 
     const setUpRequest = (ids) => (fn) => {
         //if array var name IS NOT 'req' func breaks down
+        //create array of promises ready to .exe
         let req = []
         ids.forEach(id => {
             req.push( fn(id) )
@@ -30,12 +31,6 @@ router.get('/', (req,res) => {
             })
         }
 
-        //init way
-        // const leftColumn = () => getColumn('left')
-        // const centerColumn = () => getColumn('center')
-        // const rightColumn = () => getColumn('right')
-        // const columnReqs = [leftColumn(), centerColumn(), rightColumn()]
-        
         const columns = ['left','center','right']
         const columnReqs = setUpRequest(columns)(getColumn)
         
@@ -63,7 +58,6 @@ router.get('/', (req,res) => {
         const articlesReqs = setUpRequest(ids)(getArticles)
         const [left, center, right] = await Promise.all(articlesReqs)
         return {left, center, right}
-
     }
 
     getAllColumns()
