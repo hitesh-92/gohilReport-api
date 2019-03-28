@@ -111,25 +111,23 @@ router.get('/:column', (req, res) => {
     .then(ids => ArticleLog.find({_id: {$in: ids} }) )
     .then(articles => {
         //condition response status
-        let status;
+        let status = 200;
 
         //add to response data if successful
         if(articles) data.articles = articles
+
+        data.error = false
 
         if(data.columnData == null){
             data.message = 'Column not found'
             data.error = true 
             status = 400
-        } else {
-            status = 200
-            data.error = false
         }
 
         res.status(status).json(data)
-
     })
-    .catch(_e => {
-        data.error = true
+    .catch(e => {
+        data.error = { status:true, message:e }
         data.message = 'Error processing request'
         res.status(500).json(data)
     })

@@ -11,13 +11,12 @@ const assert = require('assert')
 
 describe("article/ Routes", ()=>{
 
-  describe("GET /:articleId", ()=>{
+  describe.only("GET /:articleId", ()=>{
 
     it('retrieve saved ArticleLog using _id', ()=>{
 
-      const id = articles[0]._id
-      const hex_id = id.toHexString()
-      const uri = `/article/${hex_id}`
+      const id = articles[0]._id.toHexString()
+      const uri = `/article/${id}`
 
       return request(app)
       .get(uri)
@@ -25,15 +24,16 @@ describe("article/ Routes", ()=>{
 
     })//
 
-    it('send bad ID get back 404status and found:false', ()=>{
+    it('Bad ID results in not found', ()=>{
 
       const badID = '123456'
 
       return request(app)
       .get(`/article/${badID}`)
+      .expect(400)
       .then(response => {
         const res = response.body
-
+        console.log('@@@\n\n'.res)
         //found propery should be null
         assert.equal(res.found, null)
 
