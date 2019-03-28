@@ -15,7 +15,7 @@ router.get('/:articleId', (req, res) => {
         time: new Date().getTime(),
         found: null
     }
-    
+
     //invalid ID
     const invalidID = ObjectId.isValid(requestId) === false
 
@@ -57,6 +57,10 @@ router.get('/:articleId', (req, res) => {
 
 router.post('/', Authenticate, (req, res, next) => {
 
+    let data = {
+        articleSaved: false
+    }
+
     //create new ArticleLog
     const article = new ArticleLog({
         _id: new mongoose.Types.ObjectId(),
@@ -67,19 +71,14 @@ router.post('/', Authenticate, (req, res, next) => {
     //save created article to database and return response
     article.save()
     .then(log => {
-        const response = {
-            createdArticle: log,
-            articleSaved: true
-        }
-        res.status(201).json(response)
+        data.createdArticle = log
+        data.articleSaved = true
+
+        res.status(201).json(data)
     })
-    .catch(e =>{
-        const response = {
-            error: e,
-            articleSaved: false,
-            createdArticle: null
-        }
-        res.status(400).json(response)
+    .catch(err =>{
+        data.error = err
+        res.status(400).json(data)
     })
 
 })

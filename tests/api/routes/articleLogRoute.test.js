@@ -101,8 +101,6 @@ describe("article/ Routes", ()=>{
       })
       .then(response => {
         const res = response.body
-
-        assert.equal(res.createdArticle, null)
         assert.equal(res.articleSaved, false)
       })
     })//
