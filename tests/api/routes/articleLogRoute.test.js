@@ -11,17 +11,23 @@ const assert = require('assert')
 
 describe("article/ Routes", ()=>{
 
-  describe.only("GET /:articleId", ()=>{
+  describe("GET /:articleId", ()=>{
 
     it('retrieve saved ArticleLog using _id', ()=>{
 
-      const id = articles[0]._id.toHexString()
+      const article = articles[0]
+      const id = article._id.toHexString()
       const uri = `/article/${id}`
 
       return request(app)
       .get(uri)
       .expect(200)
+      .then(response => {
+        const res = response.body
 
+        assert.equal(res.found, true)
+        assert.equal(res.article.title, article.title)
+      })
     })//
 
     it('Bad ID results in not found', ()=>{
@@ -33,13 +39,9 @@ describe("article/ Routes", ()=>{
       .expect(400)
       .then(response => {
         const res = response.body
-        console.log('@@@\n\n'.res)
-        //found propery should be null
+
         assert.equal(res.found, null)
-
-        //returns the id used when making request
         assert.equal(res.requestId, badID)
-
       })
     })//
 
