@@ -22,7 +22,15 @@ router.get('/', (req,res) => {
         return req
     }
 
-    async function getAllColumns(){
+    const getArticleIds = (columns) => {
+        return [
+            columns.left.articleIDs,
+            columns.center.articleIDs,
+            columns.right.articleIDs
+        ]
+    }
+
+    async function getAllColumns(columns){
 
         const getColumn = (column) => {
             return new Promise((resolve) => {
@@ -31,14 +39,12 @@ router.get('/', (req,res) => {
             })
         }
 
-        const columns = ['left','center','right']
         const columnReqs = setUpRequest(columns)(getColumn)
-        
         const [left, center, right] = await Promise.all(columnReqs)
         return {left,center,right}
     }
 
-    async function getAllArticles(columns){
+    async function getAllArticles(articleIDs){
 
         const getArticles = (ids) => {
             let queryArr = []
@@ -49,21 +55,17 @@ router.get('/', (req,res) => {
             })
         }
 
-        const ids = [
-            columns.left.articleIDs,
-            columns.center.articleIDs,
-            columns.right.articleIDs
-        ]
-
-        const articlesReqs = setUpRequest(ids)(getArticles)
+        const articlesReqs = setUpRequest(articleIDs)(getArticles)
         const [left, center, right] = await Promise.all(articlesReqs)
         return {left, center, right}
     }
 
-    getAllColumns()
+    const columns = ['left','center','right']
+
+    getAllColumns(columns)
     .then(columns => {
         data.columns = columns
-        return getAllArticles(columns)
+        return getAllArticles(getArticleIds(columns))
     })
     .then(articles => {
         data.leftArticles = articles.left
