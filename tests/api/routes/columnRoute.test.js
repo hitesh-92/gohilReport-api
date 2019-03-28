@@ -22,7 +22,7 @@ describe('column/ Routes', () => {
         password: users[0].password
     }
 
-    describe.skip('GET /', () => {
+    describe.only('GET /', () => {
 
         it('return all column with articles', () => {
             return request(app)
@@ -30,8 +30,9 @@ describe('column/ Routes', () => {
             .expect(200)
             .then(response => {
                 const res = response.body
-                assert.equal(res.left.title, 'left')
-                assert.equal(res.right.title, 'right')
+                assert.equal(res.columns.left.title, 'left')
+                assert.equal(res.centerArticles[0].url, 'http://fivee.com')
+                assert.equal(res.rightArticles[1].title, 'four fire free fear')
             })
         })
 

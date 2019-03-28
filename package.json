@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "cls && node app.js",
-    "test": "cls && SET \"NODE_ENV=test\" && mocha --timeout 5000 tests/**/*.test.js",
+    "test": "cls && SET \"NODE_ENV=test\" && mocha --timeout 2200 tests/**/*.test.js",
     "test-watch": "nodemon --exec \"npm test\"",
     "start-watch": "nodemon --exec \"npm start\""
   },

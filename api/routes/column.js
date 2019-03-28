@@ -9,33 +9,76 @@ const ObjectId = require('mongoose').Types.ObjectId
 
 
 router.get('/', (req,res) => {
-    //return object with data for all 3 columns
-    // const response={message: 'Please select column'}
-    // res.status(200).json(response)
 
-    const getColumn = (column) => {
-        return new Promise((resolve) => {
-            const query = Column.where({title: column})
-            resolve( query.findOne() )
+    const data = {}
+
+    const setUpRequest = (ids) => (fn) => {
+        //if array var name IS NOT 'req' func breaks down
+        let req = []
+        ids.forEach(id => {
+            req.push( fn(id) )
         })
+        return req
     }
 
-    const leftColumn = () => getColumn('left')
-    const centerColumn = () => getColumn('center')
-    const rightColumn = () => getColumn('right')
+    async function getAllColumns(){
 
-    async function getAll(){
+        const getColumn = (column) => {
+            return new Promise((resolve) => {
+                const query = Column.where({title: column})
+                resolve( query.findOne() )
+            })
+        }
+
+        //init way
+        // const leftColumn = () => getColumn('left')
+        // const centerColumn = () => getColumn('center')
+        // const rightColumn = () => getColumn('right')
+        // const columnReqs = [leftColumn(), centerColumn(), rightColumn()]
         
-        const columnReqs = [leftColumn(), centerColumn(), rightColumn()]
+        const columns = ['left','center','right']
+        const columnReqs = setUpRequest(columns)(getColumn)
+        
         const [left, center, right] = await Promise.all(columnReqs)
+        return {left,center,right}
+    }
 
-        console.log(left)
-        console.log(center)
-        console.log(right)
+    async function getAllArticles(columns){
+
+        const getArticles = (ids) => {
+            let queryArr = []
+            ids.forEach(id => queryArr.push({_id: id}))
+
+            return new Promise((resolve) => {
+                resolve( ArticleLog.find({_id: {$in:queryArr} }) )
+            })
+        }
+
+        const ids = [
+            columns.left.articleIDs,
+            columns.center.articleIDs,
+            columns.right.articleIDs
+        ]
+
+        const articlesReqs = setUpRequest(ids)(getArticles)
+        const [left, center, right] = await Promise.all(articlesReqs)
+        return {left, center, right}
 
     }
 
-    const done = getAll()
+    getAllColumns()
+    .then(columns => {
+        data.columns = columns
+        return getAllArticles(columns)
+    })
+    .then(articles => {
+        data.leftArticles = articles.left
+        data.centerArticles = articles.center
+        data.rightArticles = articles.right
+
+        res.status(200).send(data)
+    })
+
 
 });
 
