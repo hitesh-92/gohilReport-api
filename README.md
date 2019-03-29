@@ -1,4 +1,4 @@
-# GohilReport REST API
+# GohilReport API
 
 
 ## User Routes
