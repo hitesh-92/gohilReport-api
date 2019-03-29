@@ -69,10 +69,10 @@ router.get('/', (_req,res) => {
         data.error = err
         res.status(500).send(data)
     })
-    .finally(r => {
-        console.log('DONEEE')
-        // ArticleLog.updateLogs()
-    })
+    // .finally(r => {
+    //     console.log('DONEEE')
+    //     // ArticleLog.updateLogs()
+    // })
 
 });
 

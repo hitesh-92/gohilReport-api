@@ -140,6 +140,49 @@ describe("article/ Routes", ()=>{
 
   })//POST
 
+  describe.only("PATCH /:articleId", ()=>{
+
+    const userData = {
+      email: users[0].email,
+      password: users[0].password
+    }
+
+    it('updates article title/url', ()=>{
+
+      const userData = {
+        email: users[0].email,
+        password: users[0].password
+      }
+  
+      const oldArticle = articles[0]
+      const hex_id = oldArticle._id.toHexString()
+
+      const newData = {
+        title: 'one uno eno noe',
+        url: 'http://wwww.oneoneone.com'
+      }
+
+      return request(app)
+      .post('/user/login')
+      .send(userData)
+      .then(response => {
+        return request(app)
+        .post(`/article/${hex_id}`)
+        .set('x-auth', response.header['x-auth'])
+        .send(newData)
+        .expect(200)
+      })
+      .then(response => {
+        const res = response.body
+
+        assert.equal(res.updatedArticle.title, newData.title)
+        assert.equal(res.updatedArticle.url, newData.url)
+        assert.equal(res.updatedArticle._id, oldArticle._id)
+      })
+    })
+
+  })
+
   describe("DELETE /:articleId", ()=>{
 
     it('should delete exisitng article', () => {

@@ -21,10 +21,6 @@ describe("MODEL articleLog", ()=>{
             url
         });
 
-        // console.log(article)
-
-        //check key:value pairs where possible
-        //test data types
         assert.equal(article.title, title)
         assert.equal(article.url, url)
         assert.equal(article.createdAt.length, 13)
@@ -51,10 +47,21 @@ describe("MODEL articleLog", ()=>{
     //  3: old
     //  null: archived
 
-    it("static updateLogs method updates articles", () => {
+    // it("static updateLogs method updates articles", () => {
 
+    //     //update exisitng article
+    //     //set to 1 month ahead
+    //     //add .finally block with ArticleLog.updateLogs
+    //     //query db for logs
+    //     //status should be +1
+        
+    //     return request(app)
+    //     .get('/column/')
+    //     .expect(200)
+    //     .then(response => {
+    //         return
+    //     })
 
-
-    })
+    // })
 
 });

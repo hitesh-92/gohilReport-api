@@ -83,6 +83,15 @@ router.post('/', Authenticate, (req, res, next) => {
 })
 
 
+router.patch('/:articleId', (req, res) => {
+
+    const requestId = req.params.articleId
+
+    console.log('@@@@', requestId)
+
+})
+
+
 router.delete('/:articleId', Authenticate, (req, res, next) => {
 
     //delete articleLog
