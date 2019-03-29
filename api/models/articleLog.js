@@ -16,8 +16,24 @@ const articleLogSchema = mongoose.Schema({
     createdAt: {
         type: String,
         default: new Date().getTime()
+    },
+    status: {
+        type: Number,
+        default: 0
     }
 })
+
+articleLogSchema.statics.updateLogs = async function(){
+    
+    var ArticleLog = this;
+
+    return ArticleLog.find({})
+    .then(logs => {
+        console.log(logs.length)
+    })
+    
+
+}
 
 
 module.exports =  mongoose.model('articleLog', articleLogSchema)

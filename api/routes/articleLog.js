@@ -7,7 +7,7 @@ const ObjectId = mongoose.Types.ObjectId
 
 
 router.get('/:articleId', (req, res) => {
-
+    
     const requestId = req.params.articleId
     
     let data = { 

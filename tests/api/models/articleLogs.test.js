@@ -1,6 +1,10 @@
+const {app} =  require('../../../app')
+
 const ArticleLog = require('../../../api/models/articleLog')
-// const {expect} = require('chai')
+
 const mongoose = require('mongoose')
+
+const request = require('supertest')
 const assert = require('assert')
 
 
@@ -31,18 +35,26 @@ describe("MODEL articleLog", ()=>{
 
     })//
 
-    //add property to hold value of color
-    //color will change over time
-    //every couple weeks the change color should change a shade
-    //start red then change over time to eventually be black
-    //set up so that createdAt is used as base as to when change takes place
-    //find function to do this
-    //find best place to implement this
-    //
+    
     //could have an increment count to hold value
 
     //for alert column 
     //add an option to not set this counter
-    //add a way to switch it on at a later date
+    //add a way to switch it on at a later date = new articleLog method
+
+
+    // articleLog status prop:
+    // -1: alert
+    //  0: new
+    //  1: 1 month old
+    //  2: 3 months old
+    //  3: old
+    //  null: archived
+
+    it("static updateLogs method updates articles", () => {
+
+
+
+    })
 
 });

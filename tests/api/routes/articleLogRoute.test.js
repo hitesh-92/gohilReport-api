@@ -140,7 +140,7 @@ describe("article/ Routes", ()=>{
 
   })//POST
 
-  describe.only("DELETE /:articleId", ()=>{
+  describe("DELETE /:articleId", ()=>{
 
     it('should delete exisitng article', () => {
 

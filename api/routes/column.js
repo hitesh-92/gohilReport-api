@@ -9,7 +9,6 @@ const ObjectId = require('mongoose').Types.ObjectId
 
 
 router.get('/', (_req,res) => {
-
     const data = {}
 
     function getAllQuerys(ids, fn){
@@ -69,6 +68,10 @@ router.get('/', (_req,res) => {
     .catch(err => {
         data.error = err
         res.status(500).send(data)
+    })
+    .finally(r => {
+        console.log('DONEEE')
+        // ArticleLog.updateLogs()
     })
 
 });

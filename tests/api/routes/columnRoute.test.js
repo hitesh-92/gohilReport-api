@@ -22,7 +22,7 @@ describe('column/ Routes', () => {
         password: users[0].password
     }
 
-    describe('GET /', () => {
+    describe.only('GET /', () => {
 
         it('return all column with articles', () => {
             return request(app)
