@@ -11,6 +11,11 @@ const assert = require('assert')
 
 describe("article/ Routes", ()=>{
 
+  const userData = {
+    email: users[0].email,
+    password: users[0].password
+  }
+
   describe("GET /:articleId", ()=>{
 
     it('retrieve saved ArticleLog using _id', ()=>{
@@ -51,12 +56,7 @@ describe("article/ Routes", ()=>{
 
     it('create and save new article', ()=>{
 
-      let userData = {
-        email: users[0].email,
-        password: users[0].password
-      }
-
-      let articleData = {
+      const articleData = {
         title: 'return201',
         url: 'www.201.com'
       }
@@ -78,13 +78,8 @@ describe("article/ Routes", ()=>{
     })//
   
     it('send bad data; status 400 and articleSaved to be false', () => {
-      
-      let userData = {
-        email: users[0].email,
-        password: users[0].password
-      }
-      
-      let articleData = {
+  
+      const articleData = {
         title: false,
         url: undefined
       }
@@ -107,12 +102,7 @@ describe("article/ Routes", ()=>{
   
     it('save new Article, find in db using response _id', ()=>{
 
-      let userData = {
-        email: users[0].email,
-        password: users[0].password
-      }
-
-      let articleData = {
+      const articleData = {
         title: 'return 2019',
         url: 'www.2019.com'
       }
@@ -140,20 +130,10 @@ describe("article/ Routes", ()=>{
 
   })//POST
 
-  describe.only("PATCH /:articleId", ()=>{
-
-    const userData = {
-      email: users[0].email,
-      password: users[0].password
-    }
+  describe("PATCH /:articleId", ()=>{
 
     it('updates article title/url', ()=>{
 
-      const userData = {
-        email: users[0].email,
-        password: users[0].password
-      }
-  
       const oldArticle = articles[0]
       const hex_id = oldArticle._id.toHexString()
 
@@ -167,7 +147,7 @@ describe("article/ Routes", ()=>{
       .send(userData)
       .then(response => {
         return request(app)
-        .post(`/article/${hex_id}`)
+        .patch(`/article/${hex_id}`)
         .set('x-auth', response.header['x-auth'])
         .send(newData)
         .expect(200)
@@ -175,9 +155,7 @@ describe("article/ Routes", ()=>{
       .then(response => {
         const res = response.body
 
-        assert.equal(res.updatedArticle.title, newData.title)
-        assert.equal(res.updatedArticle.url, newData.url)
-        assert.equal(res.updatedArticle._id, oldArticle._id)
+        assert.equal(res.status, true)
       })
     })
 

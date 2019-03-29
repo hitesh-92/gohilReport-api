@@ -85,9 +85,46 @@ router.post('/', Authenticate, (req, res, next) => {
 
 router.patch('/:articleId', (req, res) => {
 
-    const requestId = req.params.articleId
+    let data = {}
 
-    console.log('@@@@', requestId)
+    const requestId = req.params.articleId
+    const title = req.body.title || null
+    const url = req.body.url || null
+    
+
+    function updateArticle(id, title, url){
+        let body = {}
+        if( title != null ) body.title = title
+        if( url != null ) body.url = url
+
+        return async function(){
+            return await ArticleLog.updateOne( {_id:id}, {$set:body} )
+        }
+    }
+
+    ArticleLog.findById(requestId)
+    .then(article => {
+
+        //no article found
+        if( article===null ) return null
+
+        data.oldArticle = article
+        return updateArticle(requestId, title, url)()
+    })
+    .then(response => {
+
+        let status = 200
+
+        if ( response===null ){
+            data.error = {message:'Unable find article with ID'}
+            status = 400
+        }
+
+        data.status = true
+
+        res.status(status).send(data)
+    })
+    
 
 })
 
