@@ -1,8 +1,11 @@
+const moment = require('moment')
+
 const {app} =  require('../../../app')
 
-const ArticleLog = require('../../../api/models/articleLog')
-
 const mongoose = require('mongoose')
+
+const ArticleLog = require('../../../api/models/articleLog')
+const { users, articles } = require('../../seedData')
 
 const request = require('supertest')
 const assert = require('assert')
@@ -40,28 +43,62 @@ describe("MODEL articleLog", ()=>{
 
 
     // articleLog status prop:
-    // -1: alert
-    //  0: new
-    //  1: 1 month old
-    //  2: 3 months old
-    //  3: old
+    // -1: alert    red--text
+    //  0: new      amber
+    //  1: 1 month  amber-green
+    //  2: 3 months green
+    //  3: 6 months white
+    //
+    //  ADD LATER
     //  null: archived
 
-    // it("static updateLogs method updates articles", () => {
+    it.only("static updateLogs method updates articles", () => {
 
-    //     //update exisitng article
-    //     //set to 1 month ahead
-    //     //add .finally block with ArticleLog.updateLogs
-    //     //query db for logs
-    //     //status should be +1
+        //update 5 articles, 1 for each status
+        //get /column/ where add .finally block to update all articleLog status
+        //find init article and test if status is 1
+
+        let _articles = articles
+        _articles.pop()
+        const toUpdate = _articles.map(log => [{ _id:log._id, createdAt:log.createdAt }])
+        const status = [-1, 0, 1, 2, 3]
+
+        const editDate = (time, status) => {
+            //switch statement for status
+            // let updateTo;
+
+            console.log(moment(time))
+
+
+            // switch (status) {
+            //     case -1:
+            //         updateTo = new Date()
+            //         break;
+            
+            //     default:
+            //         break;
+            // }
+
+            // const currentTime = new Date().getTime()
+            // // console.log(time, status)
+            return status
+        }
+
+
+        //edit dates
+        // for(i in toUpdate) toUpdate[i].createdAt = editDate(toUpdate[i].createdAt, status[i])
         
-    //     return request(app)
-    //     .get('/column/')
-    //     .expect(200)
-    //     .then(response => {
-    //         return
-    //     })
+        // editDate(toUpdate[0].createdAt, status[0])
 
-    // })
+        const date = toUpdate[0].createdAt
+
+        console.log( moment(date).format() )
+        console.log( moment(date).add(1, 'months').format() )
+
+        // for (i in toUpdate) console.log(toUpdate[i])
+
+        // console.log(toUpdate)
+
+    })
 
 });
