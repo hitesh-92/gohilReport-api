@@ -140,7 +140,7 @@ describe("article/ Routes", ()=>{
 
   })//POST
 
-  describe("DELETE /:articleId", ()=>{
+  describe.only("DELETE /:articleId", ()=>{
 
     it('should delete exisitng article', () => {
 
@@ -162,12 +162,14 @@ describe("article/ Routes", ()=>{
         .expect(200)
       })
       .then(response => {
-        assert.equal(response.body.deleted, true)
+        const res = response.body
+        assert.equal(res.deleted, true)
+        assert.equal(res.log._id, articleId)
       })
 
     })//
 
-    it('send invalid _id have status 404', () => {
+    it('reject invaid id with 404', () => {
 
       const badID = '!000000f7cad342ac046AAAA'
 
@@ -186,13 +188,14 @@ describe("article/ Routes", ()=>{
         .expect(404)
       })
       .then(response => {
-        assert.equal(response.body.deleted, false)
-        assert.equal(response.body.error, 'Bad article id')
+        const res = response.body
+        assert.equal(res.deleted, false)
+        assert.equal(res.error, 'Bad article id')
       })
 
     })//
 
-    it('send fake _id have status 404', () => {
+    it('not find article that does not exist', () => {
 
       const badID = '1a00aaa111aaaa1111a111a1'
 

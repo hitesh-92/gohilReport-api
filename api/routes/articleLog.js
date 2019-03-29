@@ -80,7 +80,6 @@ router.post('/', Authenticate, (req, res, next) => {
         data.error = err
         res.status(400).json(data)
     })
-
 })
 
 
@@ -91,38 +90,38 @@ router.delete('/:articleId', Authenticate, (req, res, next) => {
 
     const articleID = req.params.articleId
 
-    // invalid ID
-    const validID = ObjectId.isValid(articleID)
-    if(!validID){
-        const response = {
-            deleted: false,
-            error: 'Bad article id'
-        }
-        return res.status(404).json(response)
+    let data = {
+        deleted: false
     }
 
-    ArticleLog
-      .findOneAndDelete({_id: articleID})
-      .then(data => {
-        const response = {
-            log: data,
-            deleted: false
+    // invalid ID
+    const validID = ObjectId.isValid(articleID)
+
+    if(!validID){
+        data.error = 'Bad article id'
+        res.status(404).json(data)
+        return
+    }
+    
+    ArticleLog.findOneAndDelete({_id: articleID})
+    .then(article => {
+        let status = 200
+
+        if(article == null){
+            data.error = 'Invalid request to delete'
+            status = 404
+        }
+        else {
+            data.log = article
+            data.deleted = true
         }
 
-        //article not found
-        if(data == null){
-            response.error = 'Invalid request to delete'
-            return res.status(404).json(response)
-        }
-
-        //success
-        response.deleted = true
-        res.status(200).json(response)
-
-      })
-      .catch(e => {
-        res.status(501).send({error: e, deleted: false})
-      })
+        res.status(status).json(data)
+    })
+    .catch(err => {
+        data.error = err
+        res.status(501).send(data)
+    })
 
 })
 
