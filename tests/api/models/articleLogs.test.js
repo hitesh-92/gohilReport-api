@@ -43,16 +43,21 @@ describe("MODEL articleLog", ()=>{
 
 
     // articleLog status prop:
-    // -1: alert    red--text
-    //  0: new      amber
-    //  1: 1 month  amber-green
-    //  2: 3 months green
-    //  3: 6 months white
+    // -1: alert 1month  red--text
+    //  0: new           amber
+    //  1: 1 month       amber-green
+    //  2: 3 months      green
+    //  3: 6 months      white
     //
     //  ADD LATER
     //  null: archived
 
     it.only("static updateLogs method updates articles", () => {
+
+        const userData = {
+            email: users[0].email,
+            password: users[0].password
+        }
 
         //update 5 articles, 1 for each status
         //get /column/ where add .finally block to update all articleLog status
@@ -60,45 +65,40 @@ describe("MODEL articleLog", ()=>{
 
         let _articles = articles
         _articles.pop()
-        const toUpdate = _articles.map(log => [{ _id:log._id, createdAt:log.createdAt }])
-        const status = [-1, 0, 1, 2, 3]
 
         const editDate = (time, status) => {
-            //switch statement for status
-            // let updateTo;
+            let updateTo;
 
-            console.log(moment(time))
+            const update = months => moment(time).add(months,'months').format('x')
 
-
-            // switch (status) {
-            //     case -1:
-            //         updateTo = new Date()
-            //         break;
-            
-            //     default:
-            //         break;
-            // }
-
-            // const currentTime = new Date().getTime()
-            // // console.log(time, status)
-            return status
+            if ( status===-1||status===1) updateTo = update(1)
+            else if ( status===2 ) updateTo = update(3)
+            else if ( status===3 ) updateTo = update(6)
+            else updateTo = moment().format('x')
+            return updateTo
         }
 
+        function updateArticles(articles){
+            let reqs = []
+            articles.forEach(article => reqs.push())
 
-        //edit dates
-        // for(i in toUpdate) toUpdate[i].createdAt = editDate(toUpdate[i].createdAt, status[i])
+
+        }
         
-        // editDate(toUpdate[0].createdAt, status[0])
+        //change article dates
+        const status = [-1, 0, 1, 2, 3]
+        const updateData = _articles.map(log => [{_id:log._id, createdAt:log.createdAt }])
+        for(i in updateData) updateData[i][0].createdAt = editDate(updateData[i].createdAt, status[i])
 
-        const date = toUpdate[0].createdAt
+        //manually update articleLogs
 
-        console.log( moment(date).format() )
-        console.log( moment(date).add(1, 'months').format() )
+        ArticleLog.updateMany()
 
-        // for (i in toUpdate) console.log(toUpdate[i])
-
-        // console.log(toUpdate)
-
+        //make request
+        // return request(app)
+        // .post('/user/login')
+        // .send(userData)
+        // .then()
     })
 
 });
