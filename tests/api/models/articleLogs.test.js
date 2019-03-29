@@ -69,7 +69,7 @@ describe("MODEL articleLog", ()=>{
         const editDate = (time, status) => {
             let updateTo;
 
-            const update = months => moment(time).add(months,'months').format('x')
+            const update = months => moment(time).subtract(months,'months').format('x')
 
             if ( status===-1||status===1) updateTo = update(1)
             else if ( status===2 ) updateTo = update(3)
@@ -79,20 +79,26 @@ describe("MODEL articleLog", ()=>{
         }
 
         function updateArticles(articles){
+            //set up querys
+            //return async func that updates articles
             let reqs = []
-            articles.forEach(article => reqs.push())
+            articles.forEach(article => {
+                const id = article._id
+                const body = { createdAt: article.createdAt }
+            })
+            
 
 
         }
         
         //change article dates
         const status = [-1, 0, 1, 2, 3]
-        const updateData = _articles.map(log => [{_id:log._id, createdAt:log.createdAt }])
-        for(i in updateData) updateData[i][0].createdAt = editDate(updateData[i].createdAt, status[i])
+        _articles = _articles.map(log => [{_id:log._id, createdAt:log.createdAt }])
+        for(i in _articles) _articles[i][0].createdAt = editDate(_articles[i].createdAt, status[i])
+        //put objects into single array
+        const updateData = _articles.map(a => a[0])
 
         //manually update articleLogs
-
-        ArticleLog.updateMany()
 
         //make request
         // return request(app)
