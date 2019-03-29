@@ -88,14 +88,15 @@ router.patch('/:articleId', (req, res) => {
     let data = {}
 
     const requestId = req.params.articleId
-    const title = req.body.title || null
-    const url = req.body.url || null
+    const { title, url, createdAt } = req.body
     
 
-    function updateArticle(id, title, url){
+    function updateArticle(id, title, url, createdAt){
         let body = {}
-        if( title != null ) body.title = title
-        if( url != null ) body.url = url
+
+        if( title !== undefined ) body.title = title
+        if( url !== undefined ) body.url = url
+        if( createdAt !== undefined ) body.createdAt = createdAt
 
         return async function(){
             return await ArticleLog.updateOne( {_id:id}, {$set:body} )
@@ -109,7 +110,7 @@ router.patch('/:articleId', (req, res) => {
         if( article===null ) return null
 
         data.oldArticle = article
-        return updateArticle(requestId, title, url)()
+        return updateArticle(requestId, title, url, createdAt)()
     })
     .then(response => {
 
@@ -119,8 +120,11 @@ router.patch('/:articleId', (req, res) => {
             data.error = {message:'Unable find article with ID'}
             status = 400
         }
-
-        data.status = true
+        else if ( response.ok !== 1 ){
+            data.error = {message:'Unsuccessful update'}
+            status = 400
+        }
+        else data.status = true
 
         res.status(status).send(data)
     })

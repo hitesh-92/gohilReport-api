@@ -132,7 +132,7 @@ describe("article/ Routes", ()=>{
 
   describe("PATCH /:articleId", ()=>{
 
-    it('updates article title/url', ()=>{
+    it.only('updates article title/url', ()=>{
 
       const oldArticle = articles[0]
       const hex_id = oldArticle._id.toHexString()
