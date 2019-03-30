@@ -52,7 +52,8 @@ describe("MODEL articleLog", ()=>{
     //  ADD LATER
     //  null: archived
 
-    it.only("static updateLogs method updates articles", () => {
+    it("static updateLogs method updates articles", () => {
+        // optimise. testTime > 2s. db requests?
 
         const userData = {
             email: users[0].email,
@@ -69,7 +70,7 @@ describe("MODEL articleLog", ()=>{
         const editDate = (time, status) => {
             let updateTo;
 
-            const update = months => moment(time).subtract(months,'months').format('x')
+            const update = months => moment(time).subtract(months,'months').subtract(1, 'days').format('x')
 
             if ( status===-1||status===1) updateTo = update(1)
             else if ( status===2 ) updateTo = update(3)
@@ -95,6 +96,20 @@ describe("MODEL articleLog", ()=>{
 
             return async() => Promise.all(reqs)
         }
+
+        function initFetch(ids){
+            let reqs = []
+
+            const setupReq = id => {
+                return new Promise(resolve => {
+                    resolve(ArticleLog.where( {_id:id} ))
+                })
+            }
+
+            ids.forEach(id => reqs.push(setupReq(id)))
+
+            return async() => Promise.all(reqs)
+        }
         
         //change article dates
         const status = [-1, 0, 1, 2, 3]
@@ -102,14 +117,32 @@ describe("MODEL articleLog", ()=>{
         for(i in _articles) _articles[i][0].createdAt = editDate(_articles[i].createdAt, status[i])
         //put objects into single array
         const updateData = _articles.map(a => a[0])
+        const ids = updateData.map(log => log._id)
 
         //manually update articleLogs
+        //call ArticleLog.updateStatus
+        //fetch all updated articleLogs
+        //test if status are updated
         const updateArticles = initUpdate(updateData)
-
-        updateArticles()
-        .then(res => ArticleLog.updateStatus() )
+        return updateArticles()
+        .then(() => ArticleLog.updateStatus())
+        .then(() => {
+            const ids = updateData.map(log => log._id)
+            const fetchArticles = initFetch(ids)
+            return fetchArticles()
+        })
         .then(res => {
-            console.log('DONE')
+            const data = res.map(log => log[0])
+            // console.log(data[0])
+            
+            assert.equal(data[0].status, 1)
+            assert.equal(data[1].status, 1)
+            assert.equal(data[2].status, 2)
+            assert.equal(data[3].status, 3)
+            assert.equal(data[4].status, 3)
+
+            assert.equal(data[0].createdAt, updateData[0].createdAt)
+            
         })
     })
 
