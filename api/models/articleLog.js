@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const moment = require('moment')
 
 //Schema for each article log
 const articleLogSchema = mongoose.Schema({
@@ -27,10 +28,28 @@ articleLogSchema.statics.updateStatus = function(){
     
     var ArticleLog = this;
 
+    function update(logs){
+        let q = []
+
+        logs.forEach(log => {
+
+        })
+    }
+
     return ArticleLog.find({})
-    .then(logs => {
-        console.log(logs.length)
+    .then(response => {
+        const logs = response.map(log => {
+            return { _id:log.id, createdAt:log.createdAt, status:log.status }
+        })
+
+        // const updated = logs.map(log => update(log))
+
+        update(logs)
+
+        // console.log(logs)
     })
+
+    // ArticleLog.update({})
     
 
 }
