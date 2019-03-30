@@ -78,17 +78,22 @@ describe("MODEL articleLog", ()=>{
             return updateTo
         }
 
-        function updateArticles(articles){
-            //set up querys
-            //return async func that updates articles
+        function initUpdate(articles){
             let reqs = []
+
+            const setupReq = (id,body) => {
+                return new Promise((resolve) => {
+                    resolve(ArticleLog.updateOne({_id:id}, {$set:body}))
+                })
+            }
+
             articles.forEach(article => {
                 const id = article._id
                 const body = { createdAt: article.createdAt }
+                reqs.push(setupReq(id,body))    
             })
-            
 
-
+            return async() => Promise.all(reqs)
         }
         
         //change article dates
@@ -99,12 +104,13 @@ describe("MODEL articleLog", ()=>{
         const updateData = _articles.map(a => a[0])
 
         //manually update articleLogs
+        const updateArticles = initUpdate(updateData)
 
-        //make request
-        // return request(app)
-        // .post('/user/login')
-        // .send(userData)
-        // .then()
+        updateArticles()
+        .then(res => ArticleLog.updateStatus() )
+        .then(res => {
+            console.log('DONE')
+        })
     })
 
 });

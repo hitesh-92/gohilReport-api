@@ -23,7 +23,7 @@ const articleLogSchema = mongoose.Schema({
     }
 })
 
-articleLogSchema.statics.updateLogs = function(){
+articleLogSchema.statics.updateStatus = function(){
     
     var ArticleLog = this;
 
