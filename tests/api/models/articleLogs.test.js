@@ -52,7 +52,7 @@ describe("MODEL articleLog", ()=>{
     //  ADD LATER
     //  null: archived
 
-    it.only("static updateLogs method updates articles", () => {
+    it.only("updateLogs method updates articles status", () => {
         // optimise. testTime > 2s. db requests?
 
         //update 5 articles, 1 for each status
@@ -61,6 +61,7 @@ describe("MODEL articleLog", ()=>{
 
         let _articles = articles
         _articles.pop()
+        // console.log(_articles[0].createdAt)
 
         const editDate = (time, status) => {
             let updateTo;
@@ -70,26 +71,36 @@ describe("MODEL articleLog", ()=>{
             if ( status===-1||status===1) updateTo = update(1)
             else if ( status===2 ) updateTo = update(3)
             else if ( status===3 ) updateTo = update(6)
-            else updateTo = moment().format('x')
+            else updateTo = update(0)
+  
             return updateTo
         }
 
         function initUpdate(articles){
-            let reqs = []
+            // let reqs = []
 
-            const setupReq = (id,body) => {
+            // const setupReq = (id,body) => {
+            //     return new Promise((resolve) => {
+            //         resolve(ArticleLog.updateOne({_id:id}, {$set:body}))
+            //     })
+            // }
+
+            // articles.forEach(article => {
+            //     const id = article._id
+            //     const body = { createdAt: article.createdAt }
+            //     reqs.push(setupReq(id,body))    
+            // })
+
+            const requests = articles.map(log => {
                 return new Promise((resolve) => {
-                    resolve(ArticleLog.updateOne({_id:id}, {$set:body}))
+                  resolve(ArticleLog.updateOne(
+                    { id: log.id },
+                    { $set: {createdAt: log.createdAt} }
+                  ))
                 })
-            }
-
-            articles.forEach(article => {
-                const id = article._id
-                const body = { createdAt: article.createdAt }
-                reqs.push(setupReq(id,body))    
             })
 
-            return async() => Promise.all(reqs)
+            return async() => Promise.all(requests)
         }
 
         function initFetch(ids){
@@ -112,9 +123,10 @@ describe("MODEL articleLog", ()=>{
         for(i in _articles) _articles[i][0].createdAt = editDate(_articles[i].createdAt, status[i])
         //put objects into single array
         const updateData = _articles.map(a => a[0])
-        const ids = updateData.map(log => log._id)
 
-        //manually update articleLogs
+        // console.log(updateData[0].createdAt )
+
+        //update articleLogs
         //call ArticleLog.updateStatus
         //fetch all updated articleLogs
         //test if status are updated
@@ -134,7 +146,8 @@ describe("MODEL articleLog", ()=>{
             // assert.equal(data[2].status, 2)
             // assert.equal(data[3].status, 3)
             // assert.equal(data[4].status, 3)
-
+            console.log(data[0])
+            console.log(updateData[0])
             assert.equal(data[0].createdAt, updateData[0].createdAt)
         })    
     })

@@ -28,30 +28,44 @@ articleLogSchema.statics.updateStatus = function(){
     
     var ArticleLog = this;
 
-    function update(logs){
-        let q = []
+    const checkStatus = (log) => {
+        const {_id, createdAt } = log
+        let { status } = log
+        const time = Number(createdAt)
+        let data = { _id }
 
+        switch (status) {
+            case 0:
+                // 1 month ahead
+                break;
+        
+            default:
+                break;
+        }
+    }
+
+    const initUpdate = (logs) => {
+        let reqs = []
+
+        
         logs.forEach(log => {
-
+            const statusChange = checkStatus(log)
         })
+
+        return async () => Promise.all(reqs)
     }
 
     return ArticleLog.find({})
-    .then(response => {
-        const logs = response.map(log => {
+    .then(data => {
+        const logs = data.map(log => {
             return { _id:log.id, createdAt:log.createdAt, status:log.status }
         })
 
-        // const updated = logs.map(log => update(log))
+        // const _time = logs[0].createdAt
+        // console.log( moment( Number(_time) ).format('x') ,'x')
 
-        update(logs)
-
-        // console.log(logs)
+        const test =  checkStatus(logs[0])
     })
-
-    // ArticleLog.update({})
-    
-
 }
 
 
