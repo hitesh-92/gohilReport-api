@@ -48,7 +48,12 @@ describe("MODEL articleLog", ()=>{
     //  1: 1 month       amber-green
     //  2: 3 months      green
     //  3: 6 months      white
-    //
+    //  
+    //  -1,0 ++ = 1 month
+    //  1 ++ = 3months
+    //  2 ++ = 6months
+    //  3 nil
+    // 
     //  ADD LATER
     //  null: archived
 
@@ -56,51 +61,42 @@ describe("MODEL articleLog", ()=>{
         // optimise. testTime > 2s. db requests?
 
         //update 5 articles, 1 for each status
-        //update articles, call articleLog.updateStatus
+        //update articles, call ArticleLog.updateStatus
         //fetch updated articles and test
+        console.log(`\n${moment().format()}\n`)
 
         let _articles = articles
         _articles.pop()
-        // console.log(_articles[0].createdAt)
 
         const editDate = (time, status) => {
             let updateTo;
 
             const update = months => moment(time).subtract(months,'months').subtract(1, 'days').format('x')
 
-            if ( status===-1||status===1) updateTo = update(1)
+            if ( status===-1||status===1||status===0) updateTo = update(1)
             else if ( status===2 ) updateTo = update(3)
             else if ( status===3 ) updateTo = update(6)
             else updateTo = update(0)
-  
+            console.log(moment(parseInt(updateTo)).format())
             return updateTo
         }
 
         function initUpdate(articles){
-            // let reqs = []
+            let reqs = []
 
-            // const setupReq = (id,body) => {
-            //     return new Promise((resolve) => {
-            //         resolve(ArticleLog.updateOne({_id:id}, {$set:body}))
-            //     })
-            // }
-
-            // articles.forEach(article => {
-            //     const id = article._id
-            //     const body = { createdAt: article.createdAt }
-            //     reqs.push(setupReq(id,body))    
-            // })
-
-            const requests = articles.map(log => {
+            const setupReq = (id,body) => {
                 return new Promise((resolve) => {
-                  resolve(ArticleLog.updateOne(
-                    { id: log.id },
-                    { $set: {createdAt: log.createdAt} }
-                  ))
+                    resolve(ArticleLog.updateOne({_id:id}, {$set:body}))
                 })
+            }
+
+            articles.forEach(article => {
+                const id = article._id
+                const body = { createdAt: article.createdAt }
+                reqs.push(setupReq(id,body))    
             })
 
-            return async() => Promise.all(requests)
+            return async() => Promise.all(reqs)
         }
 
         function initFetch(ids){
@@ -146,8 +142,6 @@ describe("MODEL articleLog", ()=>{
             // assert.equal(data[2].status, 2)
             // assert.equal(data[3].status, 3)
             // assert.equal(data[4].status, 3)
-            console.log(data[0])
-            console.log(updateData[0])
             assert.equal(data[0].createdAt, updateData[0].createdAt)
         })    
     })

@@ -29,19 +29,44 @@ articleLogSchema.statics.updateStatus = function(){
     var ArticleLog = this;
 
     const checkStatus = (log) => {
-        const {_id, createdAt } = log
-        let { status } = log
-        const time = Number(createdAt)
-        let data = { _id }
+        // const {_id, createdAt, status } = log
+        // const time = Number(createdAt)
+        // let data = { _id }
+        // let update = false
+        // console.log( _id, createdAt, status )
+        // console.log(typeof status)
 
-        switch (status) {
-            case 0:
-                // 1 month ahead
-                break;
-        
-            default:
-                break;
+        const { status } = log
+
+        if (status !== 3){
+            console.log('####', status)
+            const { _id, createdAt } = log
+
+            const nextUpdate = (time, month) => moment(time).add(month, 'months')
+            const toIncrease = nextUpdate => moment().isAfter(nextUpdate, 'months')
+
+            const compose = (fnA, fnB) => (d1, d2) => fnB(fnA(d1, d2))
+            const processUpdateCheck = compose(nextUpdate, toIncrease)
+
+            if ( status===-1 || status===0 || status===1 ){
+                const updateDate = nextUpdate(parseInt(createdAt), 1)
+                const increase = moment().isAfter(updateDate, 'months')
+                // if (increase) return { _id, status: status++}
+
+                // const increase = processUpdateCheck( parseInt(createdAt) , 1)
+                console.log('@@@ ', increase)
+                console.log(moment(updateDate).format())
+                console.log(moment().format())
+            }
+            // else if {
+
+            // }
+
+
+            console.log('end')
         }
+        
+        return false
     }
 
     const initUpdate = (logs) => {
@@ -57,15 +82,16 @@ articleLogSchema.statics.updateStatus = function(){
 
     return ArticleLog.find({})
     .then(data => {
-        const logs = data.map(log => {
-            return { _id:log.id, createdAt:log.createdAt, status:log.status }
-        })
+        const logs = data.map(log => ({ _id:log.id, createdAt:log.createdAt, status:log.status }))
 
         // const _time = logs[0].createdAt
         // console.log( moment( Number(_time) ).format('x') ,'x')
-
+        // console.log( moment() )
         const test =  checkStatus(logs[0])
+
     })
+    
+    
 }
 
 
