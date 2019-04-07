@@ -25,42 +25,39 @@ const articleLogSchema = mongoose.Schema({
 })
 
 articleLogSchema.statics.updateStatus = function(){
-    //optimise db collection query to only find articles with status<3 
     
     var ArticleLog = this;
 
     const checkStatus = (log) => {
 
-        const { status } = log
+        const { _id, createdAt, status } = log
+        let newStatus;
 
-        if (status !== 3){
+        const compose = (fnA, fnB) => (d1, d2) => fnB(fnA(d1, d2))
+        const nextUpdate = (time, months) => moment(parseInt(time)).add(months, 'months')
+        const toIncrease = nextUpdate => moment().isAfter(nextUpdate)
 
-            const { _id, createdAt } = log
+        const processUpdateCheck = compose(nextUpdate, toIncrease)
 
-            const compose = (fnA, fnB) => (d1, d2) => fnB(fnA(d1, d2))
-            const nextUpdate = (time, months) => moment(parseInt(time)).add(months, 'months')
-            const toIncrease = nextUpdate => moment().isAfter(nextUpdate)
 
-            const processUpdateCheck = compose(nextUpdate, toIncrease)
-
-            if ( status===-1 || status===0 ){
-                // console.log('A')
-                const increase = processUpdateCheck(createdAt, 1)
-                if (increase) return { _id, status: 1 }
-            }
-            else if ( status===1 ){
-                // console.log('B')
-                const increase = processUpdateCheck(createdAt, 2)
-                if (increase) return { _id, status: 2 }
-            }
-            else if ( status===2 ){
-                // console.log('C')
-                const increase = processUpdateCheck(createdAt, 3)
-                if (increase) return { _id, status: 3}
-            }
-        }
+        switch (status) {
+            case -1 || 1:
+                processUpdateCheck(createdAt, 1) === true ? newStatus = 1 : newStatus = null
+                break;
+            
+            case 1:
+                processUpdateCheck(createdAt, 2) === true ? newStatus = 1 : newStatus = null
+                break;
+            
+            case 2:
+                processUpdateCheck(createdAt, 3) === true ? newStatus = 1 : newStatus = null
+                break;
         
-        return false
+            default:
+                break;
+        }
+
+        newStatus === null ? false : { _id, status: newStatus }
     }
 
     const initUpdate = (logs) => {
@@ -81,21 +78,25 @@ articleLogSchema.statics.updateStatus = function(){
         return async () => Promise.all(reqs)
     }
 
-    return ArticleLog.find({})
-    .then(data => {
-        const logs = data.map(log => ({ _id:log.id, createdAt:log.createdAt, status:log.status }))
+    // return ArticleLog.find({})
+    // .then(data => {
+    //     const logs = data.map(log => ({ _id:log.id, createdAt:log.createdAt, status:log.status }))
 
-        //update status in testcase!!
+    //     //update status in testcase!!
 
-        return initUpdate(logs)()
+    //     return initUpdate(logs)()
 
         
 
-    })
-    .then(d => {
-        console.log('update END')
-    })
+    // })
+    // .then(d => {
+    //     console.log('update END')
+    // })
     
+    return ArticleLog.find( {'status': {$lt: 3}} )
+    .then(data => {
+        console.log(data)
+    })
     
 }
 
