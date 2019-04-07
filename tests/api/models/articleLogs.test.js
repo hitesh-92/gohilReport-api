@@ -57,6 +57,7 @@ describe("MODEL articleLog", ()=>{
     //  ADD LATER
     //  null: archived
 
+    /*
     it.only("updateLogs method updates articles status", () => {
         // optimise. testTime > 2s. db requests?
 
@@ -122,10 +123,13 @@ describe("MODEL articleLog", ()=>{
 
         // console.log(updateData[0].createdAt )
 
+
+
         //update articleLogs
         //call ArticleLog.updateStatus
         //fetch all updated articleLogs
         //test if status are updated
+
         const updateArticles = initUpdate(updateData)
         return updateArticles()
         .then(() => ArticleLog.updateStatus())
@@ -136,6 +140,7 @@ describe("MODEL articleLog", ()=>{
         })
         .then(res => {
             const data = res.map(log => log[0])
+            // console.log(data)
             
             // assert.equal(data[0].status, 1)
             // assert.equal(data[1].status, 1)
@@ -145,5 +150,69 @@ describe("MODEL articleLog", ()=>{
             assert.equal(data[0].createdAt, updateData[0].createdAt)
         })    
     })
+    */
+
+
+    it.only('updateLogs method updates articles status', () => {
+
+        const buildUpdateData = () => {
+            //return array of articles with status&&createdAt modified
+            const status = [-1, 0, 1, 2, 3]
+
+            let _articles = articles
+            _articles.pop()
+
+            const editArticle = (log, newStatus) => {
+
+                let updatedLog = {
+                    _id: log._id,
+                    status: newStatus
+                }
+
+                const update = months => moment().subtract(months,'months').subtract(1, 'hours').format('x')
+
+                if ( newStatus===-1 || newStatus===0 ) updatedLog.createdAt = update(1)
+                else if ( newStatus===1 ) updatedLog.createdAt = update(3)
+                else if ( newStatus===2 ) updatedLog.createdAt = update(6)
+                else updatedLog.createdAt = update(0)
+
+                return updatedLog
+            }
+            return _articles.map( (log, index) => editArticle(log, status[index]) )
+        }
+
+        const initArticleUpdate = logs => {
+            requests = logs.map(log => {
+                return new Promise((resolve) => {
+                    resolve(ArticleLog.updateOne( 
+                        {_id: log._id},
+                        {$set: 
+                            { createdAt: log.createdAt, status: log.status }
+                        }
+                    ))
+                })
+            })
+            return async() => Promise.all(requests)
+        }
+
+        const articleData = buildUpdateData()
+        const articleIDsQuery = articleData.map(log => mongoose.Types.ObjectId(log._id))
+
+        const updateArticles = initArticleUpdate(articleData)
+        return updateArticles()
+        .then(() => ArticleLog.updateStatus())
+        .then(() => ArticleLog.find( {'_id': {$in: articleIDsQuery}} ) )
+        .then(data => {
+            // console.log(data)
+
+            // assert.equal(data[0].status, 1)
+            // assert.equal(data[1].status, 1)
+            // assert.equal(data[2].status, 2)
+            // assert.equal(data[3].status, 3)
+            // assert.equal(data[4].status, 3)
+            assert.equal(data[0].createdAt, articleData[0].createdAt)
+        })
+    })
+
 
 });
