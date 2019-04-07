@@ -63,7 +63,7 @@ describe("MODEL articleLog", ()=>{
         //update 5 articles, 1 for each status
         //update articles, call ArticleLog.updateStatus
         //fetch updated articles and test
-        console.log(`\n${moment().format()}\n`)
+        // console.log(`\n${moment().format()}\n`)
 
         let _articles = articles
         _articles.pop()
@@ -71,13 +71,13 @@ describe("MODEL articleLog", ()=>{
         const editDate = (time, status) => {
             let updateTo;
 
-            const update = months => moment(time).subtract(months,'months').subtract(1, 'days').format('x')
+            const update = months => moment(time).subtract(months,'months').subtract(1, 'hours').format('x')
 
-            if ( status===-1||status===1||status===0) updateTo = update(1)
-            else if ( status===2 ) updateTo = update(3)
-            else if ( status===3 ) updateTo = update(6)
+            if ( status===-1 || status===0 ) updateTo = update(1)
+            else if ( status===1 ) updateTo = update(3)
+            else if ( status===2 ) updateTo = update(6)
             else updateTo = update(0)
-            console.log(moment(parseInt(updateTo)).format())
+            // console.log(moment(parseInt(updateTo)).format())
             return updateTo
         }
 

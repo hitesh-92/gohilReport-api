@@ -29,41 +29,31 @@ articleLogSchema.statics.updateStatus = function(){
     var ArticleLog = this;
 
     const checkStatus = (log) => {
-        // const {_id, createdAt, status } = log
-        // const time = Number(createdAt)
-        // let data = { _id }
-        // let update = false
-        // console.log( _id, createdAt, status )
-        // console.log(typeof status)
 
         const { status } = log
 
         if (status !== 3){
-            console.log('####', status)
+
             const { _id, createdAt } = log
 
-            const nextUpdate = (time, month) => moment(time).add(month, 'months')
-            const toIncrease = nextUpdate => moment().isAfter(nextUpdate, 'months')
-
             const compose = (fnA, fnB) => (d1, d2) => fnB(fnA(d1, d2))
+            const nextUpdate = (time, months) => moment(parseInt(time)).add(months, 'months')
+            const toIncrease = nextUpdate => moment().isAfter(nextUpdate)
+
             const processUpdateCheck = compose(nextUpdate, toIncrease)
 
-            if ( status===-1 || status===0 || status===1 ){
-                const updateDate = nextUpdate(parseInt(createdAt), 1)
-                const increase = moment().isAfter(updateDate, 'months')
-                // if (increase) return { _id, status: status++}
-
-                // const increase = processUpdateCheck( parseInt(createdAt) , 1)
-                console.log('@@@ ', increase)
-                console.log(moment(updateDate).format())
-                console.log(moment().format())
+            if ( status===-1 || status===0 ){
+                const increase = processUpdateCheck(createdAt, 1)
+                if (increase) return { _id, status: 1 }
             }
-            // else if {
-
-            // }
-
-
-            console.log('end')
+            else if ( status===1 ){
+                const increase = processUpdateCheck(createdAt, 2)
+                if (increase) return { _id, status: 2 }
+            }
+            else if ( status===2 ){
+                const increase = processUpdateCheck(createdAt, 3)
+                if (increase) return { _id, status: 3}
+            }
         }
         
         return false
