@@ -55,9 +55,9 @@ describe("MODEL articleLog", ()=>{
     //  null: archived
 
 
-
     it('updateLogs method updates articles status', () => {
-
+        // testTime > 1s
+        
         const buildUpdateData = () => {
             //return array of articles with status&&createdAt modified
             const status = [-1, 0, 1, 2, 3]
@@ -99,12 +99,12 @@ describe("MODEL articleLog", ()=>{
         }
 
         const articleData = buildUpdateData()
-        const articleIDsQuery = articleData.map(log => mongoose.Types.ObjectId(log._id))
+        const articleIDs = articleData.map(log => mongoose.Types.ObjectId(log._id))
 
         const updateArticles = initArticleUpdate(articleData)
         return updateArticles()
         .then(() => ArticleLog.updateStatus())
-        .then(() => ArticleLog.find( {'_id': {$in: articleIDsQuery}} ) )
+        .then(() => ArticleLog.find( {'_id': {$in: articleIDs}} ) )
         .then(data => {
             assert.equal(data[0].status, 1)
             assert.equal(data[1].status, 1)
@@ -113,8 +113,6 @@ describe("MODEL articleLog", ()=>{
             assert.equal(data[4].status, 3)
             // assert.equal(data[0].createdAt, articleData[0].createdAt)
         })
-
-
     })
 
 

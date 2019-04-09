@@ -42,24 +42,14 @@ const articleData = [
     
 ];
 
-const buildArticleData = data => {
+const buildSingleArticle = (data) => new ArticleLog({
+    _id: new ObjectId(),
+    title: data.title,
+    url: data.url,
+    createdAt: data.createdAt
+})
 
-    let articlesArray = [];
-
-    data.forEach(log => {
-
-        const article = new ArticleLog({
-            _id: new ObjectId(),
-            title: log.title,
-            url: log.url,
-            createdAt: log.createdAt
-        });
-
-        articlesArray.push(article)
-    });
-
-    return articlesArray;
-};
+const buildArticleData = (articleData) => articleData.map(data => buildSingleArticle(data))
 
 
 /*
@@ -158,7 +148,7 @@ const testSeed = function(MODEL, data){
             .catch(e => reject(e))
     })
 };
-// arrow function did not work. bind issue? had to use old
+
 
 const testSeedUsers = (data) => {
 

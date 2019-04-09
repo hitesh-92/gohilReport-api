@@ -30,7 +30,7 @@ articleLogSchema.statics.updateStatus = function(){
     const checkStatus = (log) => {
 
         const { _id, createdAt, status } = log
-        let newStatus;
+        let newStatus; //will be either Number or Boolean
 
         const compose = (fnA, fnB) => (d1, d2) => fnB(fnA(d1, d2))
         const nextUpdate = (time, months) => moment(parseInt(time)).add(months, 'months')
@@ -58,8 +58,8 @@ articleLogSchema.statics.updateStatus = function(){
         }
         
         logs.forEach(log => {
+            //checkStatus function outside
             const statusChange = checkStatus(log)
-            // console.log(statusChange)
             if ( statusChange !== false ) reqs.push(updateQuery(statusChange))
         })
 
@@ -72,7 +72,6 @@ articleLogSchema.statics.updateStatus = function(){
         .then( data => resolve(data) )
         .catch(err => reject(err) )
     })
-
 }
 
 
