@@ -48,7 +48,6 @@ const buildSingleArticle = (data) => new ArticleLog({
     url: data.url,
     createdAt: data.createdAt
 })
-
 const buildArticleData = (articleData) => articleData.map(data => buildSingleArticle(data))
 
 
@@ -58,32 +57,23 @@ const buildArticleData = (articleData) => articleData.map(data => buildSingleArt
 
 const buildColumnData = (data) => {
     const all_ids = data.map(each => each._id);
-    const columnOneData = [ all_ids[0], all_ids[1] ];
-    const columnTwoData = [ all_ids[2], all_ids[3] ];
-    const columnThreeData = [ all_ids[4], all_ids[5] ];
 
-    const columnOne = new Column({
+    const columnData = [
+        [ all_ids[0], all_ids[1] ],
+        [ all_ids[2], all_ids[3] ],
+        [ all_ids[4], all_ids[5] ]
+    ]
+
+    const columnNames = [ 'left', 'right', 'center' ]
+
+    const buildSingleColumn = (idsArr, title) => new Column({
         _id: new ObjectId(),
-        title: 'left',
+        title,
         lastUpdated: Date.now(),
-        articleIDs: columnOneData
-    });
+        articleIDs: idsArr
+    })
 
-    const columnTwo = new Column({
-        _id: new ObjectId(),
-        title: 'right',
-        lastUpdated: Date.now(),
-        articleIDs: columnTwoData
-    });
-
-    const columnThree = new Column({
-        _id: new ObjectId(),
-        title: 'center',
-        lastUpdated: Date.now(),
-        articleIDs: columnThreeData
-    });
-
-    return [columnOne, columnTwo, columnThree]
+    return columnNames.map( (title, i) => buildSingleColumn( columnData[i], title ) )
 };
 
 
