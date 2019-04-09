@@ -19,8 +19,7 @@ const articleLogSchema = mongoose.Schema({
         default: new Date().getTime()
     },
     status: {
-        type: Number,
-        default: 0
+        type: Number
     }
 })
 
@@ -39,33 +38,22 @@ articleLogSchema.statics.updateStatus = function(){
 
         const processUpdateCheck = compose(nextUpdate, toIncrease)
 
-
-        switch (status) {
-            case -1 || 1:
-                processUpdateCheck(createdAt, 1) === true ? newStatus = 1 : newStatus = null
-                break;
-            
-            case 1:
-                processUpdateCheck(createdAt, 2) === true ? newStatus = 1 : newStatus = null
-                break;
-            
-            case 2:
-                processUpdateCheck(createdAt, 3) === true ? newStatus = 1 : newStatus = null
-                break;
+        if ( status===-1 || status===0 ) processUpdateCheck(createdAt, 1) ? newStatus = 1 : newStatus = false
+        else if ( status===1 ) processUpdateCheck(createdAt, 3) ? newStatus = 2 : newStatus = false
+        else if ( status===2 ) processUpdateCheck(createdAt, 6) ? newStatus = 3 : newStatus = false
+        else newStatus = false
         
-            default:
-                break;
-        }
-
-        newStatus === null ? false : { _id, status: newStatus }
+        if ( newStatus===false ) return false
+        return { _id: mongoose.Types.ObjectId(_id), status: newStatus }
     }
 
-    const initUpdate = (logs) => {
+    const initUpdate = async (logs) => {
         let reqs = []
 
         const updateQuery = log => {
+            const { _id, status } = log
             return new Promise((resolve) => {
-                resolve( ArticleLog.updateOne( {id: log._id}, {$set:{status:log.status}} ) )
+                resolve( ArticleLog.updateOne( {_id}, {$set:{status} } ) )
             })
         }
         
@@ -75,29 +63,16 @@ articleLogSchema.statics.updateStatus = function(){
             if ( statusChange !== false ) reqs.push(updateQuery(statusChange))
         })
 
-        return async () => Promise.all(reqs)
+        await Promise.all(reqs)
     }
-
-    // return ArticleLog.find({})
-    // .then(data => {
-    //     const logs = data.map(log => ({ _id:log.id, createdAt:log.createdAt, status:log.status }))
-
-    //     //update status in testcase!!
-
-    //     return initUpdate(logs)()
-
-        
-
-    // })
-    // .then(d => {
-    //     console.log('update END')
-    // })
     
-    return ArticleLog.find( {'status': {$lt: 3}} )
-    .then(data => {
-        console.log(data)
+    return new Promise((resolve, reject) => {
+        ArticleLog.find( {'status': {$lt: 3}} )
+        .then( data => initUpdate(data) )
+        .then( data => resolve(data) )
+        .catch(err => reject(err) )
     })
-    
+
 }
 
 

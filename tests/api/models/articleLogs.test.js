@@ -1,13 +1,10 @@
 const moment = require('moment')
-
-const {app} =  require('../../../app')
-
 const mongoose = require('mongoose')
 
 const ArticleLog = require('../../../api/models/articleLog')
-const { users, articles } = require('../../seedData')
+const { articles } = require('../../seedData')
 
-const request = require('supertest')
+// const request = require('supertest')
 const assert = require('assert')
 
 
@@ -59,7 +56,7 @@ describe("MODEL articleLog", ()=>{
 
 
 
-    it.only('updateLogs method updates articles status', () => {
+    it('updateLogs method updates articles status', () => {
 
         const buildUpdateData = () => {
             //return array of articles with status&&createdAt modified
@@ -80,7 +77,7 @@ describe("MODEL articleLog", ()=>{
                 if ( newStatus===-1 || newStatus===0 ) updatedLog.createdAt = update(1)
                 else if ( newStatus===1 ) updatedLog.createdAt = update(3)
                 else if ( newStatus===2 ) updatedLog.createdAt = update(6)
-                else updatedLog.createdAt = update(0)
+                else if ( newStatus===3 ) updatedLog.createdAt = update(7)
 
                 return updatedLog
             }
@@ -98,7 +95,7 @@ describe("MODEL articleLog", ()=>{
                     ))
                 })
             })
-            return async() => Promise.all(requests)
+            return async () => await Promise.all(requests)
         }
 
         const articleData = buildUpdateData()
@@ -109,13 +106,15 @@ describe("MODEL articleLog", ()=>{
         .then(() => ArticleLog.updateStatus())
         .then(() => ArticleLog.find( {'_id': {$in: articleIDsQuery}} ) )
         .then(data => {
-            // assert.equal(data[0].status, 1)
-            // assert.equal(data[1].status, 1)
-            // assert.equal(data[2].status, 2)
-            // assert.equal(data[3].status, 3)
-            // assert.equal(data[4].status, 3)
-            assert.equal(data[0].createdAt, articleData[0].createdAt)
+            assert.equal(data[0].status, 1)
+            assert.equal(data[1].status, 1)
+            assert.equal(data[2].status, 2)
+            assert.equal(data[3].status, 3)
+            assert.equal(data[4].status, 3)
+            // assert.equal(data[0].createdAt, articleData[0].createdAt)
         })
+
+
     })
 
 
