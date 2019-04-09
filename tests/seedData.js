@@ -66,14 +66,14 @@ const buildColumnData = (data) => {
 
     const columnNames = [ 'left', 'right', 'center' ]
 
-    const buildSingleColumn = (idsArr, title) => new Column({
+    const buildSingleColumn = (title, articleIDs) => new Column({
         _id: new ObjectId(),
-        title,
         lastUpdated: Date.now(),
-        articleIDs: idsArr
+        title,
+        articleIDs
     })
 
-    return columnNames.map( (title, i) => buildSingleColumn( columnData[i], title ) )
+    return columnNames.map( (title, i) => buildSingleColumn( title, columnData[i] ) )
 };
 
 
@@ -89,26 +89,12 @@ const userData = [
     }
 ]
 
-const buildUserData = (data) => {
-
-    let users = []
-
-    for (user of data){
-
-        const newUser = new User({
-            _id: new ObjectId(),
-            email: user.email,
-            password: user.password,
-            createdAt: Date.now()
-        })
-
-        users.push(newUser)
-
-    }
-
-    return users
-
-}
+const buildUserData = (data) => data.map(data => new User({
+    _id: new ObjectId(),
+    createdAt: Date.now(),
+    email: data.email,
+    password: data.password
+}))
 
 /* 
     BUILD DATA
