@@ -8,39 +8,6 @@ const Data = require('./data.json')
     ARTICLE
 */
 
-// const articleData = [
-//     {
-//         title: 'test Article 1',
-//         url: 'http://www.testarticleone.co',
-//         createdAt: '1543499781111'
-//     },
-//     {
-//         title: 'two test tweet tweed',
-//         url: 'http://sseecondd.com',
-//         createdAt: '1543498582222'
-//     },
-//     {
-//         title: 'three thrid triad train',
-//         url: 'http://thirrrd.com',
-//         createdAt: '1545290573333'
-//     },
-//     {
-//         title: 'four fire free fear',
-//         url: 'http://fore.com',
-//         createdAt: '1545290554444'
-//     },
-//     {
-//         title: 'foe fee flew five',
-//         url: 'http://fivee.com',
-//         createdAt: '1545290555555'
-//     },
-//     {
-//         title: 'sax sea soi six',
-//         url: 'http://sixsix.com',
-//         createdAt: '1545290556666'
-//     }
-    
-// ];
 
 const buildSingleArticle = (data) => new ArticleLog({
     _id: new ObjectId(),
@@ -78,16 +45,16 @@ const buildColumnData = (data) => {
 
 
 // USER
-const userData = [
-    {
-        email: 'one@one.co',
-        password: 'charchar0n3'
-    },
-    {
-        email: 'two@two.co',
-        password: 'tw3n7y2tw0z'
-    }
-]
+// const userData = [
+//     {
+//         email: 'one@one.co',
+//         password: 'charchar0n3'
+//     },
+//     {
+//         email: 'two@two.co',
+//         password: 'tw3n7y2tw0z'
+//     }
+// ]
 
 const buildUserData = (data) => data.map(data => new User({
     _id: new ObjectId(),
@@ -100,7 +67,7 @@ const buildUserData = (data) => data.map(data => new User({
     BUILD DATA
 */
 const articles = buildArticleData(Data.articleData);
-const users = buildUserData(userData);
+const users = buildUserData(Data.userData);
 const columns = buildColumnData(articles);
 
 /*
@@ -136,8 +103,12 @@ const testSeedUsers = (data) => {
 }
 
 module.exports = { 
-    articles, columns, users,
-    testDelete, testSeed, testSeedUsers,
-    buildArticleData, buildColumnData,
-    userData
+    articles, 
+    columns, 
+    users,
+    testDelete, 
+    testSeed, 
+    testSeedUsers,
+    buildArticleData,
+    buildColumnData
 };

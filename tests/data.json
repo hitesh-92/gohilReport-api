@@ -30,5 +30,15 @@
             "url": "http://sixsix.com",
             "createdAt": 1545290556666
         }
+    ],
+    "userData": [
+        {
+            "email": "one@one.co",
+            "password": "charchar0n3"
+        },
+        {
+            "email": "two@two.co",
+            "password": "tw3n7y2tw0z"
+        }
     ]
 }
