@@ -2,11 +2,7 @@ const Column = require('../api/models/column');
 const ArticleLog = require('../api/models/articleLog');
 const User = require('../api/models/user');
 const ObjectId = require('mongoose').Types.ObjectId;
-
 const Data = require('./data.json')
-/*
-    ARTICLE
-*/
 
 
 const buildSingleArticle = (data) => new ArticleLog({
@@ -15,23 +11,20 @@ const buildSingleArticle = (data) => new ArticleLog({
     url: data.url,
     createdAt: data.createdAt
 })
+
 const buildArticleData = (articleData) => articleData.map(data => buildSingleArticle(data))
 
-
-/*
-    COLUMN
-*/
-
 const buildColumnData = (data) => {
-    const all_ids = data.map(each => each._id);
+    const ids = data.map(each => each._id);
 
     const columnData = [
-        [ all_ids[0], all_ids[1] ],
-        [ all_ids[2], all_ids[3] ],
-        [ all_ids[4], all_ids[5] ]
+        [ ids[0], ids[1] ],
+        [ ids[2], ids[3] ],
+        [ ids[4], ids[5] ],
+        [ ids[6], ids[7] ]
     ]
 
-    const columnNames = [ 'left', 'right', 'center' ]
+    const columnNames = [ 'left', 'right', 'center', 'archive' ]
 
     const buildSingleColumn = (title, articleIDs) => new Column({
         _id: new ObjectId(),
@@ -42,19 +35,6 @@ const buildColumnData = (data) => {
 
     return columnNames.map( (title, i) => buildSingleColumn( title, columnData[i] ) )
 };
-
-
-// USER
-// const userData = [
-//     {
-//         email: 'one@one.co',
-//         password: 'charchar0n3'
-//     },
-//     {
-//         email: 'two@two.co',
-//         password: 'tw3n7y2tw0z'
-//     }
-// ]
 
 const buildUserData = (data) => data.map(data => new User({
     _id: new ObjectId(),
@@ -76,30 +56,25 @@ const columns = buildColumnData(articles);
 
 const testDelete = MODEL => {
     return new Promise((resolve, reject) => {
-        MODEL
-            .deleteMany({})
-            .then(() => resolve())
-            .catch(e => reject(e))
+        MODEL.deleteMany({})
+        .then(() => resolve())
+        .catch(e => reject(e))
     })
 };
 
 const testSeed = function(MODEL, data){
     return new Promise((resolve, reject) => {
-        MODEL
-            .insertMany(data)
-            .then(() => resolve())
-            .catch(e => reject(e))
+        MODEL.insertMany(data)
+        .then(() => resolve())
+        .catch(e => reject(e))
     })
 };
 
 
 const testSeedUsers = (data) => {
-
-    const userOne = new User(data[0]).save()
+    const userOne = new User(data[0]).save();
     const userTwo = new User(data[1]).save();
-
     return Promise.all([userOne, userTwo])
-
 }
 
 module.exports = { 
