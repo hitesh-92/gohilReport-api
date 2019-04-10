@@ -32,6 +32,8 @@ describe("MODEL articleLog", ()=>{
     })//
 
     
+
+    //.updateStatus stuff
     //could have an increment count to hold value
 
     //for alert column 
@@ -114,6 +116,5 @@ describe("MODEL articleLog", ()=>{
             // assert.equal(data[0].createdAt, articleData[0].createdAt)
         })
     })
-
 
 });

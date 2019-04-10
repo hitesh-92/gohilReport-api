@@ -5,6 +5,7 @@ const {
   users
 } = require('../../seedData')
 const ArticleLog = require('../../../api/models/articleLog')
+const Column = require('../../../api/models/column')
 
 const request = require('supertest')
 const assert = require('assert')
@@ -242,6 +243,39 @@ describe("article/ Routes", ()=>{
     })
 
   })//DELETE
+
+  describe('/archive/ Routes', () => {
+
+    it.only('archive existing article', () => {
+      //add new prop to ArticleLog called archive
+      //filter out from columns articleIDs and remove
+      //add to Column: archive        
+      //TEST: column:title 'archive' for id
+
+      const archID = articles[0]._id
+
+      return request(app)
+      .post('/user/login')
+      .send(userData)
+      .then(response => {
+          return request(app)
+          .post('/article/archive')
+          .set('x-auth', response.header['x-auth'])
+          .send({ id: archID })
+          .expect(200)
+          .then(response => ArticleLog.findById(archID))
+          .then(article => {
+            assert.equal(article.archived, true)
+            return Column.findOne({title: 'archive'})
+          })
+          .then(column => {
+            assert.equal(column.articleIDs.length, 1)
+          })
+      })
+    
+    })//
+
+  })//archive Routes
     
 })//articleLog Route
   
