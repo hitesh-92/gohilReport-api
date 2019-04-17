@@ -79,5 +79,6 @@ router.post('/login', (req,res) => {
 
 })
 
+//ADD LOGOUT
 
 module.exports = router;

@@ -33,13 +33,11 @@ describe("MODEL articleLog", ()=>{
 
     
 
-    //.updateStatus stuff
-    //could have an increment count to hold value
+    //.updateStatus info
 
     //for alert column 
     //add an option to not set this counter
     //add a way to switch it on at a later date = new articleLog method
-
 
     // articleLog status prop:
     // -1: alert 1month  red--text
@@ -48,6 +46,7 @@ describe("MODEL articleLog", ()=>{
     //  2: 3 months      green
     //  3: 6 months      white
     //  
+    //  #re-write
     //  -1,0 ++ = 1 month
     //  1 ++ = 3months
     //  2 ++ = 6months
@@ -113,7 +112,6 @@ describe("MODEL articleLog", ()=>{
             assert.equal(data[2].status, 2)
             assert.equal(data[3].status, 3)
             assert.equal(data[4].status, 3)
-            // assert.equal(data[0].createdAt, articleData[0].createdAt)
         })
     })
 

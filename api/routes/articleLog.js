@@ -16,7 +16,6 @@ router.get('/:articleId', (req, res) => {
         found: null
     }
 
-    //invalid ID
     const invalidID = ObjectId.isValid(requestId) === false
 
     if (invalidID){
@@ -61,14 +60,12 @@ router.post('/', Authenticate, (req, res, next) => {
         articleSaved: false
     }
 
-    //create new ArticleLog
     const article = new ArticleLog({
         _id: new mongoose.Types.ObjectId(),
         title: req.body.title,
         url: req.body.url
     })
 
-    //save created article to database and return response
     article.save()
     .then(log => {
         data.createdArticle = log
@@ -78,6 +75,7 @@ router.post('/', Authenticate, (req, res, next) => {
     })
     .catch(err =>{
         data.error = err
+        data.articleSaved = false
         res.status(400).json(data)
     })
 })
@@ -91,26 +89,23 @@ router.patch('/:articleId', (req, res) => {
     const { title, url, createdAt } = req.body
     
 
-    function updateArticle(id, title, url, createdAt){
+    async function updateArticle(id, title, url, createdAt){
         let body = {}
 
         if( title !== undefined ) body.title = title
         if( url !== undefined ) body.url = url
         if( createdAt !== undefined ) body.createdAt = createdAt
 
-        return async function(){
-            return await ArticleLog.updateOne( {_id:id}, {$set:body} )
-        }
+        return await ArticleLog.updateOne( {_id:id}, {$set:body} )
     }
 
     ArticleLog.findById(requestId)
     .then(article => {
 
-        //no article found
         if( article===null ) return null
 
         data.oldArticle = article
-        return updateArticle(requestId, title, url, createdAt)()
+        return updateArticle(requestId, title, url, createdAt)
     })
     .then(response => {
 
@@ -140,17 +135,14 @@ router.delete('/:articleId', Authenticate, (req, res, next) => {
 
     const articleID = req.params.articleId
 
-    let data = {
-        deleted: false
-    }
+    let data = { deleted: false }
 
     // invalid ID
     const validID = ObjectId.isValid(articleID)
 
     if(!validID){
         data.error = 'Bad article id'
-        res.status(404).json(data)
-        return
+        return res.status(404).json(data)
     }
     
     ArticleLog.findOneAndDelete({_id: articleID})

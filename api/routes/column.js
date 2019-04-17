@@ -29,8 +29,6 @@ router.get('/', (_req,res) => {
         })
     }
 
-    // const getColumns = (title) => new Promise((resolve) => resolve(Column.where({title}).findOne()))
-
     const getArticles = (ids) => {
         let queryArr = []
         ids.forEach(id => queryArr.push({_id: id}))
@@ -54,9 +52,8 @@ router.get('/', (_req,res) => {
 
     queryColumns().then(columns => {
         data.columns = columns
-        // const queryArticles = getAllQuerys(getIDsArray(columns), getArticles)
-        // return queryArticles()
-        return getAllQuerys(getIDsArray(columns), getArticles)()
+        const queryArticles = getAllQuerys(getIDsArray(columns), getArticles)
+        return queryArticles()
     })
     .then(articles => {
         data.leftArticles = articles.left
@@ -69,11 +66,6 @@ router.get('/', (_req,res) => {
         data.error = err
         res.status(500).send(data)
     })
-    // .finally(r => {
-    //     console.log('DONEEE')
-    //     // ArticleLog.updateLogs()
-    // })
-
 });
 
 
@@ -113,10 +105,8 @@ router.get('/:column', (req, res) => {
     })
     .then(ids => ArticleLog.find({_id: {$in: ids} }) )
     .then(articles => {
-        //condition response status
         let status = 200;
 
-        //add to response data if successful
         if(articles) data.articles = articles
 
         data.error = false
@@ -140,7 +130,6 @@ router.get('/:column', (req, res) => {
 
 router.post('/', Authenticate, (req, res) => {
 
-    //response object
     let data = {
         error: {},
         createdColumn: {},
@@ -175,8 +164,6 @@ router.post('/', Authenticate, (req, res) => {
         articleIDs: data.articleIDs
     })
 
-
-    //save created column
     column.save()
     .then(savedColumn => {
 
@@ -211,12 +198,8 @@ router.patch('/:column', Authenticate, (req,res) => {
             articleIDs: idsArray
         }
 
-        return async function(){
-            return Column.updateOne( {_id:id}, {$set:body} )
-        }
-        // return async () => Column.updateOne( {_id:id}, {$set:body} )
+        return async () => Column.updateOne( {_id:id}, {$set:body} )
     }
-
 
     const validateIDs = (arr) => {
         
@@ -229,26 +212,23 @@ router.patch('/:column', Authenticate, (req,res) => {
         }
     }
 
-
     //check for any invalid IDs
     const ids_valid = validateIDs(newArticleIDs)
 
     if( ids_valid===false ){
         data.error = { message: 'Invalid article ID provided. Check entry' }
-        res.status(400).send(data)
-        return;
+        return res.status(400).send(data)
     }
 
     Column.find({title: columnTitle})
     .then(column => {
 
-        // column not found
         if(column.length === 0){
             data.error = { message: 'Invalid Column Requested' }
             return null
         }
 
-        //create new IDs array to update column with
+        //create new IDs array to save in column document
         const newIDsArray = [...column[0].articleIDs, ...newArticleIDs]
 
         data.column = column
@@ -258,10 +238,8 @@ router.patch('/:column', Authenticate, (req,res) => {
     })
     .then(response => {
         let status = 200
-
-        if(response===null) status = 404
-        else data.message = 'success'
         
+        response===null ? status = 404 : data.message = 'success'
         res.status(status).send(data)
     })
 })
