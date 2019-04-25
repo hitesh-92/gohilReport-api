@@ -8,7 +8,7 @@ const Column = require('../models/column')
 const ObjectId = require('mongoose').Types.ObjectId
 
 
-router.get('/', (_req,res) => {
+router.get('/', (req,res) => {
     const data = {}
 
     function getAllQuerys(ids, fn){
@@ -80,14 +80,16 @@ router.get('/:column', (req, res) => {
     }
 
     //returns array of ids to find in db
-    const getIdsToFind = (ids) => {
+    // const getIdsToFind = (ids) => {
 
-        let idsArr = []
+    //     let idsArr = []
 
-        ids.forEach(id => idsArr.push({_id: id}))
+    //     ids.forEach(id => idsArr.push({_id: id}))
 
-        return idsArr
-    }
+    //     return idsArr
+    // }
+
+    const getIdsToFind = ids => ids.map(id => ({_id: id}))
 
     Column.findOne({title})
     .then(singleColumn => {
