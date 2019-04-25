@@ -79,9 +79,6 @@ router.get('/:column', (req, res) => {
         columnData: new Object,
     }
 
-    //returns array of ids to find in db
-    // const getIdsToFind = ids => ids.map(id => ({_id: id}))
-
     Column.findOne({title})
     .then(singleColumn => {
 
@@ -90,15 +87,10 @@ router.get('/:column', (req, res) => {
         //return if no column found
         if(singleColumn == null) return
 
-        //return articles ids to query db
-        // const queryIDs = getIdsToFind(singleColumn.articleIDs)
-
-        return singleColumn.articleIDs.map(id => ({_id: id}))
-
-        // return queryIDs
-
+        //array of ids to find
+        const ids = singleColumn.articleIDs.map(id => ({_id: id}))
+        return ArticleLog.find({_id: {$in: ids} })
     })
-    .then(ids => ArticleLog.find({_id: {$in: ids} }) )
     .then(articles => {
         let status = 200;
 
