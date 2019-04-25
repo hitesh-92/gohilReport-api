@@ -80,16 +80,7 @@ router.get('/:column', (req, res) => {
     }
 
     //returns array of ids to find in db
-    // const getIdsToFind = (ids) => {
-
-    //     let idsArr = []
-
-    //     ids.forEach(id => idsArr.push({_id: id}))
-
-    //     return idsArr
-    // }
-
-    const getIdsToFind = ids => ids.map(id => ({_id: id}))
+    // const getIdsToFind = ids => ids.map(id => ({_id: id}))
 
     Column.findOne({title})
     .then(singleColumn => {
@@ -100,9 +91,11 @@ router.get('/:column', (req, res) => {
         if(singleColumn == null) return
 
         //return articles ids to query db
-        const queryIDs = getIdsToFind(singleColumn.articleIDs)
+        // const queryIDs = getIdsToFind(singleColumn.articleIDs)
 
-        return queryIDs
+        return singleColumn.articleIDs.map(id => ({_id: id}))
+
+        // return queryIDs
 
     })
     .then(ids => ArticleLog.find({_id: {$in: ids} }) )
