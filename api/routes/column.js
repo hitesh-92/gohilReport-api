@@ -76,7 +76,7 @@ router.get('/:column', (req, res) => {
     let data = {
         time: new Date().getTime(),
         requestedColumn: title,
-        columnData: new Object,
+        columnData: {},
     }
 
     Column.findOne({title})
@@ -93,10 +93,9 @@ router.get('/:column', (req, res) => {
     })
     .then(articles => {
         let status = 200;
+        data.error = false
 
         if(articles) data.articles = articles
-
-        data.error = false
 
         if(data.columnData == null){
             data.message = 'Column not found'
