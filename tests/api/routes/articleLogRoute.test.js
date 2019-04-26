@@ -244,7 +244,7 @@ describe("article/ Routes", ()=>{
 
   })//DELETE
 
-  describe('/archive/ Routes', () => {
+  describe.only('/archive/ Routes', () => {
 
     it('archive existing article', () => {
       //add new prop to ArticleLog called archive
@@ -252,26 +252,26 @@ describe("article/ Routes", ()=>{
       //add to Column: archive        
       //TEST: column:title 'archive' for id
 
-      // const archID = articles[0]._id
+      const archiveID = articles[0]._id
 
-      // return request(app)
-      // .post('/user/login')
-      // .send(userData)
-      // .then(response => {
-      //     return request(app)
-      //     .post('/article/archive')
-      //     .set('x-auth', response.header['x-auth'])
-      //     .send({ id: archID })
-      //     .expect(200)
-      //     .then(response => ArticleLog.findById(archID))
-      //     .then(article => {
-      //       assert.equal(article.archived, true)
-      //       return Column.findOne({title: 'archive'})
-      //     })
-      //     .then(column => {
-      //       assert.equal(column.articleIDs.length, 1)
-      //     })
-      // })
+      return request(app)
+      .post('/user/login')
+      .send(userData)
+      .then(response => {
+          return request(app)
+          .post('/article/archive')
+          .set('x-auth', response.header['x-auth'])
+          .send({ id: archiveID })
+          .expect(200)
+          .then(response => ArticleLog.findById(archID))
+          .then(article => {
+            assert.equal(article.archived, true)
+            return Column.findOne({title: 'archive'})
+          })
+          .then(column => {
+            assert.equal(column.articleIDs.length, 1)
+          })
+      })
     
     })//
 

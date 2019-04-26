@@ -47,9 +47,9 @@ describe("user/ Routes", () => {
             })
 
         })//
-    })// /signup
+    })//
 
-    describe.only("POST /login", () => {
+    describe("POST /login", () => {
 
         it('login user', () => {
 
@@ -85,13 +85,12 @@ describe("user/ Routes", () => {
             .expect(400)
             .then(response => {
                 const body = response.body
-                console.log(body)
                 assert.equal(body.loggedIn, false)
             })
 
         })//
 
-    })// /login
+    })//
 
 })// user/ Routes
 
