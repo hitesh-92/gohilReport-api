@@ -31,6 +31,7 @@ Method | Endpoint | Private | Request Body | Response
 --- | --- | --- | --- | ---
 POST | /user/signup | - | { email, password } | { email, added }
 POST | /user/login | - | { email, password } | { loggedIn }
+
 NOTE: login response header contains jwt
 
 <br>
