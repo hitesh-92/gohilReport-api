@@ -7,7 +7,7 @@ const { users } = require('../../seedData')
 
 describe("user/ Routes", () => {
 
-    describe.only("POST /signup" , () => {
+    describe("POST /signup" , () => {
 
         it('saves new user', () => {
 
@@ -27,11 +27,29 @@ describe("user/ Routes", () => {
                 assert.equal(body.added, true)
             })
 
-        });
+        })//
 
+        it('reject bad password', () => {
+
+            const userData = {
+                email: 'random@emai.com',
+                password: '123'
+            }
+
+            return request(app)
+            .post('/user/signup/')
+            .send(userData)
+            .expect(400)
+            .then(response => {
+                const body = response.body
+                
+                assert.equal(body.added, false)
+            })
+
+        })//
     })// /signup
 
-    describe("POST /login", () => {
+    describe.only("POST /login", () => {
 
         it('login user', () => {
 
@@ -50,6 +68,25 @@ describe("user/ Routes", () => {
 
                 assert.equal(header['x-auth'].length > 15, true)
                 assert.equal(body.loggedIn, true)
+            })
+
+        })//
+
+        it('reject bad login details', () => {
+
+            const userData = {
+                email: users[0].email,
+                password: 'password'
+            }
+
+            return request(app)
+            .post('/user/login')
+            .send(userData)
+            .expect(400)
+            .then(response => {
+                const body = response.body
+                console.log(body)
+                assert.equal(body.loggedIn, false)
             })
 
         })//

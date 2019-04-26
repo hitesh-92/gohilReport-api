@@ -37,35 +37,30 @@ router.post('/signup', (req,res) => {
 
 router.post('/login', (req,res) => {
 
-    let data = { email: req.body.email }
-    const password = req.body.password
+    let data = { 
+        email: req.body.email,
+        loggedIn: false
+    }
 
-    User.findByCredentials(data.email, password)
+    User.findByCredentials(data.email, req.body.password)
     .then(user => {
         if(!user) return false
         return user.createAuthToken()
     })
     .then(token => {
 
-        if(!token || token == null){
-            return res.sendStatus(400).json({
-                loggedIn: false,
-                message: 'User not found'
-            })
+        if (!token || token === null){
+            return res.status(404).send(data)
         }
+        else data.loggedIn = true
 
         res.status(200)
         .header('x-auth', token)
-        .json({
-            loggedIn: true,
-            data
-        })
+        .send(data)
     })
     .catch(err => {
-        res.sendStatus(400).json({
-            loggedIn: false,
-            error: err || true
-        })
+        data.error = true
+        res.status(400).send(data)
     })
 
 })
