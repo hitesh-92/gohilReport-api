@@ -166,7 +166,7 @@ router.patch('/:column', Authenticate, (req,res) => {
     const columnTitle = req.params.column
     const newArticleIDs = req.body.ids
     
-    function updateColumn(column, idsArray){
+    async function updateColumn(column, idsArray){
 
         const id = column._id
         const body = {
@@ -175,7 +175,7 @@ router.patch('/:column', Authenticate, (req,res) => {
             articleIDs: idsArray
         }
 
-        return async () => Column.updateOne( {_id:id}, {$set:body} )
+        return await Column.updateOne( {_id:id}, {$set:body} )
     }
 
     const validateIDs = (arr) => {
@@ -211,7 +211,7 @@ router.patch('/:column', Authenticate, (req,res) => {
         data.column = column
         data.newArticleIDs = newIDsArray
 
-        return updateColumn(column[0], newIDsArray)()
+        return updateColumn(column[0], newIDsArray)
     })
     .then(response => {
         let status = 200

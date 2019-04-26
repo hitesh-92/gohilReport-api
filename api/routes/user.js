@@ -46,11 +46,12 @@ router.post('/signup', (req,res) => {
 
 router.post('/login', (req,res) => {
 
-    let data = {}
-    data.email = req.body.email
-    data.password = req.body.password
+    let data = { email: req.body.email }
 
-    User.findByCredentials(data.email, data.password)
+    data.email = req.body.email
+    const password = req.body.password
+
+    User.findByCredentials(data.email, password)
     .then(user => {
         if(!user) return false
         return user.createAuthToken()
@@ -67,7 +68,8 @@ router.post('/login', (req,res) => {
         res.status(200)
         .header('x-auth', token)
         .json({
-            loggedIn: true
+            loggedIn: true,
+            data
         })
     })
     .catch(err => {

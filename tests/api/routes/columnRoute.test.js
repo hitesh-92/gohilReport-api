@@ -125,7 +125,7 @@ describe('column/ Routes', () => {
 
         })//
 
-        it.only('reject request with bad articleId', () => {
+        it('reject request with bad articleId', () => {
 
             //create new test data
             const articleData = [
@@ -160,10 +160,7 @@ describe('column/ Routes', () => {
                 assert.equal(res.error.articleIDs, 'Invalid Article ID(s) provided')
                 assert.equal(res.saved, false)
             })
-
-            
-
-        })
+        })//
 
     })//POST '/'
 
