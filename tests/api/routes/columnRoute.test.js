@@ -153,7 +153,7 @@ describe('column/ Routes', () => {
                 .set('x-auth', response.header['x-auth'])
                 .set('Accept', 'application/json')
                 .send(postColumnData)
-                .expect(200)
+                .expect(400)
             })
             .then(response => {
                 const res = response.body

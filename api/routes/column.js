@@ -125,34 +125,15 @@ router.post('/', Authenticate, (req, res) => {
         saved: false
     }
 
-    //validate articleID(s)
-    // let articleIDsValid = true
+    const invalidID = data.articleIDs.map(id => ObjectId.isValid(id)).filter(val => val===false).length > 0
+    const invalidTitle = data.title === undefined || data.title.length < 1
 
-    // data.articleIDs.forEach(id => {
-    //     let isValid = ObjectId.isValid(id)
-    //     if(isValid == false) articleIDsValid = false
-    // })
+    if ( invalidID || invalidTitle ){
+        if ( invalidID ) data.error.articleIDs = 'Invalid Article ID(s) provided'
+        if ( invalidTitle ) data.error.title = 'Invalid Column Title'
+        return res.status(400).send(data)
+    }
 
-    // if(articleIDsValid === false) data.error.articleIDs = 'Invalid Article ID(s) provided'
-
-
-    let articleIDsValid = false
-
-    const validIDs = data.articleIDs.map(id => ObjectId.isValid(id))
-
-    console.log(validIDs)
-
-
-
-
-
-    //validate title
-    let titleValid =  true
-    const badTitle = data.title == undefined || data.title.length < 1
-    if(badTitle) titleValid = false
-    if(titleValid == false) data.error.title = 'Invalid Column Title'
-
-    //create column
     const column = new Column({
         _id: new ObjectId(),
         lastUpdated: new Date().getTime(),
@@ -171,12 +152,10 @@ router.post('/', Authenticate, (req, res) => {
             stats = 400
             data.message = 'Please check error to see further details'
         }
-        
-        data.saved = true
+        else data.saved = true
 
         res.status(status).json(data)
     })
-    
 })
 
 
