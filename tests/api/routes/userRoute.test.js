@@ -7,15 +7,12 @@ const { users } = require('../../seedData')
 
 describe("user/ Routes", () => {
 
-    describe("POST /signup" , () => {
+    describe.only("POST /signup" , () => {
 
         it('saves new user', () => {
 
-            const r = Date.now()
-            const email = `${r}@email.com`
-
             const userData = {
-                email,
+                email: 'random@email.com',
                 password: 'needs10chars'
             }
             
@@ -25,10 +22,6 @@ describe("user/ Routes", () => {
             .expect(200)
             .then(response => {
                 const body = response.body
-                const header = response.header
-
-                // console.log(header)
-                // assert.equal(typeof(header['x-auth']), 'string')
 
                 assert.equal(body.email, userData.email)
                 assert.equal(body.added, true)

@@ -10,35 +10,26 @@ const mongoose = require('mongoose')
 
 router.post('/signup', (req,res) => {
     
-    let data = {}
-    data.userEmail = req.body.email
-    data.userPassword = req.body.password
+    let data = { 
+        email: req.body.email,
+        added: false
+    }
 
     const user = new User({
         _id: mongoose.Types.ObjectId(),
-        email: data.userEmail,
-        password: data.userPassword,
+        email: data.email,
+        password: req.body.password,
         createdAt: Date.now()
     })
 
     user.save()
-    // .then(() => user.createAuthToken())
-    // .then(token => {
     .then(user => {
-        res.status(200)
-        // .header('x-auth', token)
-        .json({
-            email: data.userEmail,
-            added: true
-        })
+        if(user) data.added = true
+        res.status(200).send(data)
     })
     .catch(err => {
-        console.log('catch:\n',err)
-        res.status(400).json({
-            email: data.userEmail,
-            error: err,
-            added: false
-        })
+        data.error = err
+        res.status(400).send(data)
     })
 
 });
@@ -47,8 +38,6 @@ router.post('/signup', (req,res) => {
 router.post('/login', (req,res) => {
 
     let data = { email: req.body.email }
-
-    data.email = req.body.email
     const password = req.body.password
 
     User.findByCredentials(data.email, password)
