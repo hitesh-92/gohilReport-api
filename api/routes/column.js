@@ -117,30 +117,40 @@ router.get('/:column', (req, res) => {
 router.post('/', Authenticate, (req, res) => {
 
     let data = {
+        title: req.body.title,
+        articleIDs: req.body.articleIDs,
         error: {},
         createdColumn: {},
-        time: new Date().getTime()
+        time: new Date().getTime(),
+        saved: false
     }
 
-    //add info sent with request to data reponse object
-    data.title = req.body.title
-    data.articleIDs = req.body.articleIDs
-
     //validate articleID(s)
-    let articleIDsValid = true
+    // let articleIDsValid = true
 
-    data.articleIDs.forEach(id => {
-        let isValid = ObjectId.isValid(id)
-        if(isValid == false) articleIDsValid = false
-    })
+    // data.articleIDs.forEach(id => {
+    //     let isValid = ObjectId.isValid(id)
+    //     if(isValid == false) articleIDsValid = false
+    // })
 
-    if(articleIDsValid === false) data.error.articleIDs = 'Invalid Article ID(s) provided'
+    // if(articleIDsValid === false) data.error.articleIDs = 'Invalid Article ID(s) provided'
+
+
+    let articleIDsValid = false
+
+    const validIDs = data.articleIDs.map(id => ObjectId.isValid(id))
+
+    console.log(validIDs)
+
+
+
+
 
     //validate title
     let titleValid =  true
     const badTitle = data.title == undefined || data.title.length < 1
     if(badTitle) titleValid = false
-    if(titleValid == false) data.error.title = 'Invalid Column Title'   
+    if(titleValid == false) data.error.title = 'Invalid Column Title'
 
     //create column
     const column = new Column({
@@ -161,6 +171,8 @@ router.post('/', Authenticate, (req, res) => {
             stats = 400
             data.message = 'Please check error to see further details'
         }
+        
+        data.saved = true
 
         res.status(status).json(data)
     })

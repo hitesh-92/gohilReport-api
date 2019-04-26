@@ -125,6 +125,46 @@ describe('column/ Routes', () => {
 
         })//
 
+        it.only('reject request with bad articleId', () => {
+
+            //create new test data
+            const articleData = [
+                { title: 'one', url: 'http://one.co', createdAt: '1543499785555' },
+                { title: 'two', url: 'http://two.co', createdAt: '1543499786666' },
+                { title: 'three', url: 'http://three.co', createdAt: '1543499787777' },
+                { title: 'four', url: 'http://four.co', createdAt: '1543499788888' }
+            ]
+            const testArticles = buildArticleData(articleData)
+
+            let testArticleIDs = testArticles.map(article => article._id)
+            testArticleIDs.push('1234567890')
+
+            const postColumnData = {
+                title: 'testTitlee',
+                articleIDs: testArticleIDs
+            }
+
+            return request(app)
+            .post('/user/login')
+            .send(userData)
+            .then(response => {
+                return request(app)
+                .post('/column')
+                .set('x-auth', response.header['x-auth'])
+                .set('Accept', 'application/json')
+                .send(postColumnData)
+                .expect(200)
+            })
+            .then(response => {
+                const res = response.body
+                assert.equal(res.error.articleIDs, 'Invalid Article ID(s) provided')
+                assert.equal(res.saved, false)
+            })
+
+            
+
+        })
+
     })//POST '/'
 
     describe('PATCH /', () => {
