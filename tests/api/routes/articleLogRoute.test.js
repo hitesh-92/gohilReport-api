@@ -247,7 +247,7 @@ describe("article/ Routes", ()=>{
   describe.only('/archive/ Routes', () => {
 
     it('archive existing article', () => {
-      //add new prop to ArticleLog called archive
+      //add new prop to ArticleLog called archived
       //filter out from columns articleIDs and remove
       //add to Column: archive        
       //TEST: column:title 'archive' for id
@@ -272,11 +272,11 @@ describe("article/ Routes", ()=>{
             assert.equal(column.articleIDs.length, 1)
           })
       })
-    
+
     })//
 
   })//archive Routes
-    
+
 })//articleLog Route
   
   

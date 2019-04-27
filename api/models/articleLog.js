@@ -20,6 +20,10 @@ const articleLogSchema = mongoose.Schema({
     },
     status: {
         type: Number
+    },
+    archived: {
+        type: Boolean,
+        default: false
     }
 })
 
