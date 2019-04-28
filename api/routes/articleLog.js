@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const ArticleLog = require('../models/articleLog')
+const Column = require('../models/column')
 const Authenticate = require('../middleware/auth')
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId
@@ -78,6 +79,47 @@ router.post('/', Authenticate, (req, res, next) => {
         data.articleSaved = false
         res.status(400).json(data)
     })
+})
+
+router.post('/archive', (req, res) => {
+
+    let data = {}
+
+    const { id } = req.body
+
+    const updateArticle = async (article) => {
+        const body = {
+            archived: true,
+            archiveDate: Date.now()
+        }
+        return await ArticleLog.updateOne({_id:article._id}, {$set: body})
+    }
+
+    const updateColumn = async (column, archArticleId) => {
+        console.log(archArticleId)
+        console.log(column)
+    }
+
+    //find article in column
+        //edit article.archive to true, remove id from column
+        //update article document
+        //update archive column
+
+    Column.find({})
+    .then(columns => {
+        columns.forEach(column => {
+            const hasArticle = column.articleIDs.filter(articleId => articleId == id)[0]
+            if ( hasArticle ) data.articleColumn = column
+            if ( column.title==='archive' ) data.archiveColumn = column
+        })
+
+        return updateArticle(data.articleColumn)
+    })
+    .then(response => {
+        if( response.ok === 1 ) return updateColumn(data.archiveColumn, id)
+    })
+    .then(r => console.log(r))
+
 })
 
 
@@ -166,6 +208,5 @@ router.delete('/:articleId', Authenticate, (req, res, next) => {
     })
 
 })
-
 
 module.exports = router;

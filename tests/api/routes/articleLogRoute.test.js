@@ -249,10 +249,10 @@ describe("article/ Routes", ()=>{
     it('archive existing article', () => {
       //add new prop to ArticleLog called archived
       //filter out from columns articleIDs and remove
-      //add to Column: archive        
+      //add to Column: archive
       //TEST: column:title 'archive' for id
 
-      const archiveID = articles[0]._id
+      const archiveID = articles[3]._id
 
       return request(app)
       .post('/user/login')
