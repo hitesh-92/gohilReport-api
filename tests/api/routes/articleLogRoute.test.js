@@ -1,7 +1,8 @@
 const {app} = require('../../../app')
 
 const {  
-  articles, 
+  articles,
+  columns,
   users
 } = require('../../seedData')
 const ArticleLog = require('../../../api/models/articleLog')
@@ -247,12 +248,21 @@ describe("article/ Routes", ()=>{
   describe.only('/archive/ Routes', () => {
 
     it('archive existing article', () => {
-      //add new prop to ArticleLog called archived
-      //filter out from columns articleIDs and remove
-      //add to Column: archive
-      //TEST: column:title 'archive' for id
 
       const archiveID = articles[3]._id
+
+      const getTestData = async (id) => {
+
+        const article = new Promise(resolve => {
+          resolve( ArticleLog.findById(id) )
+        })
+
+        const column = new Promise(resolve => {
+          resolve( Column.findOne({title: 'archive'}) )
+        })
+
+        return await Promise.all([article, column])
+      }
 
       return request(app)
       .post('/user/login')
@@ -263,20 +273,34 @@ describe("article/ Routes", ()=>{
           .set('x-auth', response.header['x-auth'])
           .send({ id: archiveID })
           .expect(200)
+          // .then( ({body: {archived}}) => {
+          //   assert.equal(archived, true)
+          //   return ArticleLog.findById(archiveID)
+          // })
+          // .then( ({archived}) => {
+          //   assert.equal(archived, true)
+          //   return Column.findOne({title: 'archive'})
+          // })
           .then( ({body: {archived}}) => {
             assert.equal(archived, true)
-            return ArticleLog.findById(archiveID)
+            return getTestData(archiveID)
           })
-          .then( ({archived}) => {
-            assert.equal(archived, true)
-            return Column.findOne({title: 'archive'})
-          })
-          .then(column => {
+          .then( ([article, column]) => {
+            assert.equal(article.archived, true)
             assert.equal(column.articleIDs.length, 3)
           })
+          // .then(column => {
+          //   assert.equal(column.articleIDs.length, 3)
+          // })
       })
 
     })//
+
+    // it('not arhcive existing archive', () => {
+
+      
+
+    // })//
 
   })//archive Routes
 

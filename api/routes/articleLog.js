@@ -82,12 +82,9 @@ router.post('/', Authenticate, (req, res, next) => {
 })
 
 router.post('/archive', (req, res) => {
-    const log = console.log
+
     let data = {}
-
     const { id } = req.body
-
-    log('id:', id)
 
     async function archive({archiveColumn, articleColumn}, archiveID){
         //update 2 columns [articleColumn, archiveColumn]
@@ -103,7 +100,6 @@ router.post('/archive', (req, res) => {
                 {_id},
                 {$set: { articleIDs: articleIDs_filtered }}
             ) )
-
         })
 
         const archive = new Promise(resolve => {
@@ -128,11 +124,6 @@ router.post('/archive', (req, res) => {
         
         return await Promise.all([column, archive, article])
     }
-    
-    //find article in column
-        //edit article.archive to true, remove id from column
-        //update article document
-        //update archive column
 
     Column.find({})
     .select('_id title articleIDs')
