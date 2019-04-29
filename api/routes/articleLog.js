@@ -81,42 +81,45 @@ router.post('/archive', (req, res) => {
 
     let data = {}
     const { id } = req.body
-
-    async function archive({archiveColumn, articleColumn}, archiveID){
+    console.log(id)
+    async function archive(
+    {
+        archiveColumn,
+        articleColumn
+    },  
+        archiveID
+    ){
         //update 2 columns [articleColumn, archiveColumn]
         //update article document
-        const id = mongoose.Types.ObjectId(archiveID)
 
         const column = new Promise(resolve => {
             const {_id, articleIDs} = articleColumn
-            //splice out id from array
-            const articleIDs_filtered = articleIDs.map(_id => _id !== id)
-
+            const filteredIDs = articleIDs.filter(_id => String(_id) !== String(archiveID))
+            console.log(filteredIDs)
             resolve( Column.updateOne(
                 {_id},
-                {$set: { articleIDs: articleIDs_filtered }}
+                {$set: { articleIDs: filteredIDs }}
             ) )
         })
 
         const archive = new Promise(resolve => {
             const {_id, articleIDs} = archiveColumn
+            const id = mongoose.Types.ObjectId(archiveID)
             resolve( Column.updateOne(
                 {_id},
                 {$set: { articleIDs: [...articleIDs, id] }}
             ) )
         })
 
-        const article = new Promise(resolve => {
-            const _id = archiveID
-            const body = {
-                archived: true,
-                archiveDate: Date.now()
-            }
+        const article = new Promise(resolve =>
             resolve( ArticleLog.updateOne(
-                {_id},
-                {$set: body}
+                {_id: archiveID},
+                {$set: {
+                    archived: true,
+                    archiveDate: Date.now()
+                }}
             ) )
-        })
+        )
         
         return await Promise.all([column, archive, article])
     }
@@ -128,7 +131,6 @@ router.post('/archive', (req, res) => {
         data.archiveColumn = columns.find(col => col.title === 'archive') || null
         //not using strict equality operator. find why not working with ObjectId
         data.articleColumn = columns.find( ({articleIDs}) => articleIDs.find(_id => _id == id) ) || null
-        
         return archive(data, id)
     })
     .then( ([
@@ -136,7 +138,6 @@ router.post('/archive', (req, res) => {
         {nModified: archive},
         {nModified: article}
     ]) => {
-        console.log(`\ncolumn:${column}\narchive:${archive}\narticle:${article}\n`)
         if (
             column === 1 &&
             archive === 1 &&

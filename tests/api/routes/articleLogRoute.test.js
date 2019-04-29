@@ -252,33 +252,42 @@ describe("article/ Routes", ()=>{
 
       const getTestData = async (id) => {
 
-        const article = new Promise(resolve => {
+        const article = new Promise(resolve =>
           resolve( ArticleLog.findById(id) )
-        })
+        )
 
-        const column = new Promise(resolve => {
+        const archive = new Promise(resolve => 
           resolve( Column.findOne({title: 'archive'}) )
-        })
+        )
 
-        return await Promise.all([article, column])
+        const articleColumn = new Promise(resolve => 
+          resolve( Column.findOne({title: 'right'}) )  
+        )
+
+        return await Promise.all([article, archive, articleColumn])
       }
 
       return request(app)
       .post('/user/login')
       .send(userData)
-      .then(response => {
+      .then( ({header}) => {
           return request(app)
           .post('/article/archive')
-          .set('x-auth', response.header['x-auth'])
+          .set('x-auth', header['x-auth'])
           .send({ id: archiveID })
           .expect(200)
           .then( ({body: {archived}}) => {
             assert.equal(archived, true)
             return getTestData(archiveID)
           })
-          .then( ([article, column]) => {
+          .then( ([ 
+            article, 
+            {articleIDs: archiveIDs},
+            {articleIDs} 
+          ]) => {
             assert.equal(article.archived, true)
-            assert.equal(column.articleIDs.length, 3)
+            assert.equal(archiveIDs.length, 3)
+            assert.equal(articleIDs.length, 1)
           })
       })
 
