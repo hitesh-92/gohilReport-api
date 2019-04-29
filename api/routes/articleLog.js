@@ -82,23 +82,30 @@ router.post('/', Authenticate, (req, res, next) => {
 })
 
 router.post('/archive', (req, res) => {
-
-    let data = {}
+    const log = console.log
+    let data = { archived: false }
 
     const { id } = req.body
 
-    const updateArticle = async (article) => {
+    log('id:', id)
+
+    const updateArticle = async ({ _id }) => {
         const body = {
             archived: true,
             archiveDate: Date.now()
         }
-        return await ArticleLog.updateOne({_id:article._id}, {$set: body})
+        return await ArticleLog.updateOne({_id}, {$set: body})
     }
 
-    const updateColumn = async (column, archArticleId) => {
-        console.log(archArticleId)
-        console.log(column)
+    const updateColumn = async ({_id, articleIDs}, archiveID) => {
+        return await Column.updateOne(
+            {_id},
+            {$set: {
+                articleIDs: [...articleIDs, mongoose.Types.ObjectId(archiveID)]
+            }
+        })
     }
+    
 
     //find article in column
         //edit article.archive to true, remove id from column
@@ -106,19 +113,26 @@ router.post('/archive', (req, res) => {
         //update archive column
 
     Column.find({})
-    .then(columns => {
-        columns.forEach(column => {
-            const hasArticle = column.articleIDs.filter(articleId => articleId == id)[0]
-            if ( hasArticle ) data.articleColumn = column
-            if ( column.title==='archive' ) data.archiveColumn = column
-        })
-
+    .select('_id title articleIDs')
+    .exec()
+    .then( (columns) => {
+        data.archiveColumn = columns.find(col => col.title === 'archive') || null
+        //not using strict equality operator. find why not working with ObjectId
+        data.articleColumn = columns.find( ({articleIDs}) => articleIDs.find(_id => _id == id) ) || null
+        
         return updateArticle(data.articleColumn)
     })
-    .then(response => {
-        if( response.ok === 1 ) return updateColumn(data.archiveColumn, id)
+    .then( ({ nModified }) => {
+        log(`updateArticle: nMod:${nModified}`)
+        return updateColumn(data.archiveColumn, id)
     })
-    .then(r => console.log(r))
+    .then( ({ nModified }) => {
+        log(`updateColumn: nMod:${nModified}`)
+
+        data.archived = true
+        res.status(200).send(data)
+    })
+    .catch(err => console.error(`/article/archive: [${err}]`))
 
 })
 

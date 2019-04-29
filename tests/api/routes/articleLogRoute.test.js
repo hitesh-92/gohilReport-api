@@ -263,9 +263,12 @@ describe("article/ Routes", ()=>{
           .set('x-auth', response.header['x-auth'])
           .send({ id: archiveID })
           .expect(200)
-          .then(response => ArticleLog.findById(archID))
-          .then(article => {
-            assert.equal(article.archived, true)
+          .then( ({body: {archived}}) => {
+            assert.equal(archived, true)
+            return ArticleLog.findById(archiveID)
+          })
+          .then( ({archived}) => {
+            assert.equal(archived, true)
             return Column.findOne({title: 'archive'})
           })
           .then(column => {

@@ -24,6 +24,10 @@ const articleLogSchema = mongoose.Schema({
     archived: {
         type: Boolean,
         default: false
+    },
+    archiveDate: {
+        type: String,
+        default: null
     }
 })
 
