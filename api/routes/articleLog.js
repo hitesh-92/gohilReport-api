@@ -13,7 +13,6 @@ router.get('/:articleId', (req, res) => {
     
     let data = { 
         requestId,
-        time: new Date().getTime(),
         found: null
     }
 
@@ -21,15 +20,12 @@ router.get('/:articleId', (req, res) => {
 
     if (invalidID){
         data.message = 'Invalid Article ID provided'
-        res.status(400).json(data)
-        return
+        return res.status(400).json(data)
     }
 
     const queryID = ObjectId.createFromHexString(requestId)
 
     ArticleLog.findById(queryID)
-    .select('title url createdAt')
-    .exec()
     .then(log => {
         let status = 200
 

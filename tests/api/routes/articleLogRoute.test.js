@@ -18,7 +18,7 @@ describe("article/ Routes", ()=>{
     password: users[0].password
   }
 
-  describe("GET /:articleId", ()=>{
+  describe.only("GET /:articleId", ()=>{
 
     it('retrieve saved ArticleLog using _id', ()=>{
 
@@ -245,7 +245,7 @@ describe("article/ Routes", ()=>{
 
   })//DELETE
 
-  describe.only('/archive/ Routes', () => {
+  describe('/archive/ Routes', () => {
 
     it('archive existing article', () => {
 
@@ -273,14 +273,6 @@ describe("article/ Routes", ()=>{
           .set('x-auth', response.header['x-auth'])
           .send({ id: archiveID })
           .expect(200)
-          // .then( ({body: {archived}}) => {
-          //   assert.equal(archived, true)
-          //   return ArticleLog.findById(archiveID)
-          // })
-          // .then( ({archived}) => {
-          //   assert.equal(archived, true)
-          //   return Column.findOne({title: 'archive'})
-          // })
           .then( ({body: {archived}}) => {
             assert.equal(archived, true)
             return getTestData(archiveID)
@@ -289,9 +281,6 @@ describe("article/ Routes", ()=>{
             assert.equal(article.archived, true)
             assert.equal(column.articleIDs.length, 3)
           })
-          // .then(column => {
-          //   assert.equal(column.articleIDs.length, 3)
-          // })
       })
 
     })//
