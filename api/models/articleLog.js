@@ -58,8 +58,7 @@ articleLogSchema.statics.updateStatus = function(){
     const initUpdate = async (logs) => {
         let reqs = []
 
-        const updateQuery = log => {
-            const { _id, status } = log
+        const updateQuery = ({ _id, status }) => {
             return new Promise((resolve) => {
                 resolve( ArticleLog.updateOne( {_id}, {$set:{status} } ) )
             })

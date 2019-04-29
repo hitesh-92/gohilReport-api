@@ -83,30 +83,52 @@ router.post('/', Authenticate, (req, res, next) => {
 
 router.post('/archive', (req, res) => {
     const log = console.log
-    let data = { archived: false }
+    let data = {}
 
     const { id } = req.body
 
     log('id:', id)
 
-    const updateArticle = async ({ _id }) => {
-        const body = {
-            archived: true,
-            archiveDate: Date.now()
-        }
-        return await ArticleLog.updateOne({_id}, {$set: body})
-    }
+    async function archive({archiveColumn, articleColumn}, archiveID){
+        //update 2 columns [articleColumn, archiveColumn]
+        //update article document
+        const id = mongoose.Types.ObjectId(archiveID)
 
-    const updateColumn = async ({_id, articleIDs}, archiveID) => {
-        return await Column.updateOne(
-            {_id},
-            {$set: {
-                articleIDs: [...articleIDs, mongoose.Types.ObjectId(archiveID)]
-            }
+        const column = new Promise(resolve => {
+            const {_id, articleIDs} = articleColumn
+            //splice out id from array
+            const articleIDs_filtered = articleIDs.map(_id => _id !== id)
+
+            resolve( Column.updateOne(
+                {_id},
+                {$set: { articleIDs: articleIDs_filtered }}
+            ) )
+
         })
+
+        const archive = new Promise(resolve => {
+            const {_id, articleIDs} = archiveColumn
+            resolve( Column.updateOne(
+                {_id},
+                {$set: { articleIDs: [...articleIDs, id] }}
+            ) )
+        })
+
+        const article = new Promise(resolve => {
+            const _id = archiveID
+            const body = {
+                archived: true,
+                archiveDate: Date.now()
+            }
+            resolve( ArticleLog.updateOne(
+                {_id},
+                {$set: body}
+            ) )
+        })
+        
+        return await Promise.all([column, archive, article])
     }
     
-
     //find article in column
         //edit article.archive to true, remove id from column
         //update article document
@@ -120,20 +142,20 @@ router.post('/archive', (req, res) => {
         //not using strict equality operator. find why not working with ObjectId
         data.articleColumn = columns.find( ({articleIDs}) => articleIDs.find(_id => _id == id) ) || null
         
-        return updateArticle(data.articleColumn)
+        return archive(data, id)
     })
-    .then( ({ nModified }) => {
-        log(`updateArticle: nMod:${nModified}`)
-        return updateColumn(data.archiveColumn, id)
+    .then( ([
+        {nModified: column},
+        {nModified: archive},
+        {nModified: article}
+    ]) => {
+        if (
+            column === 1 &&
+            archive === 1 &&
+            article === 1
+        ) res.status(200).json({archived: true})
     })
-    .then( ({ nModified }) => {
-        log(`updateColumn: nMod:${nModified}`)
-
-        data.archived = true
-        res.status(200).send(data)
-    })
-    .catch(err => console.error(`/article/archive: [${err}]`))
-
+    .catch(err => console.error(`ERROR: /article/archive [${err}]`))
 })
 
 

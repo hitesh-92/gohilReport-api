@@ -272,7 +272,7 @@ describe("article/ Routes", ()=>{
             return Column.findOne({title: 'archive'})
           })
           .then(column => {
-            assert.equal(column.articleIDs.length, 1)
+            assert.equal(column.articleIDs.length, 3)
           })
       })
 
