@@ -136,6 +136,7 @@ router.post('/archive', (req, res) => {
         {nModified: archive},
         {nModified: article}
     ]) => {
+        console.log(`\ncolumn:${column}\narchive:${archive}\narticle:${article}\n`)
         if (
             column === 1 &&
             archive === 1 &&

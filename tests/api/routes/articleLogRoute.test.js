@@ -2,7 +2,6 @@ const {app} = require('../../../app')
 
 const {  
   articles,
-  columns,
   users
 } = require('../../seedData')
 const ArticleLog = require('../../../api/models/articleLog')
@@ -18,7 +17,7 @@ describe("article/ Routes", ()=>{
     password: users[0].password
   }
 
-  describe.only("GET /:articleId", ()=>{
+  describe("GET /:articleId", ()=>{
 
     it('retrieve saved ArticleLog using _id', ()=>{
 
@@ -245,11 +244,11 @@ describe("article/ Routes", ()=>{
 
   })//DELETE
 
-  describe('/archive/ Routes', () => {
+  describe.only('/archive/ Routes', () => {
 
-    it('archive existing article', () => {
+    it.only('archive existing article', () => {
 
-      const archiveID = articles[3]._id
+      const archiveID = articles[2]._id
 
       const getTestData = async (id) => {
 
@@ -285,11 +284,25 @@ describe("article/ Routes", ()=>{
 
     })//
 
-    // it('not arhcive existing archive', () => {
-
+    it('not arhcive existing archive', () => {
       
+      const archiveID = articles[7]._id
 
-    // })//
+      return request(app)
+      .post('/user/login')
+      .send(userData)
+      .then(response => {
+        return request(app)
+        .post('/article/archive')
+        .set('x-auth', response.header['x-auth'])
+        .send({ id: archiveID })
+        .expect(400)
+        .then( ({body: {archived} }) => {
+          assert.equal(archived, false)
+        })
+      })
+
+    })//
 
   })//archive Routes
 
