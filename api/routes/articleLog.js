@@ -205,24 +205,24 @@ router.patch('/:articleId', (req, res) => {
 })
 
 
-router.delete('/:articleId', Authenticate, (req, res, next) => {
+router.delete('/', Authenticate, (req, res) => {
 
     //delete articleLog
     //success: {'deleted':true}
 
-    const articleID = req.params.articleId
+    const { id } = req.body
 
     let data = { deleted: false }
 
     // invalid ID
-    const validID = ObjectId.isValid(articleID)
+    const validID = ObjectId.isValid(id)
 
     if(!validID){
         data.error = 'Bad article id'
         return res.status(404).json(data)
     }
     
-    ArticleLog.findOneAndDelete({_id: articleID})
+    ArticleLog.findOneAndDelete({_id: id})
     .then(article => {
         let status = 200
 
