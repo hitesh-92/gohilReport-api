@@ -128,9 +128,9 @@ router.post('/archive', (req, res) => {
     .select('_id title articleIDs')
     .exec()
     .then( async (columns) => {
-        data.archiveColumn = columns.find(col => col.title === 'archive') || null
+        data.archiveColumn = columns.find(col => col.title === 'archive')
         //not using strict equality operator. find why not working with ObjectId
-        data.articleColumn = columns.find( ({articleIDs}) => articleIDs.find(_id => _id == id) ) || null
+        data.articleColumn = columns.find( ({articleIDs}) => articleIDs.find(_id => _id == id) )
         
         const {archived} = await ArticleLog.findOne({_id: id})
 
@@ -138,7 +138,7 @@ router.post('/archive', (req, res) => {
         return archive(data, id)
     })
     .then( ([
-        {nModified: column} ,
+        {nModified: column},
         {nModified: archive},
         {nModified: article}
     ] = [
@@ -146,7 +146,7 @@ router.post('/archive', (req, res) => {
         {archive: 0},
         {article: 0}
     ]) => {
-        
+        // console.log(`column:${column}. archive:${archive}. article:${article}\n`)
         if (
             column === 1 &&
             archive === 1 &&

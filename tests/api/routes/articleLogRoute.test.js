@@ -244,7 +244,7 @@ describe("article/ Routes", ()=>{
 
   })//DELETE
 
-  describe.only('/archive/ Routes', () => {
+  describe('/archive/ Routes', () => {
 
     it('archive existing article', () => {
 
@@ -295,35 +295,34 @@ describe("article/ Routes", ()=>{
 
     it('not archive existing archive', () => {
       
-      const archiveID = articles[7]._id
-      const route = '/article/archive'
-      let jwt;
+      const archiveID = articles[6]._id
 
-      return request(app)
-      .post('/user/login')
-      .send(userData)
-      .then( ({header}) => {
-        jwt = header['x-auth']
-        return request(app)
-        .post(route)
-        .set('x-auth', jwt)
-        .send({ id: archiveID })
-        .expect(200)
-        .then( ({body: {archived} }) => {
-          assert.equal(archived, true)
-
-          return request(app)
-          .post(route)
-          .send({id: archiveID})
-          .expect(400)
-          .then( ({body: {archived}}) => {
-            assert.equal(archived, false)
-          })
-        })
+      return ArticleLog.updateOne(
+        {_id: archiveID},
+        {$set: {
+          archived: true,
+          archiveDate: Date.now()
+        } }
+      )
+      .then(() => 
+        request(app)
+        .post('/user/login')
+        .send(userData)
+      )
+      .then( ({header}) => 
+        request(app)
+        .post('/article/archive')
+        .set('x-auth', header['x-auth'])
+        .send({id: archiveID})
+        .expect(400)
+      )
+      .then( ({body: {archived}}) => {
+        assert.equal(archived, false)
+      })
         
       })
 
-    })//
+    // })//
 
   })//archive Routes
 
