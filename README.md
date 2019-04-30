@@ -22,6 +22,7 @@ Method | Endpoint | Private | Request Body | Response
 --- | --- | --- | --- | ---
 GET | /:articleId | true | - | { article }
 POST | /article/ | true | { title, url } | { createdArticle, articleSaved }
+POST | /article/archive | - | { id } | { archived }
 PATCH | /article/:articleId | - | { title, url, createdAt } | { oldArticle, status }
 DELETE | /article/:articleId | true | - | { deleted, log }
 
