@@ -1,9 +1,5 @@
 const User = require('../../../api/models/user')
-const mongoose = require('mongoose')
-
-const ObjectId = mongoose.Types.ObjectId
-
-// const {ObjectId} = require('mongoose')
+const ObjectId = require('mongoose').Types.ObjectId
 
 const assert = require('assert')
 
@@ -15,7 +11,7 @@ describe('MODEL user', () => {
         const usrPasswrd = 'go0dPassword'
 
         const testUsr = new User({
-            _id: new mongoose.Types.ObjectId(),
+            _id: new ObjectId(),
             email: usrEmail,
             password: usrPasswrd
         })
