@@ -10,7 +10,7 @@ const Column = require('../../../api/models/column')
 const request = require('supertest')
 const assert = require('assert')
 
-describe.only("article/ Routes", ()=>{
+describe("article/ Routes", ()=>{
 
     describe("GET /:articleId", ()=>{
 
@@ -44,12 +44,12 @@ describe.only("article/ Routes", ()=>{
             })
         })
 
-    })//GET /:articleLogID
+    })
     
     describe("POST /", ()=>{
 
         it('create and save new article', ()=>{
-          // console.log(logInToken)
+          
           const articleData = {
               title: 'return201',
               url: 'www.201.com'
@@ -113,7 +113,7 @@ describe.only("article/ Routes", ()=>{
 
         })//
 
-    })//POST
+    })
 
     describe("PATCH /:articleId", ()=>{
 
@@ -196,7 +196,7 @@ describe.only("article/ Routes", ()=>{
 
       })
 
-    })//DELETE
+    })
 
     describe('/archive/ Routes', () => {
 
@@ -271,8 +271,6 @@ describe.only("article/ Routes", ()=>{
       })
 
 
-    })//archive Routes
+    })
 
-})//articleLog Route
-  
-  
+})
