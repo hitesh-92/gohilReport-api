@@ -70,23 +70,15 @@ describe("article/ Routes", ()=>{
       }
 
       return request(app)
-      .post('/user/login')
-      .send(userData)
-      .then( ({header}) => console.log(header['x-auth']) )
-
-      // logIn()
-      // .then(jwt => 
-      //   return request(app)
-      //   .post('/article/')
-      //   .set('x-auth', logInToken)
-      //   .send(articleData)
-      //   .expect(201)
-      // )
-      // .then( ({body: {articleSaved}}) => {
-      //   console.log(articleSaved)
-      //   assert.equal(articleSaved, true)
-      // })
-      // .catch(e => console.error('ERRRRRR'))
+      .post('/article/')
+      .set('x-auth', logInToken)
+      .send(articleData)
+      .expect(201)
+      .then( ({
+        body: {articleSaved}
+      }) => {
+        assert.equal(articleSaved, true)
+      })
 
     })//
   

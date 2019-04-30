@@ -53,13 +53,13 @@ const buildColumnData = (data) => {
 const buildUserData = ([userOne, userTwo]) => {
 
     const first = new User({
-        _id: new ObjectId(),
+        _id: ObjectId( userOne._id ),
         createdAt: Date.now(),
         email: userOne.email,
         password: userOne.password,
         tokens: [
             {
-                _id: ObjectId(userOne._id),
+                _id: new ObjectId(),
                 access: 'auth',
                 token: userOne.tokens[0].token
             }

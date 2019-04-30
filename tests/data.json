@@ -49,9 +49,8 @@
             "tokens": [
                 {
                     "access":"auth",
-                    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjVjYzg2NzJjNGVkYWI5NDM0YzViZGU1OSIsImFjY2VzcyI6ImF1dGgifSwiaWF0IjoxNTU2NjM3NDg3fQ.HDHOhWFxibG94-wl4yjdhg3-ztJMTiSvBSCmitZAwDw"
+                    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjVjYzg2NTc0YzI3N2M2M2I2MGI1NGY0YyIsImFjY2VzcyI6ImF1dGgifSwiaWF0IjoxNTU2NjM3OTUyfQ.Jqgfw7ipPZD_bp55nd7VbYf3CBEmzpgSI6L8hQ_E6Ww"
                 }
-
             ]
         },
         {
