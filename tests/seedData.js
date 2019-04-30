@@ -40,15 +40,41 @@ const buildColumnData = (data) => {
     return columnNames.map( (title, i) => buildSingleColumn( title, columnData[i] ) )
 };
 
-const buildUserData = (data) => data.map( ({
-    email,
-    password
-}) => new User({
-    _id: new ObjectId(),
-    createdAt: Date.now(),
-    email,
-    password
-}))
+// const buildUserData = (data) => data.map( ({
+//     email,
+//     password
+// }) => new User({
+//     _id: new ObjectId(),
+//     createdAt: Date.now(),
+//     email,
+//     password
+// }))
+
+const buildUserData = ([userOne, userTwo]) => {
+
+    const first = new User({
+        _id: new ObjectId(),
+        createdAt: Date.now(),
+        email: userOne.email,
+        password: userOne.password,
+        tokens: [
+            {
+                _id: new ObjectId(),
+                access: 'auth',
+                token: userOne.tokens.token
+            }
+        ]
+    })
+
+    const second = new User({
+        _id: new ObjectId(),
+        createdAt: Date.now(),
+        email: userTwo.email,
+        password: userTwo.password
+    })
+
+    return [first, second]
+}
 
 /* 
     BUILD DATA

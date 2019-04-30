@@ -184,6 +184,7 @@ describe("article/ Routes", ()=>{
       .post('/user/login')
       .send(userData)
       .then(response => {
+        console.log(response.header['x-auth'])
         return request(app)
         .delete(`/article/${hexID}`)
         .set('x-auth', response.header['x-auth'])

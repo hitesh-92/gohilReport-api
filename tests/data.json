@@ -44,7 +44,14 @@
     "userData": [
         {
             "email": "one@one.co",
-            "password": "charchar0n3"
+            "password": "charchar0n3",
+            "tokens": [
+                {
+                    "access":"auth",
+                    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjVjYzdjZTUxYjcxNjE5M2U4ODgyODQxOCIsImFjY2VzcyI6ImF1dGgifSwiaWF0IjoxNTU2NTk4MzU3fQ.PuhpBP0EW3v_awk0VzXOxUhS8SQnLmlw0ma1UgMhZ50"
+                }
+
+            ]
         },
         {
             "email": "two@two.co",
