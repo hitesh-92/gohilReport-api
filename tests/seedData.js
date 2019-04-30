@@ -5,11 +5,15 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const Data = require('./data.json')
 
 
-const buildSingleArticle = (data) => new ArticleLog({
+const buildSingleArticle = ({
+    title,
+    url,
+    createdAt
+}) => new ArticleLog({
     _id: new ObjectId(),
-    title: data.title,
-    url: data.url,
-    createdAt: data.createdAt
+    title,
+    url,
+    createdAt
 })
 
 const buildArticleData = (articleData) => articleData.map(data => buildSingleArticle(data))
@@ -36,11 +40,14 @@ const buildColumnData = (data) => {
     return columnNames.map( (title, i) => buildSingleColumn( title, columnData[i] ) )
 };
 
-const buildUserData = (data) => data.map(data => new User({
+const buildUserData = (data) => data.map( ({
+    email,
+    password
+}) => new User({
     _id: new ObjectId(),
     createdAt: Date.now(),
-    email: data.email,
-    password: data.password
+    email,
+    password
 }))
 
 /* 

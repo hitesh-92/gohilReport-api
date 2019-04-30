@@ -7,7 +7,6 @@ const articleLogSchema = mongoose.Schema({
     title: {
         type: String,
         required: true,
-
     },
     url: {
         type: String,
