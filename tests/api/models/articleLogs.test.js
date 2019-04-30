@@ -66,10 +66,10 @@ describe("MODEL articleLog", ()=>{
             let _articles = articles
             _articles.pop()
 
-            const editArticle = (log, newStatus) => {
+            const editArticle = ({_id}, newStatus) => {
 
                 let updatedLog = {
-                    _id: log._id,
+                    _id,
                     status: newStatus
                 }
 
@@ -85,25 +85,24 @@ describe("MODEL articleLog", ()=>{
             return _articles.map( (log, index) => editArticle(log, status[index]) )
         }
 
-        const initArticleUpdate = logs => {
-            requests = logs.map(log => {
+        const initArticleUpdate = async (logs) => {
+             const requests = logs.map( ({
+                _id, status, createdAt
+            }) => {
                 return new Promise((resolve) => {
                     resolve(ArticleLog.updateOne( 
-                        {_id: log._id},
-                        {$set: 
-                            { createdAt: log.createdAt, status: log.status }
-                        }
+                        { _id },
+                        {$set: {createdAt, status} }
                     ))
                 })
             })
-            return async () => await Promise.all(requests)
+            return await Promise.all(requests)
         }
 
         const articleData = buildUpdateData()
         const articleIDs = articleData.map(log => mongoose.Types.ObjectId(log._id))
 
-        const updateArticles = initArticleUpdate(articleData)
-        return updateArticles()
+        return initArticleUpdate(articleData)
         .then(() => ArticleLog.updateStatus())
         .then(() => ArticleLog.find( {'_id': {$in: articleIDs}} ) )
         .then(data => {

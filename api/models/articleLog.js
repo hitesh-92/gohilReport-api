@@ -34,9 +34,8 @@ articleLogSchema.statics.updateStatus = function(){
     
     var ArticleLog = this;
 
-    const checkStatus = (log) => {
+    const checkStatus = ({_id, status, createdAt}) => {
 
-        const { _id, createdAt, status } = log
         let newStatus; //will be either Number or Boolean
 
         const compose = (fnA, fnB) => (d1, d2) => fnB(fnA(d1, d2))
@@ -55,7 +54,6 @@ articleLogSchema.statics.updateStatus = function(){
     }
 
     const initUpdate = async (logs) => {
-        let reqs = []
 
         const updateQuery = ({ _id, status }) => {
             return new Promise((resolve) => {
@@ -63,13 +61,12 @@ articleLogSchema.statics.updateStatus = function(){
             })
         }
         
-        logs.forEach(log => {
-            //checkStatus function outside
+        const requests = logs.map(log => {
             const statusChange = checkStatus(log)
-            if ( statusChange !== false ) reqs.push(updateQuery(statusChange))
+            if ( statusChange !== false ) return updateQuery(statusChange)
         })
 
-        await Promise.all(reqs)
+        return await Promise.all(requests)
     }
     
     return new Promise((resolve, reject) => {
