@@ -4,7 +4,6 @@ const mongoose = require('mongoose')
 const ArticleLog = require('../../../api/models/articleLog')
 const { articles } = require('../../seedData')
 
-// const request = require('supertest')
 const assert = require('assert')
 
 
