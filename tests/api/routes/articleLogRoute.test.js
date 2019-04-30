@@ -246,7 +246,7 @@ describe("article/ Routes", ()=>{
 
   describe.only('/archive/ Routes', () => {
 
-    it.only('archive existing article', () => {
+    it('archive existing article', () => {
 
       const archiveID = articles[2]._id
 
@@ -293,22 +293,34 @@ describe("article/ Routes", ()=>{
 
     })//
 
-    it('not arhcive existing archive', () => {
+    it('not archive existing archive', () => {
       
       const archiveID = articles[7]._id
+      const route = '/article/archive'
+      let jwt;
 
       return request(app)
       .post('/user/login')
       .send(userData)
-      .then(response => {
+      .then( ({header}) => {
+        jwt = header['x-auth']
         return request(app)
-        .post('/article/archive')
-        .set('x-auth', response.header['x-auth'])
+        .post(route)
+        .set('x-auth', jwt)
         .send({ id: archiveID })
-        .expect(400)
+        .expect(200)
         .then( ({body: {archived} }) => {
-          assert.equal(archived, false)
+          assert.equal(archived, true)
+
+          return request(app)
+          .post(route)
+          .send({id: archiveID})
+          .expect(400)
+          .then( ({body: {archived}}) => {
+            assert.equal(archived, false)
+          })
         })
+        
       })
 
     })//

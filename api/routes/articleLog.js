@@ -81,7 +81,7 @@ router.post('/archive', (req, res) => {
 
     let data = {}
     const { id } = req.body
-    console.log(id)
+    
     async function archive(
     {
         archiveColumn,
@@ -95,7 +95,7 @@ router.post('/archive', (req, res) => {
         const column = new Promise(resolve => {
             const {_id, articleIDs} = articleColumn
             const filteredIDs = articleIDs.filter(_id => String(_id) !== String(archiveID))
-            console.log(filteredIDs)
+
             resolve( Column.updateOne(
                 {_id},
                 {$set: { articleIDs: filteredIDs }}
@@ -127,24 +127,34 @@ router.post('/archive', (req, res) => {
     Column.find({})
     .select('_id title articleIDs')
     .exec()
-    .then( (columns) => {
+    .then( async (columns) => {
         data.archiveColumn = columns.find(col => col.title === 'archive') || null
         //not using strict equality operator. find why not working with ObjectId
         data.articleColumn = columns.find( ({articleIDs}) => articleIDs.find(_id => _id == id) ) || null
+        
+        const {archived} = await ArticleLog.findOne({_id: id})
+
+        if (archived) return
         return archive(data, id)
     })
     .then( ([
-        {nModified: column},
+        {nModified: column} ,
         {nModified: archive},
         {nModified: article}
+    ] = [
+        {column: 0},
+        {archive: 0},
+        {article: 0}
     ]) => {
+        
         if (
             column === 1 &&
             archive === 1 &&
             article === 1
         ) res.status(200).json({archived: true})
+        else res.status(400).json({archived: false})
     })
-    .catch(err => console.error(`ERROR: /article/archive [${err}]`))
+    .catch(err => res.status(500).json({error: err}) )
 })
 
 
