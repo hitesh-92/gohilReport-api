@@ -20,11 +20,11 @@ describe("user/ Routes", () => {
             .post('/user/signup/')
             .send(userData)
             .expect(200)
-            .then(response => {
-                const body = response.body
-
-                assert.equal(body.email, userData.email)
-                assert.equal(body.added, true)
+            .then( ({
+                body:   {email, added}
+            }) => {
+                assert.equal(email, userData.email)
+                assert.equal(added, true)
             })
 
         })//
@@ -40,10 +40,10 @@ describe("user/ Routes", () => {
             .post('/user/signup/')
             .send(userData)
             .expect(400)
-            .then(response => {
-                const body = response.body
-                
-                assert.equal(body.added, false)
+            .then( ({
+                body:   {added}
+            }) => {
+                assert.equal(added, false)
             })
 
         })//
@@ -62,12 +62,12 @@ describe("user/ Routes", () => {
             .post('/user/login')
             .send(testUser)
             .expect(200)
-            .then(response => {
-                const header = response.header
-                const body = response.body
-
+            .then( ({
+                header,
+                body:   {loggedIn}
+            }) => {
                 assert.equal(header['x-auth'].length > 15, true)
-                assert.equal(body.loggedIn, true)
+                assert.equal(loggedIn, true)
             })
 
         })//
@@ -83,9 +83,10 @@ describe("user/ Routes", () => {
             .post('/user/login')
             .send(userData)
             .expect(400)
-            .then(response => {
-                const body = response.body
-                assert.equal(body.loggedIn, false)
+            .then( ({
+                body: {loggedIn}
+            }) => {
+                assert.equal(loggedIn, false)
             })
 
         })//
