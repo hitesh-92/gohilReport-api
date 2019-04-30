@@ -59,9 +59,9 @@ const buildUserData = ([userOne, userTwo]) => {
         password: userOne.password,
         tokens: [
             {
-                _id: new ObjectId(),
+                _id: ObjectId(userOne._id),
                 access: 'auth',
-                token: userOne.tokens.token
+                token: userOne.tokens[0].token
             }
         ]
     })
@@ -118,5 +118,6 @@ module.exports = {
     testSeed, 
     testSeedUsers,
     buildArticleData,
-    buildColumnData
+    buildColumnData,
+    logInToken: Data.userData[0].tokens[0].token
 };

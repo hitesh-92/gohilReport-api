@@ -2,7 +2,8 @@ const {app} = require('../../../app')
 
 const {  
   articles,
-  users
+  users,
+  logInToken
 } = require('../../seedData')
 const ArticleLog = require('../../../api/models/articleLog')
 const Column = require('../../../api/models/column')
@@ -17,13 +18,13 @@ describe("article/ Routes", ()=>{
     password: users[0].password
   }
 
-  const logIn = async () => {
-    const {header} = await request(app)
-    .post('/user/login')
-    .send(userData)
-    console.log(header['x-auth'])
-    return header['x-auth']
-  }
+  // const logIn = async () => {
+  //   const {header} = await request(app)
+  //   .post('/user/login')
+  //   .send(userData)
+  //   console.log(header['x-auth'])
+  //   return header['x-auth']
+  // }
 
   describe("GET /:articleId", ()=>{
 
@@ -61,25 +62,30 @@ describe("article/ Routes", ()=>{
   
   describe("POST /", ()=>{
 
-    it.skip('create and save new article', ()=>{
-
+    it.only('create and save new article', ()=>{
+      console.log(logInToken)
       const articleData = {
         title: 'return201',
         url: 'www.201.com'
       }
 
-      logIn()
-      .then(jwt => 
-        request(app)
-        .post('/article/')
-        .set('x-auth', jwt)
-        .send(articleData)
-        .expect(201)
-      )
-      .then( ({body: {articleSaved}}) => {
-        console.log(articleSaved)
-        assert.equal(articleSaved, true)
-      })
+      return request(app)
+      .post('/user/login')
+      .send(userData)
+      .then( ({header}) => console.log(header['x-auth']) )
+
+      // logIn()
+      // .then(jwt => 
+      //   return request(app)
+      //   .post('/article/')
+      //   .set('x-auth', logInToken)
+      //   .send(articleData)
+      //   .expect(201)
+      // )
+      // .then( ({body: {articleSaved}}) => {
+      //   console.log(articleSaved)
+      //   assert.equal(articleSaved, true)
+      // })
       // .catch(e => console.error('ERRRRRR'))
 
     })//

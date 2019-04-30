@@ -64,7 +64,7 @@ UserSchema.methods.createAuthToken = function(){
             _id: user._id.toHexString(),
             access
         },
-        exp: Math.floor(Date.now() / 1000) + (60 * 15)
+        // exp: Math.floor(Date.now() / 1000) + (60 * 15)
     };
 
     const token = jwt.sign(tokenData, process.env.xJWT).toString()
