@@ -24,6 +24,8 @@ const columnSchema = mongoose.Schema({
         type: Object,
         required: true
     }
+}, {
+    timestamps: true
 })
 
 module.exports = mongoose.model('column', columnSchema)
