@@ -42,23 +42,23 @@ Requiremnts:
 * NodeJS
 * MongoDB + client
 
-config file: ```server/config.json```
+add config file: ```server/config.json```
 ```json
 {
     "development": {
       "PORT": 8000,
       "MONGODB_URI": "mongodb://localhost:27017/gReport",
-      "xJWT": "jwtSecret"
+      "jwtSecret": "jwtSecret"
     },
     "test": {
       "PORT": 8080,
       "MONGODB_URI": "mongodb://localhost:27017/gReportTest",
-      "xJWT": "jwtSecretTest"
+      "jwtSecret": "jwtSecretTest"
 }
 ```
 
-Run local web server:
-```bash
+Run local server:
+```
 node start
 ```
 
@@ -67,4 +67,3 @@ node start
 ##### TODO
 - [ ] Complete frontend for management system with Angular ( priority )
 - [ ] User validation / tests for jwt
-- [ ] Add in ArticleLog.updateStatus after save

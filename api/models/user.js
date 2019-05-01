@@ -66,7 +66,7 @@ UserSchema.methods.createAuthToken = function(){
         }
     };
 
-    const token = jwt.sign(tokenData, process.env.xJWT, {expiresIn: '1h'}).toString()
+    const token = jwt.sign(tokenData, process.env.jwtSecret, {expiresIn: '1h'}).toString()
 
     user.tokens = user.tokens.concat({access, token})
 
@@ -96,7 +96,7 @@ UserSchema.statics.findByToken = function(token){
     let decoded;
 
     try {
-        decoded = jwt.verify(token, process.env.xJWT)
+        decoded = jwt.verify(token, process.env.jwtSecret)
     }
     catch (err)
     {

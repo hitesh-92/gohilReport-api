@@ -8,14 +8,8 @@ const options = {
 }
 
 mongoose.Promise = global.Promise;
-
 mongoose.connect(db_uri, options);
 
-const connect = () => mongoose.connect(db_uri, options)
+// mongoose.set('debug', false)
 
-/*
-  TESTING
-*/
-mongoose.set('debug', false)
-
-module.exports = { mongoose, connect }
+module.exports = { mongoose }
