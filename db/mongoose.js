@@ -11,9 +11,11 @@ mongoose.Promise = global.Promise;
 
 mongoose.connect(db_uri, options);
 
+const connect = () => mongoose.connect(db_uri, options)
+
 /*
   TESTING
 */
 mongoose.set('debug', false)
 
-module.exports = { mongoose }
+module.exports = { mongoose, connect }

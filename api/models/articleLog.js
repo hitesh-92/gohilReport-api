@@ -57,7 +57,11 @@ articleLogSchema.statics.updateStatus = function(){
 
         const updateQuery = ({ _id, status }) => {
             return new Promise((resolve) => {
-                resolve( ArticleLog.updateOne( {_id}, {$set:{status} } ) )
+                resolve( 
+                    ArticleLog
+                    .updateOne( {_id}, {$set:{status} } )
+                    .exec() 
+                )
             })
         }
         
@@ -71,6 +75,7 @@ articleLogSchema.statics.updateStatus = function(){
     
     return new Promise((resolve, reject) => {
         ArticleLog.find( {'status': {$lt: 3}} )
+        .exec()
         .then( data => initUpdate(data) )
         .then( data => resolve(data) )
         .catch(err => reject(err) )

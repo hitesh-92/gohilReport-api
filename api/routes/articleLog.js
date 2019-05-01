@@ -26,6 +26,7 @@ router.get('/:articleId', (req, res) => {
     const queryID = ObjectId.createFromHexString(requestId)
 
     ArticleLog.findById(queryID)
+    .exec()
     .then(log => {
         let status = 200
 

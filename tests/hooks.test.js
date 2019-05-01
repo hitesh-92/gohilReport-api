@@ -11,12 +11,13 @@ const {
     users
 } = require('./seedData')
 
-//DELETE DATA
-beforeEach( () => testDelete(ArticleLog) )
-beforeEach( () => testDelete(User) )
-beforeEach( () => testDelete(Column) )
 
-//SEED DATA
-beforeEach( () => testSeed(ArticleLog, articles) )
-beforeEach( () => testSeed(Column, columns) )
-beforeEach( () => testSeedUsers(users) )
+// Delete all collections
+beforeEach( async () => await testDelete(ArticleLog) )
+beforeEach( async () => await testDelete(User) )
+beforeEach( async () => await testDelete(Column) )
+
+// Seed db
+beforeEach( async () => await testSeed(ArticleLog, articles) )
+beforeEach( async () => await testSeed(Column, columns) )
+beforeEach( async () => await testSeedUsers(users) )
