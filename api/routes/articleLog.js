@@ -78,7 +78,7 @@ router.post('/', Authenticate, (req, res, next) => {
     })
 })
 
-router.post('/archive', (req, res) => {
+router.post('/archive', Authenticate, (req, res) => {
 
     let data = {}
     const { id } = req.body
@@ -159,7 +159,7 @@ router.post('/archive', (req, res) => {
 })
 
 
-router.patch('/:articleId', (req, res) => {
+router.patch('/:articleId', Authenticate, (req, res) => {
 
     let data = {}
 
