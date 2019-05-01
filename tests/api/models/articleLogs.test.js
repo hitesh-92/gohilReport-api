@@ -9,7 +9,7 @@ const assert = require('assert')
 
 describe.only("MODEL articleLog", ()=>{
 
-    it.only('create new log with 4 properties', async ()=>{
+    it('create new log with 4 properties', async ()=>{
 
         const body = {
             _id: new mongoose.Types.ObjectId(),
@@ -29,16 +29,16 @@ describe.only("MODEL articleLog", ()=>{
             updatedAt
         } = await article.save()
 
-        const time = moment().subtract(1, 'days').format('x')
+        // const time = moment().subtract(1, 'days').format('x')
 
-        const x = await ArticleLog.insertMany({
-            _id:mongoose.Types.ObjectId(),
-            title: 'hello there will be todya',
-            url: 'www.klsdkas.com',
-            createdAt: time
-        })
-        console.log(time)
-        console.log(x)
+        // const x = await ArticleLog.insertMany({
+        //     _id:mongoose.Types.ObjectId(),
+        //     title: 'hello there will be todya',
+        //     url: 'www.klsdkas.com',
+        //     createdAt: time
+        // })
+        // console.log(time)
+        // console.log(x)
 
         assert.equal(title, body.title)
         assert.equal(typeof _id, 'object')
@@ -72,7 +72,7 @@ describe.only("MODEL articleLog", ()=>{
     //  null: archived
 
 
-    it('updateLogs method updates articles status', () => {
+    it.only('updateLogs method updates articles status', () => {
         // testTime > 1s
         
         const buildUpdateData = () => {
