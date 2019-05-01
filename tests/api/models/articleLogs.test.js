@@ -7,15 +7,14 @@ const { articles } = require('../../seedData')
 const assert = require('assert')
 
 
-describe.only("MODEL articleLog", ()=>{
+describe("MODEL articleLog", ()=>{
 
     it('create new log with 4 properties', async ()=>{
 
         const body = {
             _id: new mongoose.Types.ObjectId(),
             title: 'createLog',
-            url: 'www.has4props.com',
-            // createdAt: time
+            url: 'www.has4props.com'
         }
 
         const article =  new ArticleLog(body);
@@ -28,17 +27,6 @@ describe.only("MODEL articleLog", ()=>{
             createdAt,
             updatedAt
         } = await article.save()
-
-        // const time = moment().subtract(1, 'days').format('x')
-
-        // const x = await ArticleLog.insertMany({
-        //     _id:mongoose.Types.ObjectId(),
-        //     title: 'hello there will be todya',
-        //     url: 'www.klsdkas.com',
-        //     createdAt: time
-        // })
-        // console.log(time)
-        // console.log(x)
 
         assert.equal(title, body.title)
         assert.equal(typeof _id, 'object')
@@ -63,70 +51,63 @@ describe.only("MODEL articleLog", ()=>{
     //  3: 6 months      white
     //  
     //  #re-write
-    //  -1,0 ++ = 1 month
+    //  -1 = manual edit to 0
+    //  0 ++ = 1 month
     //  1 ++ = 3months
     //  2 ++ = 6months
     //  3 nil
     // 
     //  ADD LATER
-    //  null: archived
+    //  10: archived
 
 
-    it.only('updateLogs method updates articles status', () => {
-        // testTime > 1s
+    it('updateLogs method updates articles status', () => {
         
         const buildUpdateData = () => {
-            //return array of articles with status&&createdAt modified
-            const status = [-1, 0, 1, 2, 3]
 
-            let _articles = articles
-            _articles.pop()
+            const status = [0, 1, 2, 3]
+            const monthIncrement = [1 , 3, 6, 0]
+            const data = [
+                { title: 'firstPost', url:'www.oneee.com' },
+                { title: 'secondPost', url:'www.twoo.com' },
+                { title: 'thirdPost', url:'www.treee.com' },
+                { title: 'fourthPost', url:'www.fourrr.com' }
+            ]
 
-            const editArticle = ({_id}, newStatus) => {
+            const createArticle = ( {title, url}, status, months ) => {
 
-                let updatedLog = {
-                    _id,
-                    status: newStatus
-                }
-
-                const update = months => moment().subtract(months,'months').subtract(1, 'hours').format('x')
-
-                if ( newStatus===-1 || newStatus===0 ) updatedLog.createdAt = update(1)
-                else if ( newStatus===1 ) updatedLog.createdAt = update(3)
-                else if ( newStatus===2 ) updatedLog.createdAt = update(6)
-                else if ( newStatus===3 ) updatedLog.createdAt = update(7)
-
-                return updatedLog
+                const time = moment().subtract(months, 'months').subtract(1, 'days')
+                return new ArticleLog({
+                    _id: mongoose.Types.ObjectId(),
+                    title,
+                    url,
+                    status,
+                    createdAt: time
+                })
             }
-            return _articles.map( (log, index) => editArticle(log, status[index]) )
+
+            return data.map( (log, i) => createArticle(log, status[i], monthIncrement[i]) )
         }
 
-        const initArticleUpdate = async (logs) => {
-             const requests = logs.map( ({
-                _id, status, createdAt
-            }) => {
-                return new Promise((resolve) => {
-                    resolve(ArticleLog.updateOne( 
-                        { _id },
-                        {$set: {createdAt, status} }
-                    ))
-                })
-            })
-            return await Promise.all(requests)
+        const saveArticles = async (logs) => {
+            for(log of logs) await log.save()
         }
 
         const articleData = buildUpdateData()
-        const articleIDs = articleData.map(log => mongoose.Types.ObjectId(log._id))
+        const articleIDs = articleData.map(log => log._id)
 
-        return initArticleUpdate(articleData)
+        return saveArticles(articleData)
         .then(() => ArticleLog.updateStatus())
-        .then(() => ArticleLog.find( {'_id': {$in: articleIDs}} ) )
-        .then(data => {
+        .then( async () => {
+            const data = await ArticleLog
+            .find( {'_id': {$in: articleIDs}} )
+            .select('status')
+            .exec()
+
             assert.equal(data[0].status, 1)
-            assert.equal(data[1].status, 1)
-            assert.equal(data[2].status, 2)
+            assert.equal(data[1].status, 2)
+            assert.equal(data[2].status, 3)
             assert.equal(data[3].status, 3)
-            assert.equal(data[4].status, 3)
         })
     })
 

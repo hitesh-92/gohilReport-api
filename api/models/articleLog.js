@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const moment = require('moment')
 
-//Schema for each article log
 const articleLogSchema = mongoose.Schema({
     _id: mongoose.Types.ObjectId,
     title: {
@@ -13,10 +12,6 @@ const articleLogSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-    // createdAt: {
-    //     type: String,
-    //     default: new Date().getTime()
-    // },
     status: {
         type: Number
     },
@@ -41,7 +36,7 @@ articleLogSchema.statics.updateStatus = function(){
         let newStatus; //will be either Number or Boolean
 
         const compose = (fnA, fnB) => (d1, d2) => fnB(fnA(d1, d2))
-        const nextUpdate = (time, months) => moment(parseInt(time)).add(months, 'months')
+        const nextUpdate = (time, months) => moment(time).add(months, 'months')
         const toIncrease = nextUpdate => moment().isAfter(nextUpdate)
 
         const processUpdateCheck = compose(nextUpdate, toIncrease)
@@ -71,21 +66,19 @@ articleLogSchema.statics.updateStatus = function(){
             if ( statusChange !== false ) return updateQuery(statusChange)
         })
 
-        
-        //  Instead of using promise array
-        //  Use async generator
-
         return await Promise.all(requests)
     }
     
     return new Promise((resolve, reject) => {
         ArticleLog.find( {'status': {$lt: 3}} )
+        .select('_id status createdAt')
         .exec()
-        .then( data => initUpdate(data) )
-        .then( data => resolve(data) )
-        .catch(err => reject(err) )
+        .then( async (toUpdate) => {
+            const updated = await initUpdate(toUpdate)
+            resolve({toUpdate, updated})
+        })
+        .catch(error => reject(error))
     })
 }
-
 
 module.exports =  mongoose.model('articleLog', articleLogSchema)
