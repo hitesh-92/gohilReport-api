@@ -7,27 +7,44 @@ const { articles } = require('../../seedData')
 const assert = require('assert')
 
 
-describe("MODEL articleLog", ()=>{
+describe.only("MODEL articleLog", ()=>{
 
-    it('create new log with 4 properties', ()=>{
+    it.only('create new log with 4 properties', async ()=>{
 
-        const title = 'createLog'
-        const url = 'www.has4props.com'
-
-        const article =  new ArticleLog({
+        const body = {
             _id: new mongoose.Types.ObjectId(),
+            title: 'createLog',
+            url: 'www.has4props.com',
+            // createdAt: time
+        }
+
+        const article =  new ArticleLog(body);
+
+        const {
+            _id,
             title,
-            url
-        });
+            url,
+            archived,
+            createdAt,
+            updatedAt
+        } = await article.save()
 
-        assert.equal(article.title, title)
-        assert.equal(article.url, url)
-        assert.equal(article.createdAt.length, 13)
-        assert.equal(typeof article.title, 'string')
-        assert.equal(typeof article.url, 'string')
-        assert.equal(typeof article.createdAt, 'string')
-        assert.equal(typeof article._id, 'object')
+        const time = moment().subtract(1, 'days').format('x')
 
+        const x = await ArticleLog.insertMany({
+            _id:mongoose.Types.ObjectId(),
+            title: 'hello there will be todya',
+            url: 'www.klsdkas.com',
+            createdAt: time
+        })
+        console.log(time)
+        console.log(x)
+
+        assert.equal(title, body.title)
+        assert.equal(typeof _id, 'object')
+        assert.equal(typeof createdAt, 'object')
+        assert.equal(typeof updatedAt, 'object')
+        assert.equal(archived, false)
     })//
 
     

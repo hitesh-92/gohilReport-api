@@ -13,10 +13,10 @@ const articleLogSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-    createdAt: {
-        type: String,
-        default: new Date().getTime()
-    },
+    // createdAt: {
+    //     type: String,
+    //     default: new Date().getTime()
+    // },
     status: {
         type: Number
     },
@@ -28,6 +28,8 @@ const articleLogSchema = mongoose.Schema({
         type: String,
         default: null
     }
+},  {
+    timestamps: true
 })
 
 articleLogSchema.statics.updateStatus = function(){
@@ -60,7 +62,6 @@ articleLogSchema.statics.updateStatus = function(){
                 resolve( 
                     ArticleLog
                     .updateOne( {_id}, {$set:{status} } )
-                    .exec() 
                 )
             })
         }
@@ -69,6 +70,10 @@ articleLogSchema.statics.updateStatus = function(){
             const statusChange = checkStatus(log)
             if ( statusChange !== false ) return updateQuery(statusChange)
         })
+
+        
+        //  Instead of using promise array
+        //  Use async generator
 
         return await Promise.all(requests)
     }
