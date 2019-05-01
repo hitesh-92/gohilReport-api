@@ -7,7 +7,6 @@ const mongoose = require('mongoose')
 
 // const Authenticate = require('../middleware/auth')
 
-
 router.post('/signup', (req,res) => {
     
     let data = { 
@@ -34,7 +33,6 @@ router.post('/signup', (req,res) => {
 
 });
 
-
 router.post('/login', (req,res) => {
 
     let data = { 
@@ -42,26 +40,35 @@ router.post('/login', (req,res) => {
         loggedIn: false
     }
 
-    User.findByCredentials(data.email, req.body.password)
-    .then(user => {
-        if(!user) return false
-        return user.createAuthToken()
-    })
-    .then(token => {
+    const findUser = async (email, password) => {
+        const user = await User.findByCredentials(email, password)
+        if ( user === false ) return false
+        else return user
+    }
 
-        if (!token || token === null){
+    findUser( data.email, req.body.password )
+    .then( async (user) => {
+
+        if (user === false) {
+            data.message = 'Unable to find user'
             return res.status(404).send(data)
         }
-        else data.loggedIn = true
 
-        res.status(200)
-        .header('x-auth', token)
-        .send(data)
-    })
-    .catch(err => {
-        data.error = true
+        const token = await user.createAuthToken()
+
+        if (!token) {
+            data.message = 'Unable to authenticate user'
+            res.status(401).send(data)
+        } else {
+            data.loggedIn = true
+            res.status(200).send(data)
+        }
+    })   
+    .catch(error => {
+        data.error = error
+        data.message = 'Unable to login. Contact'
         res.status(400).send(data)
-    })
+    }) 
 
 })
 

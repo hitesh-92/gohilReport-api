@@ -57,21 +57,20 @@ UserSchema.pre('save', function(next){
 UserSchema.methods.createAuthToken = function(){
 
     var user = this;
-    const access = 'auth';
+    const access = 'auth'
 
     const tokenData = {
         data: {
             _id: user._id.toHexString(),
             access
-        },
-        // exp: Math.floor(Date.now() / 1000) + (60 * 15)
+        }
     };
 
-    const token = jwt.sign(tokenData, process.env.xJWT).toString()
+    const token = jwt.sign(tokenData, process.env.xJWT, {expiresIn: '1h'}).toString()
 
     user.tokens = user.tokens.concat({access, token})
 
-    return user.save().then(() => { return token })
+    return user.save().then(() => token)
 };
 
 UserSchema.statics.findByCredentials = function(email, password){
