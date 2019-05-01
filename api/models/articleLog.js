@@ -21,6 +21,11 @@ const articleLogSchema = mongoose.Schema({
     archiveDate: {
         type: String,
         default: null
+    },
+    column: {
+        type: mongoose.Types.ObjectId,
+        required: true,
+        ref: 'column'
     }
 },  {
     timestamps: true

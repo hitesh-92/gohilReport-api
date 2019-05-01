@@ -9,7 +9,7 @@ const assert = require('assert')
 
 describe("MODEL articleLog", ()=>{
 
-    it('create new log with 4 properties', async ()=>{
+    it.only('create new log with 4 properties', async ()=>{
 
         const body = {
             _id: new mongoose.Types.ObjectId(),
@@ -25,7 +25,8 @@ describe("MODEL articleLog", ()=>{
             url,
             archived,
             createdAt,
-            updatedAt
+            updatedAt,
+            column
         } = await article.save()
 
         assert.equal(title, body.title)
@@ -33,6 +34,7 @@ describe("MODEL articleLog", ()=>{
         assert.equal(typeof createdAt, 'object')
         assert.equal(typeof updatedAt, 'object')
         assert.equal(archived, false)
+        assert.equal(typeof column._id, 'object')
     })//
 
     

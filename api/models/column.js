@@ -1,12 +1,5 @@
 const mongoose = require('mongoose')
 
-// Schema for columns
-// need 3 columns in total
-// needs name of column
-// needs a last updated value
-// needs to hold articles in order
-// article IDs to be held in array
-
 const columnSchema = mongoose.Schema({
     _id: mongoose.Types.ObjectId,
     title: {
