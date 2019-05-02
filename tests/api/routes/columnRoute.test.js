@@ -16,7 +16,7 @@ const Column = require('../../../api/models/column')
 const request = require('supertest')
 const assert = require('assert')
 
-describe.only('column/ Routes', () => {
+describe('column/ Routes', () => {
 
     describe('GET /', () => {
         // var start = Date.now()
@@ -74,7 +74,7 @@ describe.only('column/ Routes', () => {
 
     })//GET '/:column'
 
-    describe.only('POST /', () => {
+    describe('POST /', () => {
 
         it('save new column and find it', () => {
 
@@ -139,82 +139,75 @@ describe.only('column/ Routes', () => {
 
     describe('PATCH /', () => {
         
-        it('update articleIDs of first seed column', () => {
-
-            //create new articlesIDs to update
-            const articleIDsData = [
-                {title: 'one1', url: 'http://one1.com'},
-                {title: 'two2', url: 'http://two2.com'},
-                {title: 'three3', url: 'http://three3.com'},
-                {title: 'four4', url: 'http://four4.com'}
-            ]
-            const testArticles = buildArticleData(articleIDsData)
-            const testArticleIDs = testArticles.map(article => article._id)
+        it('updates single column document', async () => {
 
             const sendData = {
-                ids: testArticleIDs
+                id: leftColumnId,
+                title: 'updateMeee'
             }
 
-            return request(app)
-            .patch('/column/left')
+            const {
+                body: { column: {
+                    nModified
+                } }
+            } = await request(app)
+            .patch('/column/')
             .set('x-auth', logInToken)
             .set('Accept', 'application/json')
             .send(sendData)
             .expect(200)
-            .then( ({
-                body: {
-                    newArticleIDs,
-                    message
-                }
-            }) => {         
-                assert.equal(newArticleIDs.length, 6)
-                assert.equal(message, 'success')
-            })
+            
+            assert.equal(nModified, 1)
 
+            const {
+                title,
+                createdAt,
+                updatedAt
+            } = await Column.findOne({
+                _id: leftColumnId
+            })
+            .select('title createdAt updatedAt')
+            .exec()
+
+            assert.equal(title, sendData.title)
+            assert.notEqual(createdAt, updatedAt)
         });//
 
-        it('return error if id(s) not found', () => {
+        it('reject invalid column id', async () => {
 
             const sendData = {
-                ids: [new ObjectId(), new ObjectId()]
+                id: '123456789',
+                title: 'newTitle'
             }
 
-            return request(app)
-            .patch('/column/noColumn')
-            .set('x-auth', logInToken)
-            .set('Accept', 'application/json')
-            .send(sendData)
-            .expect(404)
-            .then( ({
-                body: {error: {message}}
-            }) => {
-                assert.equal(message, 'Invalid Column Requested')
-            })
-
-        })//
-        
-        it('reject invalid article id', () => {
-
-            const sendData = {
-                ids: [
-                    new ObjectId(),
-                    new ObjectId(),
-                    '5c2d0555c9d6872c78874081', //good id
-                    '5c2d0555c9d6872c7887408'   //bad id
-                ]
-            }
-
-            return request(app)
-            .patch('/column/right')
+            const {
+                body: { error }
+            } = await request(app)
+            .patch('/column/')
             .set('x-auth', logInToken)
             .set('Accept', 'application/json')
             .send(sendData)
             .expect(400)
-            .then( ({
-                body: {error: {message}}
-            }) => {
-                assert.equal(message, 'Invalid article ID provided. Check entry')
-            })
+            
+            assert.equal(error, 'Invalid id')
+        })//
+        
+        it('reject if no column found', async () => {
+
+            const sendData = {
+                id: new ObjectId()
+            }
+
+            const {
+                body: { error }
+            } = await request(app)
+            .patch('/column/')
+            .set('x-auth', logInToken)
+            .set('Accept', 'application/json')
+            .send(sendData)
+            .expect(400)
+
+            assert.equal(error, 'No column with given id found')
         })//
         
 
@@ -222,32 +215,30 @@ describe.only('column/ Routes', () => {
 
     describe('DELETE /:column', () => {
 
-        it('delete a column with 200 response status', () => {
+        it('delete single column', async () => {
 
-            return request(app)
+            const {
+                body: {deleted, message}
+            } = await request(app)
             .delete('/column/right')
             .set('x-auth', logInToken)
             .expect(200)
-            .then( ({
-                body: {message, deleted}
-            }) => {
-                assert.equal(message, 'success')
-                assert.equal(deleted, true)
-            })
+
+            assert.equal(message, 'success')
+            assert.equal(deleted, true)
         })//
 
-        it('reject wrong column with 400 status', () => {
+        it('reject wrong column', async () => {
 
-            return request(app)
+            const {
+                body: {deleted, message}
+            } = await request(app)
             .delete('/column/noColumn')
             .set('x-auth', logInToken)
             .expect(400)
-            .then( ({
-                body: {message, deleted}
-            }) => {
-                assert.equal(message, 'Invalid Column Provided')
-                assert.equal(deleted, false)
-            })
+            
+            assert.equal(message, 'Invalid Column Provided')
+            assert.equal(deleted, false)
         })//
 
     })//DELETE '/:column'

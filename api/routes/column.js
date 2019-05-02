@@ -140,65 +140,50 @@ router.post('/', Authenticate, (req, res) => {
 })
 
 
-router.patch('/:column', Authenticate, (req,res) => {
-
-    let data = {}
-
-    const columnTitle = req.params.column
-    const newArticleIDs = req.body.ids
+router.patch('/', Authenticate, (req,res) => {
     
-    async function updateColumn(column, idsArray){
+    let data = {}
+    
+    const { id: columnId, title: updateTitle } = req.body
+    
+    const findColumn = async (_id) => await Column
+    .findOne( { _id } )
+    .select('_id title')
+    .exec()
 
-        const id = column._id
-        const body = {
-            title: column.title,
-            lastUpdated: new Date().getTime(),
-            articleIDs: idsArray
-        }
+    const updateColumn = async (_id, title) => await Column
+    .updateOne( {_id}, { $set: {title} } )
+    .exec()
 
-        return await Column.updateOne( {_id:id}, {$set:body} )
+
+    const isValidId = ObjectId.isValid(columnId)
+
+    if( isValidId === false ) {
+        res.status(400).send({error: 'Invalid id'})
+        return
     }
 
-    const validateIDs = (arr) => {
-        
-        const badID = arr.filter(id => ObjectId.isValid(id)===false)
-
-        if ( badID.length===0 ) return true
-        else {
-            data.error = { invalidIDs : badID }
-            return false
-        }
+    if( String(updateTitle).trim().length < 4 ){
+        res.status(400).send({error: 'Invalid update title'})
+        return
     }
 
-    //check for any invalid IDs
-    const ids_valid = validateIDs(newArticleIDs)
+    findColumn(columnId)
+    .then( async (column) => {
 
-    if( ids_valid===false ){
-        data.error = { message: 'Invalid article ID provided. Check entry' }
-        return res.status(400).send(data)
-    }
-
-    Column.find({title: columnTitle})
-    .then(column => {
-
-        if(column.length === 0){
-            data.error = { message: 'Invalid Column Requested' }
-            return null
+        if (!column){
+            data.error = 'No column with given id found'
+            res.status(400).send(data)
+            return
         }
 
-        //create new IDs array to save in column document
-        const newIDsArray = [...column[0].articleIDs, ...newArticleIDs]
-
-        data.column = column
-        data.newArticleIDs = newIDsArray
-
-        return updateColumn(column[0], newIDsArray)
+        const savedColumn = await updateColumn(columnId, updateTitle)
+        data.column = savedColumn
+        res.status(200).send(data)
     })
-    .then(response => {
-        let status = 200
-        
-        response===null ? status = 404 : data.message = 'success'
-        res.status(status).send(data)
+    .catch(err => {
+        data.error = err
+        res.status(500).send(data)
     })
 })
 
@@ -208,12 +193,12 @@ router.delete('/:column', Authenticate, (req,res) => {
     const columnSelected = req.params.column
 
     let data = {
-        deleteRequest: columnSelected,
         deleted: true,
         message: 'success'
     }
 
     Column.findOneAndDelete({title: columnSelected})
+    .exec()
     .then(log => {
 
         let status = 200
@@ -225,6 +210,10 @@ router.delete('/:column', Authenticate, (req,res) => {
         }
             
         res.status(status).send(data)
+    })
+    .catch(err => {
+        data.error = err
+        res.status(500).send(data)
     })
 
 })
