@@ -2,21 +2,28 @@ const Column = require('../api/models/column');
 const ArticleLog = require('../api/models/articleLog');
 const User = require('../api/models/user');
 const ObjectId = require('mongoose').Types.ObjectId;
-const Data = require('./data.json')
+const {articleData, userData} = require('./data.json')
 
+//build columns
+//get columns ids [left,right,center,archive]
+//build articles. ref column _id
+//edit before each hooks =>
+//  1. add column
+//  2. add articles
+//  3. add users
 
-const buildSingleArticle = ({
+const buildArticleData = (articleData) => articleData.map( ({
     title,
     url,
-    createdAt
+    createdAt,
+    column
 }) => new ArticleLog({
     _id: new ObjectId(),
     title,
     url,
-    createdAt
-})
-
-const buildArticleData = (articleData) => articleData.map(data => buildSingleArticle(data))
+    createdAt,
+    column
+}) )
 
 const buildColumnData = (data) => {
     const ids = data.map(each => each._id);
@@ -39,16 +46,6 @@ const buildColumnData = (data) => {
 
     return columnNames.map( (title, i) => buildSingleColumn( title, columnData[i] ) )
 };
-
-// const buildUserData = (data) => data.map( ({
-//     email,
-//     password
-// }) => new User({
-//     _id: new ObjectId(),
-//     createdAt: Date.now(),
-//     email,
-//     password
-// }))
 
 const buildUserData = ([userOne, userTwo]) => {
 
@@ -79,8 +76,8 @@ const buildUserData = ([userOne, userTwo]) => {
 /* 
     BUILD DATA
 */
-const articles = buildArticleData(Data.articleData);
-const users = buildUserData(Data.userData);
+const articles = buildArticleData(articleData);
+const users = buildUserData(userData);
 const columns = buildColumnData(articles);
 
 /*
@@ -119,5 +116,5 @@ module.exports = {
     testSeedUsers,
     buildArticleData,
     buildColumnData,
-    logInToken: Data.userData[0].tokens[0].token
+    logInToken: userData[0].tokens[0].token
 };

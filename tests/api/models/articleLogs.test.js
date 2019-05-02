@@ -11,10 +11,13 @@ describe("MODEL articleLog", ()=>{
 
     it.only('create new log with 4 properties', async ()=>{
 
+        const someColumnId = mongoose.Types.ObjectId()
+
         const body = {
             _id: new mongoose.Types.ObjectId(),
             title: 'createLog',
-            url: 'www.has4props.com'
+            url: 'www.has4props.com',
+            column: someColumnId
         }
 
         const article =  new ArticleLog(body);
@@ -29,7 +32,7 @@ describe("MODEL articleLog", ()=>{
             column
         } = await article.save()
 
-        assert.equal(title, body.title)
+        assert.equal(typeof title, 'string')
         assert.equal(typeof _id, 'object')
         assert.equal(typeof createdAt, 'object')
         assert.equal(typeof updatedAt, 'object')

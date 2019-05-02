@@ -23,7 +23,7 @@ const articleLogSchema = mongoose.Schema({
         default: null
     },
     column: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'column'
     }

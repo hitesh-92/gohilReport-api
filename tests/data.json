@@ -3,42 +3,50 @@
         {
             "title": "test Article 1",
             "url": "http://www.testarticleone.co",
-            "createdAt": 1543499781111
+            "createdAt": 1543499781111,
+            "column": "left"
         },
         {
             "title": "two test tweet tweed",
             "url": "http://sseecondd.com",
-            "createdAt": 1543498582222
+            "createdAt": 1543498582222,
+            "column": "left"
         },
         {
             "title": "three thrid triad train",
             "url": "http://thirrrd.com",
-            "createdAt": 1545290573333
+            "createdAt": 1545290573333,
+            "column": "right"
         },
         {
             "title": "four fire free fear",
             "url": "http://fore.com",
-            "createdAt": 1545290554444
+            "createdAt": 1545290554444,
+            "column": "right"
         },
         {
             "title": "foe fee flew five",
             "url": "http://fivee.com",
-            "createdAt": 1545290555555
+            "createdAt": 1545290555555,
+            "column": "center"
         },
         {
             "title": "sax sea soi six",
             "url": "http://sixsix.com",
-            "createdAt": 1545290556666
+            "createdAt": 1545290556666,
+            "column": "center"
         },
         {
             "title": "seven vesen veenns",
             "url": "http://se7en.com",
-            "createdAt": 1545290557777
+            "createdAt": 1545290557777,
+            "column": "archive"
         },
         {
             "title": "eight ate e8ght",
             "url": "http://8atey-eight.com",
-            "createdAt": 1545290558888
+            "createdAt": 1545290558888,
+            "column": "archive"
         }
     ],
     "userData": [
