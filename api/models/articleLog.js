@@ -17,13 +17,11 @@ const articleLogSchema = new Schema({
         type: Number,
         default: 0
     },
-    archived: {
-        type: Boolean,
-        default: false
+    archive: {
+        type: Schema.Types.ObjectId
     },
     archiveDate: {
-        type: String,
-        default: null
+        type: Schema.Types.Date
     },
     column: {
         type: Schema.Types.ObjectId,

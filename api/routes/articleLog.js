@@ -84,81 +84,87 @@ router.post('/', Authenticate, (req, res) => {
 router.post('/archive', Authenticate, (req, res) => {
 
     let data = {}
-    const { id } = req.body
+    const { id: articleId } = req.body
+
+    // 
+
+
+
+
     
-    async function archive(
-    {
-        archiveColumn,
-        articleColumn
-    },  
-        archiveID
-    ){
-        //update 2 columns [articleColumn, archiveColumn]
-        //update article document
+    // async function archive(
+    // {
+    //     archiveColumn,
+    //     articleColumn
+    // },  
+    //     archiveID
+    // ){
+    //     //update 2 documents [articleColumn, archiveColumn]
+    //     //update article document
 
-        const column = new Promise(resolve => {
-            const {_id, articleIDs} = articleColumn
-            const filteredIDs = articleIDs.filter(_id => String(_id) !== String(archiveID))
+    //     const column = new Promise(resolve => {
+    //         const {_id, articleIDs} = articleColumn
+    //         const filteredIDs = articleIDs.filter(_id => String(_id) !== String(archiveID))
 
-            resolve( Column.updateOne(
-                {_id},
-                {$set: { articleIDs: filteredIDs }}
-            ) )
-        })
+    //         resolve( Column.updateOne(
+    //             {_id},
+    //             {$set: { articleIDs: filteredIDs }}
+    //         ) )
+    //     })
 
-        const archive = new Promise(resolve => {
-            const {_id, articleIDs} = archiveColumn
-            const id = mongoose.Types.ObjectId(archiveID)
-            resolve( Column.updateOne(
-                {_id},
-                {$set: { articleIDs: [...articleIDs, id] }}
-            ) )
-        })
+    //     const archive = new Promise(resolve => {
+    //         const {_id, articleIDs} = archiveColumn
+    //         const id = mongoose.Types.ObjectId(archiveID)
+    //         resolve( Column.updateOne(
+    //             {_id},
+    //             {$set: { articleIDs: [...articleIDs, id] }}
+    //         ) )
+    //     })
 
-        const article = new Promise(resolve =>
-            resolve( ArticleLog.updateOne(
-                {_id: archiveID},
-                {$set: {
-                    archived: true,
-                    archiveDate: Date.now()
-                }}
-            ) )
-        )
+    //     const article = new Promise(resolve =>
+    //         resolve( ArticleLog.updateOne(
+    //             {_id: archiveID},
+    //             {$set: {
+    //                 archived: true,
+    //                 archiveDate: Date.now()
+    //             }}
+    //         ) )
+    //     )
         
-        return await Promise.all([column, archive, article])
-    }
+    //     return await Promise.all([column, archive, article])
+    // }
 
-    Column.find({})
-    .select('_id title articleIDs')
-    .exec()
-    .then( async (columns) => {
-        data.archiveColumn = columns.find(col => col.title === 'archive')
-        //not using strict equality operator. find why not working with ObjectId
-        data.articleColumn = columns.find( ({articleIDs}) => articleIDs.find(_id => _id == id) )
+    // Column.find({})
+    // .select('_id title articleIDs')
+    // .exec()
+    // .then( async (columns) => {
+    //     data.archiveColumn = columns.find(col => col.title === 'archive')
+    //     //not using strict equality operator. find why not working with ObjectId
+    //     data.articleColumn = columns.find( ({articleIDs}) => articleIDs.find(_id => _id == id) )
         
-        const {archived} = await ArticleLog.findOne({_id: id})
+    //     const {archived} = await ArticleLog.findOne({_id: id})
 
-        if (archived) return
-        return archive(data, id)
-    })
-    .then( ([
-        {nModified: column},
-        {nModified: archive},
-        {nModified: article}
-    ] = [
-        {column: 0},
-        {archive: 0},
-        {article: 0}
-    ]) => {
-        // console.log(`column:${column}. archive:${archive}. article:${article}\n`)
-        if (
-            column === 1 &&
-            archive === 1 &&
-            article === 1
-        ) res.status(200).json({archived: true})
-        else res.status(400).json({archived: false})
-    })
-    .catch(err => res.status(500).json({error: err}) )
+    //     if (archived) return
+    //     return archive(data, id)
+    // })
+    // .then( ([
+    //     {nModified: column},
+    //     {nModified: archive},
+    //     {nModified: article}
+    // ] = [
+    //     {column: 0},
+    //     {archive: 0},
+    //     {article: 0}
+    // ]) => {
+    //     // console.log(`column:${column}. archive:${archive}. article:${article}\n`)
+    //     if (
+    //         column === 1 &&
+    //         archive === 1 &&
+    //         article === 1
+    //     ) res.status(200).json({archived: true})
+    //     else res.status(400).json({archived: false})
+    // })
+    // .catch(err => res.status(500).json({error: err}) )
 })
 
 

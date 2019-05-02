@@ -11,7 +11,7 @@ const Column = require('../../../api/models/column')
 const request = require('supertest')
 const assert = require('assert')
 
-describe.only("article/ Routes", ()=>{
+describe("article/ Routes", ()=>{
 
     describe("GET /:articleId", ()=>{
 
@@ -47,7 +47,7 @@ describe.only("article/ Routes", ()=>{
 
     })
     
-    describe.only("POST /", ()=>{
+    describe("POST /", ()=>{
 
         it('create and save new article', ()=>{
           
@@ -127,7 +127,8 @@ describe.only("article/ Routes", ()=>{
 
             const data = {
                 title: 'one uno eno noe',
-                url: 'http://wwww.oneoneone.com'
+                url: 'http://wwww.oneoneone.com',
+                column: leftColumnId
             }
 
             return request(app)
@@ -202,7 +203,7 @@ describe.only("article/ Routes", ()=>{
 
     })
 
-    describe('/archive/ Routes', () => {
+    describe.skip('/archive/ Routes', () => {
 
       it('archive existing article', () => {
 

@@ -1,7 +1,7 @@
 const {app} = require('../../../app')
 
 const mongoose = require('mongoose')
-const ObjectId = mongoose.Types.ObjectId
+const { Types: {ObjectId}} = mongoose
 
 const {
     articles,
@@ -15,24 +15,21 @@ const Column = require('../../../api/models/column')
 const request = require('supertest')
 const assert = require('assert')
 
-describe('column/ Routes', () => {
+describe.only('column/ Routes', () => {
 
-    describe('GET /', () => {
+    describe.only('GET /', () => {
+        // var start = Date.now()
 
         it('return all column with articles', () => {
             return request(app)
             .get('/column/')
             .expect(200)
             .then( ({
-                body: {
-                    columns: {left: {title: leftColumnTitle}},
-                    centerArticles: [firstCenterArticle],
-                    rightArticles: [_, secondRightArticle]
-                }
+                body: {center, left, right}
             }) => {
-                assert.equal(leftColumnTitle, 'left')
-                assert.equal(firstCenterArticle.url, 'http://fivee.com')
-                assert.equal(secondRightArticle.title, 'four fire free fear')
+                assert.equal(left.length, 2)
+                assert.equal(center.length, 2)
+                assert.equal(right.length, 2)
             })
         })
 

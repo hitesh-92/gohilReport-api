@@ -1,70 +1,55 @@
 const express = require('express')
 const router = express.Router()
+const mongoose = require('mongoose')
+
 const Authenticate = require('../middleware/auth')
 
 const ArticleLog = require('../models/articleLog')
 const Column = require('../models/column')
 
-const ObjectId = require('mongoose').Types.ObjectId
+const { Types: {ObjectId}} = mongoose
 
-
-router.get('/', (req,res) => {
+router.get('/', (req, res) => {
+    
     const data = {}
 
-    function getAllQuerys(ids, fn){
-        let reqs = []
-        ids.forEach(id => {
-            reqs.push( fn(id) )
-        })
-        return async function(){
-            const [left, center, right] = await Promise.all(reqs)
-            return {left,center,right}
-        }
-    }
-
-    const getColumns = (column) => {
-        return new Promise((resolve) => {
-            const query = Column.where({title: column})
-            resolve( query.findOne() )
-        })
-    }
-
-    const getArticles = (ids) => {
-        let queryArr = []
-        ids.forEach(id => queryArr.push({_id: id}))
-
-        return new Promise((resolve) => {
-            resolve( ArticleLog.find({_id: {$in:queryArr} }) )
-        })
-    }
-
-    const getIDsArray = (columns) => {
-        return [
-            columns.left.articleIDs,
-            columns.center.articleIDs,
-            columns.right.articleIDs
-        ]
-    }
-
-    const columns = ['left','center','right']
-
-    const queryColumns = getAllQuerys(columns, getColumns)
-
-    queryColumns().then(columns => {
-        data.columns = columns
-        const queryArticles = getAllQuerys(getIDsArray(columns), getArticles)
-        return queryArticles()
+    const fetchColumns = async () => await Column
+    .find({
+        'title': {$in: [ 'left', 'center', 'right' ]}
     })
-    .then(articles => {
-        data.leftArticles = articles.left
-        data.centerArticles = articles.center
-        data.rightArticles = articles.right
+    .select('_id title')
+    .exec()
 
-        res.status(200).send(data)
-    })
-    .catch(err => {
-        data.error = err
-        res.status(500).send(data)
+    const articleQuery = async (column) => {
+        return new Promise((resolve) => {
+            resolve(
+                ArticleLog.find({
+                    'column': {$in: column}
+                })
+                .select('_id title url status column')
+                .exec()
+            )
+        })
+    }
+
+    const fetchAllArticles = async (columns) => {
+        const requests = columns.map( ({_id}) => articleQuery(_id) )
+        return await Promise.all(requests)
+    }
+    
+    
+    fetchColumns()
+    .then(columns => fetchAllArticles(columns))
+    .then( ([
+        center,
+        left,
+        right
+    ]) => {
+        data.center = center
+        data.left = left
+        data.right = right
+
+        res.status(200).json(data)
     })
 });
 
