@@ -2,7 +2,8 @@ const {app} = require('../../../app')
 
 const {  
   articles,
-  logInToken
+  logInToken,
+  columnIds: [leftColumnId]
 } = require('../../seedData')
 const ArticleLog = require('../../../api/models/articleLog')
 const Column = require('../../../api/models/column')
@@ -10,7 +11,7 @@ const Column = require('../../../api/models/column')
 const request = require('supertest')
 const assert = require('assert')
 
-describe("article/ Routes", ()=>{
+describe.only("article/ Routes", ()=>{
 
     describe("GET /:articleId", ()=>{
 
@@ -46,13 +47,14 @@ describe("article/ Routes", ()=>{
 
     })
     
-    describe("POST /", ()=>{
+    describe.only("POST /", ()=>{
 
         it('create and save new article', ()=>{
           
           const articleData = {
               title: 'return201',
-              url: 'www.201.com'
+              url: 'www.201.com',
+              column: leftColumnId
           }
 
           return request(app)
@@ -72,7 +74,8 @@ describe("article/ Routes", ()=>{
       
             const articleData = {
                 title: false,
-                url: undefined
+                url: undefined,
+                column: leftColumnId
             }
 
             return request(app)
@@ -92,7 +95,8 @@ describe("article/ Routes", ()=>{
 
             const data = {
                 title: 'return 2019',
-                url: 'www.2019.com'
+                url: 'www.2019.com',
+                column: leftColumnId
             }
             
             return request(app)

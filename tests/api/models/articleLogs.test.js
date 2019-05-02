@@ -9,7 +9,7 @@ const assert = require('assert')
 
 describe("MODEL articleLog", () => {
 
-    it.only('create new log with 4 properties', async ()=>{
+    it('create new log with 4 properties', async () => {
 
         const body = {
             _id: new ObjectId(),
@@ -64,7 +64,7 @@ describe("MODEL articleLog", () => {
     //  10: archived
 
 
-    it('updateLogs method updates articles status', () => {
+    it.skip('updateLogs method updates articles status', () => {
         
         const buildUpdateData = () => {
 

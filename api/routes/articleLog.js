@@ -4,7 +4,7 @@ const ArticleLog = require('../models/articleLog')
 const Column = require('../models/column')
 const Authenticate = require('../middleware/auth')
 const mongoose = require('mongoose')
-const ObjectId = mongoose.Types.ObjectId
+const { Types: {ObjectId} } = mongoose
 
 
 router.get('/:articleId', (req, res) => {
@@ -52,16 +52,19 @@ router.get('/:articleId', (req, res) => {
 })
 
 
-router.post('/', Authenticate, (req, res, next) => {
+router.post('/', Authenticate, (req, res) => {
+
+    const {title, url, column} = req.body
 
     let data = {
         articleSaved: false
     }
 
     const article = new ArticleLog({
-        _id: new mongoose.Types.ObjectId(),
-        title: req.body.title,
-        url: req.body.url
+        _id: new ObjectId(),
+        title,
+        url,
+        column
     })
 
     article.save()
