@@ -74,27 +74,14 @@ describe.only('column/ Routes', () => {
 
     })//GET '/:column'
 
-    describe('POST /', () => {
+    describe.only('POST /', () => {
 
         it('save new column and find it', () => {
 
-            //create new test data
-            const fakeArticleData = [
-                { title: 'one', url: 'http://one.co', createdAt: '1543499785555' },
-                { title: 'two', url: 'http://two.co', createdAt: '1543499786666' },
-                { title: 'three', url: 'http://three.co', createdAt: '1543499787777' },
-                { title: 'four', url: 'http://four.co', createdAt: '1543499788888' }
-            ]
-            const testArticles = buildArticleData(fakeArticleData)
-
-            const testArticleIDs = testArticles.map(article => article._id)
-
             const postColumnData = {
-                title: 'testTitlee',
-                articleIDs: testArticleIDs
+                title: 'testTitlee'
             }
         
-            
             return request(app)
             .post('/column')
             .set('x-auth', logInToken)
@@ -103,46 +90,32 @@ describe.only('column/ Routes', () => {
             .expect(200)
             .then( async ({
                 body: {
-                    createdColumn: column,
+                    column,
                     title,
-                    message
+                    message,
+                    saved
                 }
             }) => {
 
                 const id = ObjectId.createFromHexString(column._id)
 
-                assert.equal(column.articleIDs.length, 4)
                 assert.equal(title, postColumnData.title)
                 assert.equal(message, 'success')
+                assert.equal(saved, true)
 
-                const {
-                    title: confirmTitle,
-                    articleIDs: confirmArticleIDs
-                } = await Column.findById(id)
+                const { title: savedTitle } = await Column.findById(id)
+                .select('title')
+                .exec()
 
-                assert.equal(confirmTitle, postColumnData.title)
-                assert.equal(confirmArticleIDs.length, testArticles.length)
+                assert.equal(savedTitle, postColumnData.title)
             })
 
         })//
 
         it('reject request with bad articleId', () => {
 
-            //create new test data
-            const articleData = [
-                { title: 'one', url: 'http://one.co', createdAt: '1543499785555' },
-                { title: 'two', url: 'http://two.co', createdAt: '1543499786666' },
-                { title: 'three', url: 'http://three.co', createdAt: '1543499787777' },
-                { title: 'four', url: 'http://four.co', createdAt: '1543499788888' }
-            ]
-            const testArticles = buildArticleData(articleData)
-
-            let testArticleIDs = testArticles.map(article => article._id)
-            testArticleIDs.push('1234567890')
-
             const postColumnData = {
-                title: 'testTitlee',
-                articleIDs: testArticleIDs
+                title: ''
             }
 
             return request(app)
@@ -157,8 +130,8 @@ describe.only('column/ Routes', () => {
                     saved
                 }
             }) => {
-                assert.equal(error.articleIDs, 'Invalid Article ID(s) provided')
                 assert.equal(saved, false)
+                assert.equal(error, 'Invalid title')
             })
         })//
 

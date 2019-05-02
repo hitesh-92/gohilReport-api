@@ -55,7 +55,7 @@ router.get('/', (req, res) => {
 
 
 router.get('/:column', (req, res) => {
-    
+
     const title = req.params.column
 
     let data = {}
@@ -98,46 +98,44 @@ router.get('/:column', (req, res) => {
 
 
 router.post('/', Authenticate, (req, res) => {
-
+    
     let data = {
         title: req.body.title,
-        articleIDs: req.body.articleIDs,
         error: {},
         createdColumn: {},
-        time: new Date().getTime(),
         saved: false
     }
 
-    const invalidID = data.articleIDs.map(id => ObjectId.isValid(id)).filter(val => val===false).length > 0
-    const invalidTitle = data.title === undefined || data.title.length < 1
-
-    if ( invalidID || invalidTitle ){
-        if ( invalidID ) data.error.articleIDs = 'Invalid Article ID(s) provided'
-        if ( invalidTitle ) data.error.title = 'Invalid Column Title'
+    if( data.title.trim().length < 4 ) {
+        data.error = 'Invalid title'
         return res.status(400).send(data)
     }
 
     const column = new Column({
         _id: new ObjectId(),
-        lastUpdated: new Date().getTime(),
-        title: data.title,
-        articleIDs: data.articleIDs
+        title: data.title
     })
-
+    
     column.save()
     .then(savedColumn => {
 
         let status = 200
-        data.createdColumn = savedColumn
-        data.message = 'success'
+        data.column = savedColumn
 
         if (!savedColumn){
             stats = 400
             data.message = 'Please check error to see further details'
         }
-        else data.saved = true
+        else {
+            data.saved = true
+            data.message = 'success'
+        }
 
         res.status(status).json(data)
+    })
+    .catch(err => {
+        data.error = err
+        res.status(500).send(data)
     })
 })
 
