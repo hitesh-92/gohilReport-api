@@ -7,8 +7,7 @@ const ArticleLog = require('../../../api/models/articleLog')
 const { columnIds: [columnId] } = require('../../seedData')
 const assert = require('assert')
 
-
-describe("MODEL articleLog", ()=>{
+describe("MODEL articleLog", () => {
 
     it.only('create new log with 4 properties', async ()=>{
 
@@ -19,7 +18,7 @@ describe("MODEL articleLog", ()=>{
             column: columnId
         }
 
-        const article =  new ArticleLog(body);
+        const article = new ArticleLog(body);
 
         const {
             _id,

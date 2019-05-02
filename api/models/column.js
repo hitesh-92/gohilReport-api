@@ -8,15 +8,7 @@ const columnSchema = mongoose.Schema({
         trim: true,
         minlength: 1,
         unique: true
-    },
-    // lastUpdated: {
-    //     type: String,
-    //     required: true
-    // },
-    // articleIDs: {
-    //     type: Object,
-    //     required: true
-    // }
+    }
 }, {
     timestamps: true
 })

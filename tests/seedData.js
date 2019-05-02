@@ -32,7 +32,7 @@ function buildColumns(ids){
 function buildArticles(data, columnIds){
     let articlesArray = [];
 
-    for (let i=2; i<=columnIds.length; i+=2){
+    for (let i=2; i<=data.length; i+=2){
         articlesArray.push( data.slice(i-2, i) )
     }
 

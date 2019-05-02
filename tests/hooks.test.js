@@ -19,5 +19,5 @@ beforeEach( async () => await testDelete(Column) )
 
 // Seed db
 beforeEach( async () => await testSeed(Column, columns) )
-// beforeEach( async () => await testSeed(ArticleLog, articles) )
-// beforeEach( async () => await testSeedUsers(users) )
+beforeEach( async () => await testSeed(ArticleLog, articles) )
+beforeEach( async () => await testSeedUsers(users) )
