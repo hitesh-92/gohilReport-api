@@ -7,6 +7,7 @@ const {
     articles,
     columns,
     buildArticleData,
+    columnIds: [leftColumnId],
     logInToken
 } = require('../../seedData')
 
@@ -17,7 +18,7 @@ const assert = require('assert')
 
 describe.only('column/ Routes', () => {
 
-    describe.only('GET /', () => {
+    describe('GET /', () => {
         // var start = Date.now()
 
         it('return all column with articles', () => {
@@ -39,37 +40,32 @@ describe.only('column/ Routes', () => {
 
         it('find column and return articles', () => {
             return request(app)
-            .get('/column/right')
+            .get('/column/left')
             .expect(200)
             .then( ({
                 body: {
-                    columnData,
-                    articles: [savedArticle1, savedArticle2],
+                    columnData: {_id},
+                    articles,
                     error
                 }
             }) => {
-                const seedColumn = columns[1]
-
                 assert.equal(error, false)
-                assert.equal(columnData._id, seedColumn._id)
-                assert.equal(savedArticle1._id, articles[2]._id)
-                assert.equal(savedArticle2._id, articles[3]._id)
+                assert.equal(_id, leftColumnId)
+                assert.equal(articles.length, 2)
             })
         })//
 
-        it("not find column 'noColumn'", () => {
+        it("not find invalid column", () => {
             return request(app)
-            .get('/column/noColumn')
+            .get('/column/badColumn')
             .expect(400)
             .then( ({
                 body: {
-                    requestedColumn,
                     columnData,
                     message,
                     error
                 }
             }) => {
-                assert.equal(requestedColumn, 'noColumn')
                 assert.equal(columnData, null)
                 assert.equal(message, 'Column not found')
                 assert.equal(error, true)

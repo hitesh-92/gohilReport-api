@@ -55,28 +55,26 @@ router.get('/', (req, res) => {
 
 
 router.get('/:column', (req, res) => {
+    
+    const title = req.params.column
 
-    let title = req.params.column
-
-    let data = {
-        time: new Date().getTime(),
-        requestedColumn: title,
-        columnData: {},
-    }
+    let data = {}
 
     Column.findOne({title})
-    .then(singleColumn => {
+    .exec()
+    .then(column => {
+        
+        data.columnData = column
+        
+        if(column == null) return
 
-        data.columnData = singleColumn
-
-        //return if no column found
-        if(singleColumn == null) return
-
-        //array of ids to find
-        const ids = singleColumn.articleIDs.map(id => ({_id: id}))
-        return ArticleLog.find({_id: {$in: ids} })
+        return ArticleLog.find({
+            'column': {$in: column._id} 
+        })
+        .exec()
     })
     .then(articles => {
+        
         let status = 200;
         data.error = false
 
