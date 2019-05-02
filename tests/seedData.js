@@ -1,7 +1,10 @@
 const Column = require('../api/models/column');
 const ArticleLog = require('../api/models/articleLog');
 const User = require('../api/models/user');
-const ObjectId = require('mongoose').Types.ObjectId;
+
+const mongoose = require('mongoose')
+const { Types: {ObjectId} } = mongoose
+
 const {articleData, userData} = require('./data.json')
 
 //build columns
@@ -12,42 +15,42 @@ const {articleData, userData} = require('./data.json')
 //  2. add articles
 //  3. add users
 
-const buildArticleData = (articleData) => articleData.map( ({
-    title,
-    url,
-    createdAt,
-    column
-}) => new ArticleLog({
-    _id: new ObjectId(),
-    title,
-    url,
-    createdAt,
-    column
-}) )
+function createColumnIds(){
+    let ids = []
+    for(let i=0; i<5; i++) ids.push( ObjectId() )
+    return ids
+}
 
-const buildColumnData = (data) => {
-    const ids = data.map(each => each._id);
+function buildColumns(ids){
+    const titles = [ 'left', 'center', 'right', 'archive' ]
+    return titles.map((title, i) => new Column({
+        _id: new ObjectId( ids[i] ),
+        title
+    }) )
+}
 
-    const columnData = [
-        [ ids[0], ids[1] ],
-        [ ids[2], ids[3] ],
-        [ ids[4], ids[5] ],
-        [ ids[6], ids[7] ]
-    ]
+function buildArticles(data, columnIds){
+    let articlesArray = [];
 
-    const columnNames = [ 'left', 'right', 'center', 'archive' ]
+    for (let i=2; i<=columnIds.length; i+=2){
+        articlesArray.push( data.slice(i-2, i) )
+    }
 
-    const buildSingleColumn = (title, articleIDs) => new Column({
-        _id: new ObjectId(),
-        lastUpdated: Date.now(),
-        title,
-        articleIDs
-    })
+    return articlesArray.map( (articles,i) => {
+        const columnId = columnIds[i]
+        return articles.map( ({
+            title,
+            url
+        }) => new ArticleLog({
+            _id: ObjectId(),
+            title,
+            url,
+            column: columnId
+        }) )
+    }).flat(1)
+}
 
-    return columnNames.map( (title, i) => buildSingleColumn( title, columnData[i] ) )
-};
-
-const buildUserData = ([userOne, userTwo]) => {
+function buildUserData ([userOne, userTwo]){
 
     const first = new User({
         _id: ObjectId( userOne._id ),
@@ -73,17 +76,6 @@ const buildUserData = ([userOne, userTwo]) => {
     return [first, second]
 }
 
-/* 
-    BUILD DATA
-*/
-const articles = buildArticleData(articleData);
-const users = buildUserData(userData);
-const columns = buildColumnData(articles);
-
-/*
-    HOOKS
-*/
-
 const testDelete = MODEL => {
     return new Promise((resolve, reject) => {
         MODEL.deleteMany({})
@@ -100,21 +92,24 @@ const testSeed = function(MODEL, data){
     })
 };
 
-
 const testSeedUsers = (data) => {
     const userOne = new User(data[0]).save();
     const userTwo = new User(data[1]).save();
     return Promise.all([userOne, userTwo])
 }
 
+const columnIds = createColumnIds()
+const columns = buildColumns( columnIds )
+const articles = buildArticles( articleData, columnIds )
+const users = buildUserData( userData )
+
 module.exports = { 
-    articles, 
+    articles,
+    columnIds,
     columns, 
     users,
     testDelete, 
     testSeed, 
     testSeedUsers,
-    buildArticleData,
-    buildColumnData,
     logInToken: userData[0].tokens[0].token
 };

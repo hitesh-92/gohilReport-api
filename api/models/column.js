@@ -9,14 +9,14 @@ const columnSchema = mongoose.Schema({
         minlength: 1,
         unique: true
     },
-    lastUpdated: {
-        type: String,
-        required: true
-    },
-    articleIDs: {
-        type: Object,
-        required: true
-    }
+    // lastUpdated: {
+    //     type: String,
+    //     required: true
+    // },
+    // articleIDs: {
+    //     type: Object,
+    //     required: true
+    // }
 }, {
     timestamps: true
 })

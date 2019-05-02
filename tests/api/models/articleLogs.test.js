@@ -1,9 +1,10 @@
 const moment = require('moment')
 const mongoose = require('mongoose')
+const { Types: {ObjectId} } = mongoose
 
 const ArticleLog = require('../../../api/models/articleLog')
-const { articles } = require('../../seedData')
 
+const { columnIds: [columnId] } = require('../../seedData')
 const assert = require('assert')
 
 
@@ -11,13 +12,11 @@ describe("MODEL articleLog", ()=>{
 
     it.only('create new log with 4 properties', async ()=>{
 
-        const someColumnId = mongoose.Types.ObjectId()
-
         const body = {
-            _id: new mongoose.Types.ObjectId(),
+            _id: new ObjectId(),
             title: 'createLog',
             url: 'www.has4props.com',
-            column: someColumnId
+            column: columnId
         }
 
         const article =  new ArticleLog(body);

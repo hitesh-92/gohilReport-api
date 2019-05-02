@@ -1,18 +1,21 @@
 const mongoose = require('mongoose')
 const moment = require('moment')
+const { Schema, Types: {ObjectId} } = mongoose
 
-const articleLogSchema = mongoose.Schema({
-    _id: mongoose.Types.ObjectId,
+const articleLogSchema = new Schema({
+    _id: Schema.Types.ObjectId,
     title: {
         type: String,
         required: true,
+        trim: true
     },
     url: {
         type: String,
         required: true
     },
     status: {
-        type: Number
+        type: Number,
+        default: 0
     },
     archived: {
         type: Boolean,
@@ -23,7 +26,7 @@ const articleLogSchema = mongoose.Schema({
         default: null
     },
     column: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: 'column'
     }
@@ -51,7 +54,7 @@ articleLogSchema.statics.updateStatus = function(){
         else newStatus = false
         
         if ( newStatus===false ) return false
-        return { _id: mongoose.Types.ObjectId(_id), status: newStatus }
+        return { _id: ObjectId(_id), status: newStatus }
     }
 
     const initUpdate = async (logs) => {
