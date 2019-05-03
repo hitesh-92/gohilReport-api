@@ -42,10 +42,8 @@ articleLogSchema.statics.updateStatus = function() {
   var ArticleLog = this;
 
   const checkStatus = ({ _id, status, createdAt }) => {
-    let newStatus; //will be either Number or Boolean
-
-    const compose = (fnA, fnB) => (d1, d2) => fnB(fnA(d1, d2));
-    const nextUpdate = (time, months) => moment(time).add(months, "months");
+    const compose = (nxt, inc) => m => inc(nxt(m));
+    const nextUpdate = months => moment(createdAt).add(months, "months");
     const toIncrease = nextUpdate => moment().isAfter(nextUpdate);
 
     const processUpdateCheck = compose(
@@ -53,16 +51,21 @@ articleLogSchema.statics.updateStatus = function() {
       toIncrease
     );
 
-    if (status === -1 || status === 0)
-      processUpdateCheck(createdAt, 1) ? (newStatus = 1) : (newStatus = false);
-    else if (status === 1)
-      processUpdateCheck(createdAt, 3) ? (newStatus = 2) : (newStatus = false);
-    else if (status === 2)
-      processUpdateCheck(createdAt, 6) ? (newStatus = 3) : (newStatus = false);
-    else newStatus = false;
+    const check = (nextUpdate, newStatus) =>
+      processUpdateCheck(nextUpdate)
+        ? { _id: ObjectId(_id), status: newStatus }
+        : false;
 
-    if (newStatus === false) return false;
-    return { _id: ObjectId(_id), status: newStatus };
+    switch (status) {
+      case 0:
+        return check(1, 1);
+      case 1:
+        return check(3, 2);
+      case 2:
+        return check(6, 3);
+      default:
+        return false;
+    }
   };
 
   const initUpdate = async logs => {
@@ -76,7 +79,7 @@ articleLogSchema.statics.updateStatus = function() {
       const statusChange = checkStatus(log);
       if (statusChange !== false) return updateQuery(statusChange);
     });
-
+    
     return await Promise.all(requests);
   };
 

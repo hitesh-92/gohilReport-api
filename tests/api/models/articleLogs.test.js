@@ -62,7 +62,7 @@ describe("MODEL articleLog", () => {
   //  ADD LATER
   //  10: archived
 
-  it("updateLogs method updates articles status", () => {
+  it.only("updateLogs method updates articles status", () => {
     const buildArticleData = () => {
       const status = [0, 1, 2, 3];
       const monthIncrement = [1, 3, 6, 0];
@@ -105,7 +105,7 @@ describe("MODEL articleLog", () => {
         const data = await ArticleLog.find({ _id: { $in: articleIDs } })
           .select("status")
           .exec();
-          
+
         assert.equal(data[0].status, 1);
         assert.equal(data[1].status, 2);
         assert.equal(data[2].status, 3);
