@@ -1,29 +1,26 @@
 const Column = require('../../../api/models/column')
 const mongoose = require('mongoose')
 const assert = require('assert')
-const {articles} = require('../../seedData')
+const { Types: {ObjectId} } = mongoose
 
-describe('MODEL column', ()=>{
+describe('MODEL column', () => {
 
-    it('create new column with 4 properties', ()=>{
+    it('create new column', async () => {
         
-        const data = articles.map(log => log._id)
-
-        const testCol = new Column({
+        const column = new Column({
             _id: new mongoose.Types.ObjectId(),            
-            title: 'testColumn',
-            lastUpdated: new Date().getTime(),
-            articleIDs: data
+            title: 'testColumn'
         })
 
-        // check data types
-        assert.equal(typeof testCol._id, 'object')
-        assert.equal(typeof testCol.title, 'string')
-        assert.equal(typeof testCol.lastUpdated, 'string')
-        assert.equal(typeof testCol.articleIDs, 'object')
+        const {
+            _id,
+            title,
+            createdAt
+        } = await column.save()
 
-        assert.equal(testCol.articleIDs, data)
-
+        assert.equal(ObjectId.isValid(_id), true)
+        assert.equal(title, 'testColumn')
+        assert.equal(typeof createdAt, 'object')
     })//
 
 });
