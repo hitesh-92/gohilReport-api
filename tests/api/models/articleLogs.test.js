@@ -93,7 +93,7 @@ describe("MODEL articleLog", () => {
     };
 
     const saveArticles = async logs => {
-      for (log of logs) await log.save();
+      for (let log of logs) await log.save();
     };
 
     const articleData = buildArticleData();
