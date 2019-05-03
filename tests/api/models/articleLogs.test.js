@@ -5,6 +5,7 @@ const {
 } = mongoose;
 
 const ArticleLog = require("../../../api/models/articleLog");
+const { columnIds } = require("../../seedData");
 
 const {
   columnIds: [columnId]
@@ -61,32 +62,33 @@ describe("MODEL articleLog", () => {
   //  ADD LATER
   //  10: archived
 
-  it.skip("updateLogs method updates articles status", () => {
-    const buildUpdateData = () => {
+  it("updateLogs method updates articles status", () => {
+    const buildArticleData = () => {
       const status = [0, 1, 2, 3];
       const monthIncrement = [1, 3, 6, 0];
       const data = [
         { title: "firstPost", url: "www.oneee.com" },
         { title: "secondPost", url: "www.twoo.com" },
-        { title: "thirdPost", url: "www.treee.com" },
-        { title: "fourthPost", url: "www.fourrr.com" }
+        { title: "thirdPost", url: "www.treee.com" }
       ];
 
-      const createArticle = ({ title, url }, status, months) => {
+      const createArticle = ({ title, url }, status, months, column) => {
         const time = moment()
           .subtract(months, "months")
           .subtract(1, "days");
+
         return new ArticleLog({
           _id: mongoose.Types.ObjectId(),
           title,
           url,
           status,
+          column,
           createdAt: time
         });
       };
 
       return data.map((log, i) =>
-        createArticle(log, status[i], monthIncrement[i])
+        createArticle(log, status[i], monthIncrement[i], columnIds[i])
       );
     };
 
@@ -94,7 +96,7 @@ describe("MODEL articleLog", () => {
       for (log of logs) await log.save();
     };
 
-    const articleData = buildUpdateData();
+    const articleData = buildArticleData();
     const articleIDs = articleData.map(log => log._id);
 
     return saveArticles(articleData)
@@ -103,11 +105,10 @@ describe("MODEL articleLog", () => {
         const data = await ArticleLog.find({ _id: { $in: articleIDs } })
           .select("status")
           .exec();
-
+          
         assert.equal(data[0].status, 1);
         assert.equal(data[1].status, 2);
         assert.equal(data[2].status, 3);
-        assert.equal(data[3].status, 3);
       });
   });
 });
