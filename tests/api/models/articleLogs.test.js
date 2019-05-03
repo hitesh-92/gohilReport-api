@@ -62,7 +62,7 @@ describe("MODEL articleLog", () => {
   //  ADD LATER
   //  10: archived
 
-  it.only("updateLogs method updates articles status", () => {
+  it("updateLogs method updates articles status", () => {
     const buildArticleData = () => {
       const status = [0, 1, 2, 3];
       const monthIncrement = [1, 3, 6, 0];
