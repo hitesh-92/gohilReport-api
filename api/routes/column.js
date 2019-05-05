@@ -18,6 +18,7 @@ router.get('/', (req, res) => {
         'title': {$in: [ 'left', 'center', 'right' ]}
     })
     .select('_id title')
+    .lean()
     .exec()
 
     const articleQuery = async (column) => {
@@ -27,6 +28,7 @@ router.get('/', (req, res) => {
                     'column': {$in: column}
                 })
                 .select('_id title url status column')
+                .lean()
                 .exec()
             )
         })

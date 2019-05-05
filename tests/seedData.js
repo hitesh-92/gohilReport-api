@@ -7,14 +7,6 @@ const { Types: {ObjectId} } = mongoose
 
 const {articleData, userData} = require('./data.json')
 
-//build columns
-//get columns ids [left,right,center,archive]
-//build articles. ref column _id
-//edit before each hooks =>
-//  1. add column
-//  2. add articles
-//  3. add users
-
 function createColumnIds(){
     let ids = []
     for(let i=0; i<5; i++) ids.push( ObjectId() )

@@ -102,7 +102,6 @@ describe("/article/ POST", () => {
 describe("/article/ PATCH", () => {
 
   it("updates article title/url", () => {
-    // const hex_id = articles[0]._id.toHexString();
 
     const data = {
       id: articles[0]._id,
@@ -115,7 +114,7 @@ describe("/article/ PATCH", () => {
       .set("x-auth", logInToken)
       .send(data)
       .expect(200)
-      .then( ({ 
+      .then(({
         body: { status }
       }) => {
         assert.equal(status, true);
@@ -141,11 +140,11 @@ describe("/article/ PATCH", () => {
 
     const {
       title
-    } =  await ArticleLog
-      .findOne({_id: data.id})
+    } = await ArticleLog
+      .findOne({ _id: data.id })
       .select('title')
       .exec()
-    
+
     assert.equal(title, data.title)
   });
 
@@ -200,14 +199,14 @@ describe("/article/:articleId DELETE", () => {
         deleted
       }
     } = await request(app)
-        .delete('/article/')
-        .set("x-auth", logInToken)
-        .send({ id: articles[1]._id })
-        .expect(200)
+      .delete('/article/')
+      .set("x-auth", logInToken)
+      .send({ id: articles[1]._id })
+      .expect(200)
 
     assert.equal(deleted, true)
-  }); 
-  
+  });
+
   it("reject invaid id", async () => {
 
     const id = "!000000f7cad342ac046AAAA";
@@ -239,7 +238,7 @@ describe("/article/:articleId DELETE", () => {
       .set("x-auth", logInToken)
       .send({ id: new ObjectId() })
       .expect(404)
-      
+
     assert.equal(deleted, false);
     assert.equal(error, "Invalid request to delete");
   });
@@ -265,14 +264,14 @@ describe("/article/archive/", () => {
       archive,
       archiveDate
     } = await ArticleLog.findOne({
-        _id: archiveID
-      })
+      _id: archiveID
+    })
       .select("archive archiveDate")
       .exec();
 
     assert.equal(ObjectId.isValid(archive), true);
     assert.equal(typeof archiveDate, "object");
-  }); 
+  });
 
   it("not archive existing archive", async () => {
     const archiveID = articles[6]._id;
