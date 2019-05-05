@@ -193,25 +193,23 @@ router.patch("/", Authenticate, (req, res) => {
 });
 
 router.delete("/", Authenticate, (req, res) => {
-  //delete articleLog
-  //success: {'deleted':true}
-
+  
   const { id } = req.body;
 
   let data = { deleted: false };
 
-  // invalid ID
-  const validID = ObjectId.isValid(id);
+  const invalidID = ObjectId.isValid(id) == false;
 
-  if (!validID) {
+  if (invalidID) {
     data.error = "Bad article id";
     return res.status(404).json(data);
   }
 
   ArticleLog.findOneAndDelete({ _id: id })
     .then(article => {
+      
       let status = 200;
-
+      
       if (article == null) {
         data.error = "Invalid request to delete";
         status = 404;
@@ -224,7 +222,7 @@ router.delete("/", Authenticate, (req, res) => {
     })
     .catch(err => {
       data.error = err;
-      res.status(501).send(data);
+      res.status(501).json(data);
     });
 });
 

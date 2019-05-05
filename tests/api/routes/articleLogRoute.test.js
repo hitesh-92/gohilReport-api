@@ -99,7 +99,7 @@ describe("/article/ POST", () => {
   });
 });
 
-describe.only("/article/ PATCH", () => {
+describe("/article/ PATCH", () => {
 
   it("updates article title/url", () => {
     // const hex_id = articles[0]._id.toHexString();
@@ -192,50 +192,61 @@ describe.only("/article/ PATCH", () => {
 });
 
 describe("/article/:articleId DELETE", () => {
-  it("should delete exisitng article", () => {
-    const id = articles[1]._id;
 
-    return request(app)
-      .delete(`/article/`)
-      .set("x-auth", logInToken)
-      .send({ id })
-      .expect(200)
-      .then(({ body: { deleted, log: { _id } } }) => {
-        assert.equal(deleted, true);
-        assert.equal(_id, id);
-      });
+  it("delete exisitng article", async () => {
+
+    const {
+      body: {
+        deleted
+      }
+    } = await request(app)
+        .delete('/article/')
+        .set("x-auth", logInToken)
+        .send({ id: articles[1]._id })
+        .expect(200)
+
+    assert.equal(deleted, true)
   }); 
   
-  it("reject invaid id", () => {
+  it("reject invaid id", async () => {
+
     const id = "!000000f7cad342ac046AAAA";
 
-    return request(app)
+    const {
+      body: {
+        deleted,
+        error
+      }
+    } = await request(app)
       .delete("/article/")
       .set("x-auth", logInToken)
       .send({ id })
       .expect(404)
-      .then(({ body: { deleted, error } }) => {
-        assert.equal(deleted, false);
-        assert.equal(error, "Bad article id");
-      });
+
+    assert.equal(deleted, false);
+    assert.equal(error, "Bad article id");
   });
 
-  it("not find article with non-existing id", () => {
-    const id = "1a00aaa111aaaa1111a111a1";
+  it("not find article with non-existing id", async () => {
 
-    return request(app)
+    const {
+      body: {
+        deleted,
+        error
+      }
+    } = await request(app)
       .delete("/article/")
       .set("x-auth", logInToken)
-      .send({ id })
+      .send({ id: new ObjectId() })
       .expect(404)
-      .then(({ body: { deleted, error } }) => {
-        assert.equal(deleted, false);
-        assert.equal(error, "Invalid request to delete");
-      });
+      
+    assert.equal(deleted, false);
+    assert.equal(error, "Invalid request to delete");
   });
 });
 
 describe("/article/archive/", () => {
+
   it("archive existing article", async () => {
     const archiveID = articles[2]._id;
 
@@ -250,9 +261,12 @@ describe("/article/archive/", () => {
     assert.equal(message, "Article archived");
     assert.equal(archived, true);
 
-    const { archive, archiveDate } = await ArticleLog.findOne({
-      _id: archiveID
-    })
+    const {
+      archive,
+      archiveDate
+    } = await ArticleLog.findOne({
+        _id: archiveID
+      })
       .select("archive archiveDate")
       .exec();
 
