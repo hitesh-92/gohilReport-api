@@ -114,10 +114,15 @@ describe("/article/:articleId PATCH", () => {
       .set("x-auth", logInToken)
       .send(data)
       .expect(200)
-      .then(({ body: { status } }) => {
+      .then( ({ 
+        body: { status }
+      }) => {
         assert.equal(status, true);
       });
   });
+
+  
+
 });
 
 describe("/article/:articleId DELETE", () => {

@@ -16,7 +16,7 @@ router.get("/:articleId", (req, res) => {
     found: null
   };
 
-  const invalidID = ObjectId.isValid(requestId) === false;
+  const invalidID = ObjectId.isValid(requestId) == false;
 
   if (invalidID) {
     data.message = "Invalid Article ID provided";
@@ -28,17 +28,17 @@ router.get("/:articleId", (req, res) => {
   ArticleLog.findById(queryID)
     .exec()
     .then(log => {
-      let status = 200;
+      let status = 404;
 
       data.article = log;
 
-      // no document returned from find request
-      if (log === null) {
-        data.found = false;
+      if (log == null) {
         data.message = "No Article found with given requestId";
-        status = 404;
-      } else {
+        data.found = false;
+      }
+      else {
         data.found = true;
+        status = 200;
       }
 
       res.status(status).json(data);
@@ -80,20 +80,18 @@ router.post("/", Authenticate, (req, res) => {
 });
 
 router.post("/archive", Authenticate, (req, res) => {
+
   let data = {
     archived: false
   };
 
   const { id: articleId } = req.body;
 
-  const isValidId = ObjectId.isValid(articleId);
+  const invalidId = ObjectId.isValid(articleId) == false ;
 
-  if (!isValidId) {
-    res.status(400).send({ error: "Invalid id" });
-    return;
-  }
+  if (invalidId) return res.status(400).send({ error: "Invalid id" });
 
-  const fetchArticle = async _id =>
+  const fetchArticle = async (_id) =>
     await ArticleLog.findOne({ _id })
       .select("_id archive")
       .exec();
@@ -105,12 +103,13 @@ router.post("/archive", Authenticate, (req, res) => {
 
   const fetchData = async () => {
     const article = await fetchArticle(articleId);
-    const { _id: columnId } = await fetchArchiveColumn();
-    return [article, columnId];
+    const { _id } = await fetchArchiveColumn();
+    return [article, _id];
   };
 
   fetchData()
     .then(async ([article, columnId]) => {
+
       if (article.archive != undefined) {
         data.error = "Article is already archived";
         res.status(400).json(data);
@@ -127,15 +126,15 @@ router.post("/archive", Authenticate, (req, res) => {
         }
       );
 
-      let status;
+      let status = 501;
 
-      if (nModified === 1) {
+      //nModified should be 1 if archive successful
+      if (nModified) {
         data.archived = true;
         data.message = "Article archived";
         status = 200;
       } else {
         data.error = "Error archiving article";
-        status = 501;
       }
 
       res.status(status).send(data);
@@ -152,9 +151,9 @@ router.patch("/:articleId", Authenticate, (req, res) => {
   async function updateArticle(id, title, url, createdAt) {
     let body = {};
 
-    if (title !== undefined) body.title = title;
-    if (url !== undefined) body.url = url;
-    if (createdAt !== undefined) body.createdAt = createdAt;
+    if (title) body.title = title;
+    if (url) body.url = url;
+    if (createdAt) body.createdAt = createdAt;
 
     return await ArticleLog.updateOne({ _id: id }, { $set: body });
   }
