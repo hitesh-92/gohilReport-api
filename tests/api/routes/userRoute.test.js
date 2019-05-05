@@ -1,8 +1,4 @@
 const {app} =  require('../../../app')
-
-const request = require('supertest')
-const assert = require('assert')
-
 const { users } = require('../../seedData')
 
 describe("user/ Routes", () => {
@@ -27,7 +23,7 @@ describe("user/ Routes", () => {
                 assert.equal(added, true)
             })
 
-        })//
+        });
 
         it('reject bad password', () => {
 
@@ -46,8 +42,8 @@ describe("user/ Routes", () => {
                 assert.equal(added, false)
             })
 
-        })//
-    })//
+        });
+    });
 
     describe("POST /login", () => {
 
@@ -66,11 +62,10 @@ describe("user/ Routes", () => {
                 header,
                 body: {loggedIn}
             }) => {
-                // console.log(body)
                 assert.equal(loggedIn, true)
             })
 
-        })//
+        });
 
         it('reject bad login details', () => {
 
@@ -89,9 +84,9 @@ describe("user/ Routes", () => {
                 assert.equal(loggedIn, false)
             })
 
-        })//
+        });
 
-    })//
+    });
 
-})// user/ Routes
+});
 

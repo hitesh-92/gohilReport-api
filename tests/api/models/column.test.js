@@ -1,6 +1,6 @@
 const Column = require('../../../api/models/column')
 const mongoose = require('mongoose')
-const assert = require('assert')
+// const assert = require('assert')
 const { Types: {ObjectId} } = mongoose
 
 describe('MODEL column', () => {

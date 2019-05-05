@@ -1,8 +1,6 @@
 const User = require('../../../api/models/user')
 const ObjectId = require('mongoose').Types.ObjectId
 
-const assert = require('assert')
-
 describe('MODEL user', () => {
 
     it('create new user', () => {

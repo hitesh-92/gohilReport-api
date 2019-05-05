@@ -1,3 +1,6 @@
+global.assert = require('assert');
+global.request = require('supertest');
+
 const ArticleLog = require('../api/models/articleLog')
 const User = require('../api/models/user')
 const Column = require('../api/models/column')
@@ -11,13 +14,18 @@ const {
     users
 } = require('./seedData')
 
+beforeEach( async () => 
+    await Promise.all([
+        testDelete(ArticleLog),
+        testDelete(User),
+        testDelete(Column)
+    ])
+)
 
-// Delete all collections
-beforeEach( async () => await testDelete(ArticleLog) )
-beforeEach( async () => await testDelete(User) )
-beforeEach( async () => await testDelete(Column) )
-
-// Seed db
-beforeEach( async () => await testSeed(Column, columns) )
-beforeEach( async () => await testSeed(ArticleLog, articles) )
-beforeEach( async () => await testSeedUsers(users) )
+beforeEach( async () => 
+    await Promise.all([
+        testSeed(Column, columns),
+        testSeed(ArticleLog, articles),
+        testSeedUsers(users)
+    ])
+)

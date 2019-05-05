@@ -10,7 +10,7 @@ const { columnIds } = require("../../seedData");
 const {
   columnIds: [columnId]
 } = require("../../seedData");
-const assert = require("assert");
+// const assert = require("assert");
 
 describe("MODEL articleLog", () => {
   it("create new log with 4 properties", async () => {
@@ -38,29 +38,6 @@ describe("MODEL articleLog", () => {
     assert.equal(typeof updatedAt, "object");
     assert.equal(typeof column._id, "object");
   }); //
-
-  //.updateStatus info
-
-  //for alert column
-  //add an option to not set this counter
-  //add a way to switch it on at a later date = new articleLog method
-
-  // articleLog status prop:
-  // -1: alert 1month  red--text
-  //  0: new           amber
-  //  1: 1 month       amber-green
-  //  2: 3 months      green
-  //  3: 6 months      white
-  //
-  //  #re-write
-  //  -1 = manual edit to 0
-  //  0 ++ = 1 month
-  //  1 ++ = 3months
-  //  2 ++ = 6months
-  //  3 nil
-  //
-  //  ADD LATER
-  //  10: archived
 
   it("updateLogs method updates articles status", () => {
     const buildArticleData = () => {

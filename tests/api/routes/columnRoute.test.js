@@ -4,17 +4,11 @@ const mongoose = require('mongoose')
 const { Types: {ObjectId}} = mongoose
 
 const {
-    articles,
-    columns,
-    buildArticleData,
     columnIds: [leftColumnId],
     logInToken
 } = require('../../seedData')
 
 const Column = require('../../../api/models/column')
-
-const request = require('supertest')
-const assert = require('assert')
 
 describe('column/ Routes', () => {
 
