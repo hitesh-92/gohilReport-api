@@ -99,18 +99,19 @@ describe("/article/ POST", () => {
   });
 });
 
-describe("/article/:articleId PATCH", () => {
+describe.only("/article/ PATCH", () => {
+
   it("updates article title/url", () => {
-    const hex_id = articles[0]._id.toHexString();
+    // const hex_id = articles[0]._id.toHexString();
 
     const data = {
+      id: articles[0]._id,
       title: "one uno eno noe",
-      url: "http://wwww.oneoneone.com",
-      column: leftColumnId
+      url: "http://wwww.oneoneone.com"
     };
 
     return request(app)
-      .patch(`/article/${hex_id}`)
+      .patch(`/article/`)
       .set("x-auth", logInToken)
       .send(data)
       .expect(200)
@@ -121,7 +122,18 @@ describe("/article/:articleId PATCH", () => {
       });
   });
 
-  
+  // it("only updates title", async () => {
+
+  //   const data = { title: 'updated Title' }
+
+  //   const {
+  //     body: { status }
+  //   } = await request(app)
+  //     .patch()
+
+
+
+  // });
 
 });
 

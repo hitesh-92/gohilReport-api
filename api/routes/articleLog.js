@@ -142,28 +142,37 @@ router.post("/archive", Authenticate, (req, res) => {
     .catch(err => res.status(500).send({ error: err }));
 });
 
-router.patch("/:articleId", Authenticate, (req, res) => {
+router.patch("/", Authenticate, (req, res) => {
   let data = {};
 
-  const requestId = req.params.articleId;
-  const { title, url, createdAt } = req.body;
+  const { 
+    title = null,
+    url = null,
+    id = null
+  } = req.body;
 
-  async function updateArticle(id, title, url, createdAt) {
+  async function updateArticle(id, title, url) {
     let body = {};
 
     if (title) body.title = title;
     if (url) body.url = url;
-    if (createdAt) body.createdAt = createdAt;
 
     return await ArticleLog.updateOne({ _id: id }, { $set: body });
   }
 
-  ArticleLog.findById(requestId)
+  if( !title && !url ) {
+    return res.status(400).json({
+      error: 'No title or url provided',
+      status: false
+    })
+  }
+
+  ArticleLog.findById(id)
     .then(article => {
       if (article === null) return null;
 
       data.oldArticle = article;
-      return updateArticle(requestId, title, url, createdAt);
+      return updateArticle(id, title, url);
     })
     .then(response => {
       let status = 200;
