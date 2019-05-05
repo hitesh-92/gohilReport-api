@@ -143,7 +143,7 @@ router.post("/archive", Authenticate, (req, res) => {
 });
 
 router.patch("/", Authenticate, (req, res) => {
-  let data = {};
+  let data = { status: false };
 
   const { 
     title = null,
@@ -160,30 +160,33 @@ router.patch("/", Authenticate, (req, res) => {
     return await ArticleLog.updateOne({ _id: id }, { $set: body });
   }
 
-  if( !title && !url ) {
-    return res.status(400).json({
-      error: 'No title or url provided',
-      status: false
-    })
+  if( title == null && url == null ) {
+    data.message = 'No title or url provided';
+    return res.status(400).send(data)
   }
 
   ArticleLog.findById(id)
+    .select('_id')
+    .exec()
     .then(article => {
-      if (article === null) return null;
-
-      data.oldArticle = article;
+      if ( article == null ) return;
       return updateArticle(id, title, url);
     })
-    .then(response => {
+    .then( ({
+      nModified: patched = null
+    } = {}) => {
+      
       let status = 200;
 
-      if (response === null) {
-        data.error = { message: "Unable find article with ID" };
+      if ( patched == null ) {
+        data.error = { message: 'Unable find article with ID' };
         status = 400;
-      } else if (response.ok !== 1) {
-        data.error = { message: "Unsuccessful update" };
+      } else if ( !patched ) {
+        data.error = { message: 'Unsuccessful update' };
         status = 400;
-      } else data.status = true;
+      } else {
+        data.status = true;
+      }
 
       res.status(status).send(data);
     });

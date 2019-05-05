@@ -111,7 +111,7 @@ describe.only("/article/ PATCH", () => {
     };
 
     return request(app)
-      .patch(`/article/`)
+      .patch('/article/')
       .set("x-auth", logInToken)
       .send(data)
       .expect(200)
@@ -122,18 +122,72 @@ describe.only("/article/ PATCH", () => {
       });
   });
 
-  // it("only updates title", async () => {
+  it("only updates title", async () => {
 
-  //   const data = { title: 'updated Title' }
+    const data = {
+      id: articles[0]._id,
+      title: 'updated Title'
+    }
 
-  //   const {
-  //     body: { status }
-  //   } = await request(app)
-  //     .patch()
+    const {
+      body: { status }
+    } = await request(app)
+      .patch('/article/')
+      .set("x-auth", logInToken)
+      .send(data)
+      .expect(200)
 
+    assert.equal(status, true)
 
+    const {
+      title
+    } =  await ArticleLog
+      .findOne({_id: data.id})
+      .select('title')
+      .exec()
+    
+    assert.equal(title, data.title)
+  });
 
-  // });
+  it("rejects request with no title/url", async () => {
+
+    const data = {
+      id: new ObjectId()
+    }
+
+    const {
+      body: { status, message }
+    } = await request(app)
+      .patch('/article/')
+      .set("x-auth", logInToken)
+      .send(data)
+      .expect(400)
+
+    assert.equal(status, false)
+    assert.equal(message, 'No title or url provided')
+  });
+
+  it("rejects request with invalid article id", async () => {
+
+    const data = {
+      id: new ObjectId(),
+      title: 'random Title'
+    }
+
+    const {
+      body: {
+        status,
+        error: { message }
+      }
+    } = await request(app)
+      .patch('/article/')
+      .set("x-auth", logInToken)
+      .send(data)
+      .expect(400)
+
+    assert.equal(status, false)
+    assert.equal(message, 'Unable find article with ID');
+  })
 
 });
 
