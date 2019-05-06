@@ -8,24 +8,18 @@ const {
   Types: { ObjectId }
 } = mongoose;
 
-router.get("/:articleId", (req, res) => {
-  const requestId = req.params.articleId;
+router.get("/single", (req, res) => {
+  const { id } = req.body
 
-  let data = {
-    requestId,
-    found: null
-  };
+  let data = { found: null }
 
-  const invalidID = ObjectId.isValid(requestId) == false;
-
-  if (invalidID) {
+  if ( ObjectId.isValid(id) == false ) {
     data.message = "Invalid Article ID provided";
     return res.status(400).json(data);
   }
 
-  const queryID = ObjectId.createFromHexString(requestId);
-
-  ArticleLog.findById(queryID)
+  ArticleLog.findOne({_id: id})
+    .lean()
     .exec()
     .then(log => {
       let status = 404;
@@ -35,8 +29,7 @@ router.get("/:articleId", (req, res) => {
       if (log == null) {
         data.message = "No Article found with given requestId";
         data.found = false;
-      }
-      else {
+      } else {
         data.found = true;
         status = 200;
       }
@@ -74,7 +67,6 @@ router.post("/", Authenticate, (req, res) => {
     })
     .catch(err => {
       data.error = err;
-      data.articleSaved = false;
       res.status(400).json(data);
     });
 });
@@ -87,9 +79,10 @@ router.post("/archive", Authenticate, (req, res) => {
 
   const { id: articleId } = req.body;
 
-  const invalidId = ObjectId.isValid(articleId) == false ;
-
-  if (invalidId) return res.status(400).send({ error: "Invalid id" });
+  if ( ObjectId.isValid(articleId) == false ) {
+    res.status(400).send({ error: "Invalid id" })
+    return
+  }
 
   const fetchArticle = async (_id) =>
     await ArticleLog.findOne({ _id })
@@ -137,9 +130,9 @@ router.post("/archive", Authenticate, (req, res) => {
         data.error = "Error archiving article";
       }
 
-      res.status(status).send(data);
+      res.status(status).json(data);
     })
-    .catch(err => res.status(500).send({ error: err }));
+    .catch(err => res.status(500).json({ error: err }));
 });
 
 router.patch("/", Authenticate, (req, res) => {
@@ -151,18 +144,18 @@ router.patch("/", Authenticate, (req, res) => {
     id = null
   } = req.body;
 
-  async function updateArticle(id, title, url) {
+  async function updateArticle(_id, title, url) {
     let body = {};
 
     if (title) body.title = title;
     if (url) body.url = url;
 
-    return await ArticleLog.updateOne({ _id: id }, { $set: body });
+    return await ArticleLog.updateOne({ _id   }, { $set: body });
   }
 
   if( title == null && url == null ) {
     data.message = 'No title or url provided';
-    return res.status(400).send(data)
+    return res.status(400).json(data)
   }
 
   ArticleLog.findById(id)
@@ -198,9 +191,7 @@ router.delete("/", Authenticate, (req, res) => {
 
   let data = { deleted: false };
 
-  const invalidID = ObjectId.isValid(id) == false;
-
-  if (invalidID) {
+  if ( ObjectId.isValid(id) == false ) {
     data.error = "Bad article id";
     return res.status(404).json(data);
   }
@@ -208,14 +199,14 @@ router.delete("/", Authenticate, (req, res) => {
   ArticleLog.findOneAndDelete({ _id: id })
     .then(article => {
       
-      let status = 200;
+      let status = 404;
       
       if (article == null) {
         data.error = "Invalid request to delete";
-        status = 404;
       } else {
         data.log = article;
         data.deleted = true;
+        status = 200;
       }
 
       res.status(status).json(data);

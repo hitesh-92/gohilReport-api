@@ -13,9 +13,8 @@ const {
 const ArticleLog = require("../../../api/models/articleLog");
 
 describe("/article/:articleId GET", () => {
-  it("find saved ArticleLog using _id", async () => {
+  it("find saved article", async () => {
     const article = articles[0];
-    const id = article._id.toHexString();
 
     const {
       body: {
@@ -23,23 +22,45 @@ describe("/article/:articleId GET", () => {
         article: { title }
       }
     } = await request(app)
-      .get(`/article/${id}`)
-      .expect(200);
+      .get('/article/single')
+      .send({ id: article._id })
+      .expect(200)
 
     assert.strictEqual(found, true);
     assert.strictEqual(title, article.title);
   });
 
-  it("Bad ID results in not found", async () => {
-    const badID = "123456";
+  it("reject invalid id", async () => {
+    const badId = "123456";
 
     const {
-      body: { found }
+      body: {
+        found,
+        message
+      }
     } = await request(app)
-      .get(`/article/${badID}`)
-      .expect(400);
+      .get('/article/single')
+      .send({ id: badId })
+      .expect(400)
 
-    assert.strictEqual(found, null);
+    assert.equal(found, null)
+    assert.equal(message, "Invalid Article ID provided")
+  });
+
+  it("not find article", async () => {
+
+    const {
+      body: {
+        found,
+        message
+      }
+    } = await request(app)
+      .get('/article/single')
+      .send({id: new ObjectId()})
+      .expect(404)
+    
+    assert.equal(found, false)
+    assert.equal(message, 'No Article found with given requestId')
   });
 });
 
