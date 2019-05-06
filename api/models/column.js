@@ -11,11 +11,7 @@ const columnSchema = Schema({
         trim: true,
         minlength: 1,
         unique: true
-    },
-    articles: [{
-        ref: 'articlelog',
-        type: Schema.Types.ObjectId
-    }]
+    }
 }, {
     timestamps: true
 })

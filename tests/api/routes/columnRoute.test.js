@@ -6,12 +6,12 @@ const { Types: { ObjectId } } = mongoose
 const {
     columnIds: [leftColumnId],
     logInToken,
-    linkArticlesToColumn,
-    articles
+    // linkArticlesToColumn,
+    // articles
 } = require('../../seedData')
 
 const Column = require('../../../api/models/column')
-const ArticleLog = require('../../../api/models/articleLog')
+// const ArticleLog = require('../../../api/models/articleLog')
 
 describe('column/ Routes', () => {
 
@@ -32,42 +32,39 @@ describe('column/ Routes', () => {
 
     })
 
-    describe('GET /:column', () => {
+    describe('GET /single', () => {
 
-        it('find column and return articles', () => {
-            return request(app)
-                .get('/column/left')
+        it('find column and return articles', async () => {
+            const {
+                body: {
+                    error,
+                    articles
+                }
+            } = await request(app)
+                .get('/column/single/')
+                .send({title: 'left'})
                 .expect(200)
-                .then(({
-                    body: {
-                        columnData: { _id },
-                        articles,
-                        error
-                    }
-                }) => {
-                    assert.equal(error, false)
-                    assert.equal(_id, leftColumnId)
-                    assert.equal(articles.length, 2)
-                })
-        })
+                
+            assert.equal(error, false)
+            assert.equal(articles.length, 2)
+        });
 
-        it("not find invalid column", () => {
-            return request(app)
-                .get('/column/badColumn')
+        it("not find invalid column", async () => {
+            const {
+                body: {
+                    columnData,
+                    message,
+                    error
+                }
+            } = await request(app)
+                .get('/column/single')
+                .send({ title: 'badColumn'})
                 .expect(400)
-                .then(({
-                    body: {
-                        columnData,
-                        message,
-                        error
-                    }
-                }) => {
-                    assert.equal(columnData, null)
-                    assert.equal(message, 'Column not found')
-                    assert.equal(error, true)
-                })
-        })
-
+                
+            assert.equal(columnData, null)
+            assert.equal(message, 'Column not found')
+            assert.equal(error, true)
+        });
     })
 
     describe('POST /', () => {
@@ -216,8 +213,9 @@ describe('column/ Routes', () => {
             const {
                 body: { deleted, message }
             } = await request(app)
-                .delete('/column/right')
+                .delete('/column/')
                 .set('x-auth', logInToken)
+                .send({title: 'left'})
                 .expect(200)
 
             assert.equal(message, 'success')
@@ -229,8 +227,9 @@ describe('column/ Routes', () => {
             const {
                 body: { deleted, message }
             } = await request(app)
-                .delete('/column/noColumn')
+                .delete('/column/')
                 .set('x-auth', logInToken)
+                .send({title: 'thisDoesNotExist'})
                 .expect(400)
 
             assert.equal(message, 'Invalid Column Provided')

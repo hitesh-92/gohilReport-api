@@ -56,23 +56,25 @@ router.get('/', (req, res) => {
 });
 
 
-router.get('/:column', (req, res) => {
+router.get('/single', (req, res) => {
 
-    const title = req.params.column
+    const { title } = req.body
 
     let data = {}
 
     Column.findOne({title})
+    .lean()
     .exec()
-    .then(column => {
+    .then( async (column) => {
         
-        data.columnData = column
+        data.columnData = column || null
         
         if(column == null) return
 
         return ArticleLog.find({
             'column': {$in: column._id} 
         })
+        .lean()
         .exec()
     })
     .then(articles => {
@@ -90,8 +92,8 @@ router.get('/:column', (req, res) => {
 
         res.status(status).json(data)
     })
-    .catch(e => {
-        data.error = { status:true, message:e }
+    .catch(err => {
+        data.error = { status:true, message:err }
         data.message = 'Error processing request'
         res.status(500).json(data)
     })
@@ -110,12 +112,12 @@ router.post('/', Authenticate, (req, res) => {
 
     if( data.title.trim().length < 4 ) {
         data.error = 'Invalid title'
-        return res.status(400).send(data)
+        return res.status(400).json(data)
     }
 
     const column = new Column({
         _id: new ObjectId(),
-        title: data.title
+        title: data.title.trim()
     })
     
     column.save()
@@ -137,7 +139,7 @@ router.post('/', Authenticate, (req, res) => {
     })
     .catch(err => {
         data.error = err
-        res.status(500).send(data)
+        res.status(500).json(data)
     })
 })
 
@@ -151,22 +153,20 @@ router.patch('/', Authenticate, (req,res) => {
     const findColumn = async (_id) => await Column
     .findOne( { _id } )
     .select('_id title')
+    .lean()
     .exec()
 
     const updateColumn = async (_id, title) => await Column
     .updateOne( {_id}, { $set: {title} } )
     .exec()
 
-
-    const isValidId = ObjectId.isValid(columnId)
-
-    if( isValidId === false ) {
-        res.status(400).send({error: 'Invalid id'})
+    if( ObjectId.isValid(columnId) == false ) {
+        res.status(400).json({error: 'Invalid id'})
         return
     }
 
     if( String(updateTitle).trim().length < 4 ){
-        res.status(400).send({error: 'Invalid update title'})
+        res.status(400).json({error: 'Invalid update title'})
         return
     }
 
@@ -175,47 +175,49 @@ router.patch('/', Authenticate, (req,res) => {
 
         if (!column){
             data.error = 'No column with given id found'
-            res.status(400).send(data)
+            res.status(400).json(data)
             return
         }
 
         const savedColumn = await updateColumn(columnId, updateTitle)
         data.column = savedColumn
-        res.status(200).send(data)
+        res.status(200).json(data)
     })
     .catch(err => {
         data.error = err
-        res.status(500).send(data)
+        res.status(500).json(data)
     })
 })
 
 
-router.delete('/:column', Authenticate, (req,res) => {
+router.delete('/', Authenticate, (req,res) => {
 
-    const columnSelected = req.params.column
+    const { title } = req.body
 
     let data = {
-        deleted: true,
-        message: 'success'
+        deleted: false  
     }
 
-    Column.findOneAndDelete({title: columnSelected})
+    Column
+    .findOneAndDelete({ title })
     .exec()
     .then(log => {
 
-        let status = 200
+        let status = 400
         
         if(log === null){
-            status = 400
             data.message = 'Invalid Column Provided'
-            data.deleted = false
+        } else {
+            status = 200
+            data.message = 'success'
+            data.deleted = true
         }
             
-        res.status(status).send(data)
+        res.status(status).json(data)
     })
     .catch(err => {
         data.error = err
-        res.status(500).send(data)
+        res.status(500).json(data)
     })
 
 })

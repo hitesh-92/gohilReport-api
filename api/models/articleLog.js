@@ -27,6 +27,10 @@ const articleLogSchema = new Schema(
     archiveDate: {
       type: Schema.Types.Date
     },
+    position: {
+      type: Number,
+      default: -1
+    },
     column: {
       type: Schema.Types.ObjectId,
       required: true,
@@ -77,7 +81,7 @@ articleLogSchema.statics.updateStatus = function() {
 
     const requests = logs.map(log => {
       const statusChange = checkStatus(log);
-      if (statusChange !== false) return updateQuery(statusChange);
+      if (statusChange) return updateQuery(statusChange);
     });
     
     return await Promise.all(requests);
