@@ -12,7 +12,7 @@ const {
 
 const ArticleLog = require("../../../api/models/articleLog");
 
-describe("/article/:articleId GET", () => {
+describe("/article/ GET", () => {
   it("find saved article", async () => {
     const article = articles[0];
 
@@ -118,9 +118,14 @@ describe("/article/ POST", () => {
         });
       });
   });
+
+  it("adds articles and edits positions")
+
 });
 
 describe("/article/ PATCH", () => {
+
+  it("edits position of articles")
 
   it("updates article title/url", () => {
 
@@ -211,7 +216,7 @@ describe("/article/ PATCH", () => {
 
 });
 
-describe("/article/:articleId DELETE", () => {
+describe("/article/ DELETE", () => {
 
   it("delete exisitng article", async () => {
 
@@ -267,7 +272,11 @@ describe("/article/:articleId DELETE", () => {
 
 describe("/article/archive/", () => {
 
-  it("archive existing article", async () => {
+  it("GET get all archived articles")
+
+  it("null position propery and readjust positions")
+
+  it("POST archive existing article", async () => {
     const archiveID = articles[2]._id;
 
     const {
@@ -294,7 +303,7 @@ describe("/article/archive/", () => {
     assert.equal(typeof archiveDate, "object");
   });
 
-  it("not archive existing archive", async () => {
+  it("POST not archive existing archive", async () => {
     const archiveID = articles[6]._id;
 
     await ArticleLog.updateOne(
