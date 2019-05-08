@@ -42,10 +42,72 @@ const articleLogSchema = new Schema(
   }
 );
 
-articleLogSchema.statics.updateStatus = function() {
+articleLogSchema.statics.updateStatus = async function () {
   var ArticleLog = this;
 
-  const checkStatus = ({ _id, status, createdAt }) => {
+  return await new Promise(updateStatus)
+
+  async function updateStatus(resolve, reject) {
+    var currentArticles = await fetchArticles()
+    if (currentArticles == null) return reject(new Error('Error Fetching Articles'))
+
+    var updateComplete = await updateArticles(currentArticles)
+    if (!updateComplete) return reject(new Error('Error Updating Articles'))
+
+    return resolve(updateComplete.length)
+  };
+
+  // -----
+
+  async function fetchArticles() {
+    var result;
+    try {
+      result = await ArticleLog.find(
+        { status: { $lt: 3 } }
+      )
+        .select("_id status createdAt")
+        .exec()
+    } catch (err) {
+      result = null
+    } finally {
+      return result;
+    }
+  };
+
+  async function updateArticles(logs) {
+    var articlesToUpdate = logs.map(updateCheck).filter(filterQueryies);
+
+    var saved;
+    try {
+      saved = await Promise.all(articlesToUpdate)
+    } catch (err) {
+      saved = err
+    } finally {
+      return saved
+    }
+
+    // -----
+
+    function updateCheck(log) {
+      var updateData = checkStatus(log)
+      if (updateData) return updateQuery(updateData)
+    };
+
+    function updateQuery({ _id, status }) {
+      return new Promise(resolve => {
+        resolve(
+          ArticleLog.updateOne({ _id }, { $set: { status } })
+        );
+      });
+    };
+
+    function filterQueryies(query) {
+      if (!(query == null)) return query;
+    };
+
+  };
+
+  function checkStatus({ _id, status, createdAt }) {
     const compose = (nxt, inc) => m => inc(nxt(m));
     const nextUpdate = months => moment(createdAt).add(months, "months");
     const toIncrease = nextUpdate => moment().isAfter(nextUpdate);
@@ -69,34 +131,8 @@ articleLogSchema.statics.updateStatus = function() {
         return check(6, 3);
       default:
         return false;
-    }
-  };
-
-  const initUpdate = async logs => {
-    const updateQuery = ({ _id, status }) => {
-      return new Promise(resolve => {
-        resolve(ArticleLog.updateOne({ _id }, { $set: { status } }));
-      });
     };
-
-    const requests = logs.map(log => {
-      const statusChange = checkStatus(log);
-      if (statusChange) return updateQuery(statusChange);
-    });
-    
-    return await Promise.all(requests);
   };
-
-  return new Promise((resolve, reject) => {
-    ArticleLog.find({ status: { $lt: 3 } })
-      .select("_id status createdAt")
-      .exec()
-      .then(async toUpdate => {
-        const updated = await initUpdate(toUpdate);
-        resolve({ toUpdate, updated });
-      })
-      .catch(error => reject(error));
-  });
 };
 
 module.exports = mongoose.model("articleLog", articleLogSchema);

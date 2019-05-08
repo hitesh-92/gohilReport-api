@@ -5,9 +5,7 @@ const { Types: { ObjectId } } = mongoose
 
 const {
     columnIds: [leftColumnId],
-    logInToken,
-    // linkArticlesToColumn,
-    // articles
+    logInToken
 } = require('../../seedData')
 
 const Column = require('../../../api/models/column')
@@ -42,9 +40,9 @@ describe('column/ Routes', () => {
                 }
             } = await request(app)
                 .get('/column/single/')
-                .send({title: 'left'})
+                .send({ title: 'left' })
                 .expect(200)
-                
+
             assert.equal(error, false)
             assert.equal(articles.length, 2)
         });
@@ -58,9 +56,9 @@ describe('column/ Routes', () => {
                 }
             } = await request(app)
                 .get('/column/single')
-                .send({ title: 'badColumn'})
+                .send({ title: 'badColumn' })
                 .expect(400)
-                
+
             assert.equal(columnData, null)
             assert.equal(message, 'Column not found')
             assert.equal(error, true)
@@ -215,7 +213,7 @@ describe('column/ Routes', () => {
             } = await request(app)
                 .delete('/column/')
                 .set('x-auth', logInToken)
-                .send({title: 'left'})
+                .send({ title: 'left' })
                 .expect(200)
 
             assert.equal(message, 'success')
@@ -229,7 +227,7 @@ describe('column/ Routes', () => {
             } = await request(app)
                 .delete('/column/')
                 .set('x-auth', logInToken)
-                .send({title: 'thisDoesNotExist'})
+                .send({ title: 'thisDoesNotExist' })
                 .expect(400)
 
             assert.equal(message, 'Invalid Column Provided')

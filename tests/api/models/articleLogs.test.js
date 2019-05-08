@@ -10,7 +10,6 @@ const { columnIds } = require("../../seedData");
 const {
   columnIds: [columnId]
 } = require("../../seedData");
-// const assert = require("assert");
 
 describe("MODEL articleLog", () => {
   it("create new log with 4 properties", async () => {
@@ -39,7 +38,7 @@ describe("MODEL articleLog", () => {
     assert.equal(typeof column._id, "object");
   }); //
 
-  it("updateLogs method updates articles status", () => {
+  it.only("updateLogs method updates articles status", () => {
     const buildArticleData = () => {
       const status = [0, 1, 2, 3];
       const monthIncrement = [1, 3, 6, 0];
@@ -78,7 +77,7 @@ describe("MODEL articleLog", () => {
 
     return saveArticles(articleData)
       .then(() => ArticleLog.updateStatus())
-      .then(async () => {
+      .then(async (count) => {
         const data = await ArticleLog.find({ _id: { $in: articleIDs } })
           .select("status")
           .exec();
@@ -86,6 +85,7 @@ describe("MODEL articleLog", () => {
         assert.equal(data[0].status, 1);
         assert.equal(data[1].status, 2);
         assert.equal(data[2].status, 3);
+        assert.equal(count, 3);
       });
   });
 });

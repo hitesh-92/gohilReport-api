@@ -56,9 +56,9 @@ describe("/article/ GET", () => {
       }
     } = await request(app)
       .get('/article/single')
-      .send({id: new ObjectId()})
+      .send({ id: new ObjectId() })
       .expect(404)
-    
+
     assert.equal(found, false)
     assert.equal(message, 'No Article found with given requestId')
   });
@@ -212,6 +212,27 @@ describe("/article/ PATCH", () => {
 
     assert.equal(status, false)
     assert.equal(message, 'Unable find article with ID');
+  })
+
+  it.skip("adds new article and assigns position", async () => {
+
+    const article = new ArticleLog({
+      _id: new ObjectId(),
+      title: 'something new',
+      url: 'www.siteee.com',
+      column: leftColumnId,
+      position: 3
+    });
+
+    await article.save()
+
+    const {
+      body: {
+        position
+      }
+    } = await ArticleLog.findOne({ _id: article._id })
+
+    assert.equal(position, article.position)
   })
 
 });
