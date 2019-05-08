@@ -32,12 +32,14 @@ function buildArticles(data, columnIds){
         const columnId = columnIds[i]
         return articles.map( ({
             title,
-            url
+            url,
+            position
         }) => new ArticleLog({
             _id: ObjectId(),
             title,
             url,
-            column: columnId
+            column: columnId,
+            position
         }) )
     }).flat(1)
 }

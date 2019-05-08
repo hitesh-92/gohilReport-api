@@ -135,7 +135,7 @@ describe("/article/ POST", () => {
 
     const {
       position
-    } = await ArticleLog.findOne({_id: article._id})
+    } = await ArticleLog.findOne({ _id: article._id })
       .select('position')
       .lean()
       .exec()
