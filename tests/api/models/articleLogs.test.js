@@ -38,7 +38,7 @@ describe("MODEL articleLog", () => {
     assert.equal(typeof column._id, "object");
   }); //
 
-  it.only("updateLogs method updates articles status", () => {
+  it("updateLogs method updates articles status", () => {
     const buildArticleData = () => {
       const status = [0, 1, 2, 3];
       const monthIncrement = [1, 3, 6, 0];

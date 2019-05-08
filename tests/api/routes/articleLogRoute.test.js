@@ -119,7 +119,34 @@ describe("/article/ POST", () => {
       });
   });
 
-  it("adds articles and edits positions")
+  it.only("adds articles and edits positions", async () => {
+    //add new Article with position set to 3
+    //get article and checks its position
+
+    var article = new ArticleLog({
+      _id: new ObjectId(),
+      title: 'some new title',
+      url: 'www.posittioning.com',
+      column: leftColumnId,
+      position: 3
+    })
+
+    await article.save()
+
+    const {
+      position
+    } = await ArticleLog.findOne({_id: article._id})
+      .select('position')
+      .lean()
+      .exec()
+
+    assert.equal(position, article.position)
+
+  })
+
+  it("adds articles to last position in column")
+
+  it("invalid position, sets article to last in column")
 
 });
 
