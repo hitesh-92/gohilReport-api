@@ -119,9 +119,7 @@ describe("/article/ POST", () => {
       });
   });
 
-  it.only("adds articles and edits positions", async () => {
-    //add new Article with position set to 3
-    //get article and checks its position
+  it("adds articles and edits positions", async () => {
 
     var article = new ArticleLog({
       _id: new ObjectId(),
@@ -129,22 +127,68 @@ describe("/article/ POST", () => {
       url: 'www.posittioning.com',
       column: leftColumnId,
       position: 3
-    })
+    });
 
-    await article.save()
+    await article.save();
 
     const {
       position
     } = await ArticleLog.findOne({ _id: article._id })
       .select('position')
       .lean()
-      .exec()
+      .exec();
 
-    assert.equal(position, article.position)
-
+    assert.equal(position, article.position);
   })
 
-  it("adds articles to last position in column")
+  it.only("adds articles to first position in column and edits others", async () => {
+
+    var data = {
+      title: "articelLog title",
+      url: "www.articlee.com",
+      column: leftColumnId,
+      position: 1
+    };
+
+    const {
+      body: {
+        createdArticle: {
+          _id: newArticleId
+        }
+      }
+    } = await request(app)
+      .post('/article/')
+      .set('x-auth', logInToken)
+      .send(data)
+      .expect(201)
+
+    var ids = [ newArticleId, articles[0]._id, articles[1]._id ]
+
+    const [
+      newArticle,
+      oldFirstArticle,
+      oldSecondArticle
+    ] = await ArticleLog
+      .find(
+        { '_id': { $in: ids } }
+      )
+      .select('_id position title')
+      .sort({ position: 1 })
+      .lean()
+      .exec();
+
+    console.log('\n\n')
+    console.log(newArticle)
+    console.log(oldFirstArticle)
+    console.log(oldSecondArticle)
+
+    assert.equal(newArticle.position, 1);
+    assert.equal(newArticle.title, data.title);
+    assert.equal(oldFirstArticle.position, 2);
+    assert.equal(oldFirstArticle.title, articles[0].title);
+    assert.equal(oldSecondArticle.position, 3);
+    assert.equal(oldSecondArticle.title, articles[1].title);
+  });
 
   it("invalid position, sets article to last in column")
 

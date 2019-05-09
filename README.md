@@ -67,4 +67,6 @@ node start
 ##### TODO
 - [ ] Complete frontend management system with Angular ( priority 
 - [ ] User validation / tests for jwt
-- [ ] remove and refactor anonymous functions where appropriate
+- [ ] Remove and refactor anonymous functions where appropriate
+- [ ] Restructure API
+- [ ] Add admin authentication

@@ -11,9 +11,9 @@ const {
 router.get("/single", (req, res) => {
   const { id } = req.body
 
-  let data = { found: null }
+  var data = { found: null }
 
-  if ( ObjectId.isValid(id) == false ) {
+  if ( !(ObjectId.isValid(id)) ) {
     data.message = "Invalid Article ID provided";
     return res.status(400).json(data);
   }
