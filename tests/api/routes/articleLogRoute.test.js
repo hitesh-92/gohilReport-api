@@ -1,7 +1,11 @@
-const { app } = require("../../../app");
+const {
+  app
+} = require("../../../app");
 
 const {
-  Types: { ObjectId }
+  Types: {
+    ObjectId
+  }
 } = require("mongoose");
 
 const {
@@ -19,11 +23,15 @@ describe("/article/ GET", () => {
     const {
       body: {
         found,
-        article: { title }
+        article: {
+          title
+        }
       }
     } = await request(app)
       .get('/article/single')
-      .send({ id: article._id })
+      .send({
+        id: article._id
+      })
       .expect(200)
 
     assert.strictEqual(found, true);
@@ -40,7 +48,9 @@ describe("/article/ GET", () => {
       }
     } = await request(app)
       .get('/article/single')
-      .send({ id: badId })
+      .send({
+        id: badId
+      })
       .expect(400)
 
     assert.equal(found, null)
@@ -56,7 +66,9 @@ describe("/article/ GET", () => {
       }
     } = await request(app)
       .get('/article/single')
-      .send({ id: new ObjectId() })
+      .send({
+        id: new ObjectId()
+      })
       .expect(404)
 
     assert.equal(found, false)
@@ -65,7 +77,7 @@ describe("/article/ GET", () => {
 });
 
 describe("/article/ POST", () => {
-  it.skip("create and save new article", () => {
+  it.only("create and save new article", () => {
     const articleData = {
       title: "return201",
       url: "www.201.com",
@@ -77,7 +89,11 @@ describe("/article/ POST", () => {
       .set("x-auth", logInToken)
       .send(articleData)
       .expect(201)
-      .then(({ body: { articleSaved } }) => {
+      .then(({
+        body: {
+          articleSaved
+        }
+      }) => {
         assert.equal(articleSaved, true);
       });
   });
@@ -94,7 +110,11 @@ describe("/article/ POST", () => {
       .set("x-auth", logInToken)
       .send(articleData)
       .expect(400)
-      .then(({ body: { articleSaved } }) => {
+      .then(({
+        body: {
+          articleSaved
+        }
+      }) => {
         assert.equal(articleSaved, false);
       });
   });
@@ -111,8 +131,17 @@ describe("/article/ POST", () => {
       .set("x-auth", logInToken)
       .send(data)
       .expect(201)
-      .then(({ body: { createdArticle: { _id } } }) => {
-        ArticleLog.findById(_id).then(({ title, url }) => {
+      .then(({
+        body: {
+          createdArticle: {
+            _id
+          }
+        }
+      }) => {
+        ArticleLog.findById(_id).then(({
+          title,
+          url
+        }) => {
           assert.equal(title, data.title);
           assert.equal(url, data.url);
         });
@@ -133,7 +162,9 @@ describe("/article/ POST", () => {
 
     const {
       position
-    } = await ArticleLog.findOne({ _id: article._id })
+    } = await ArticleLog.findOne({
+        _id: article._id
+      })
       .select('position')
       .lean()
       .exec();
@@ -162,18 +193,22 @@ describe("/article/ POST", () => {
       .send(data)
       .expect(201)
 
-    const ids = [ newArticleId, articles[0]._id, articles[1]._id ]
+    const ids = [newArticleId, articles[0]._id, articles[1]._id]
 
     const [
       newArticle,
       oldFirstArticle,
       oldSecondArticle
     ] = await ArticleLog
-      .find(
-        { '_id': { $in: ids } }
-      )
+      .find({
+        '_id': {
+          $in: ids
+        }
+      })
       .select('_id position title')
-      .sort({ position: 1 })
+      .sort({
+        position: 1
+      })
       .lean()
       .exec();
 
@@ -207,7 +242,9 @@ describe("/article/ PATCH", () => {
       .send(data)
       .expect(200)
       .then(({
-        body: { status }
+        body: {
+          status
+        }
       }) => {
         assert.equal(status, true);
       });
@@ -221,7 +258,9 @@ describe("/article/ PATCH", () => {
     }
 
     const {
-      body: { status }
+      body: {
+        status
+      }
     } = await request(app)
       .patch('/article/')
       .set("x-auth", logInToken)
@@ -233,7 +272,9 @@ describe("/article/ PATCH", () => {
     const {
       title
     } = await ArticleLog
-      .findOne({ _id: data.id })
+      .findOne({
+        _id: data.id
+      })
       .select('title')
       .exec()
 
@@ -247,7 +288,10 @@ describe("/article/ PATCH", () => {
     }
 
     const {
-      body: { status, message }
+      body: {
+        status,
+        message
+      }
     } = await request(app)
       .patch('/article/')
       .set("x-auth", logInToken)
@@ -268,7 +312,9 @@ describe("/article/ PATCH", () => {
     const {
       body: {
         status,
-        error: { message }
+        error: {
+          message
+        }
       }
     } = await request(app)
       .patch('/article/')
@@ -296,7 +342,9 @@ describe("/article/ PATCH", () => {
       body: {
         position
       }
-    } = await ArticleLog.findOne({ _id: article._id })
+    } = await ArticleLog.findOne({
+      _id: article._id
+    })
 
     assert.equal(position, article.position)
   })
@@ -314,7 +362,9 @@ describe("/article/ DELETE", () => {
     } = await request(app)
       .delete('/article/')
       .set("x-auth", logInToken)
-      .send({ id: articles[1]._id })
+      .send({
+        id: articles[1]._id
+      })
       .expect(200)
 
     assert.equal(deleted, true)
@@ -332,7 +382,9 @@ describe("/article/ DELETE", () => {
     } = await request(app)
       .delete("/article/")
       .set("x-auth", logInToken)
-      .send({ id })
+      .send({
+        id
+      })
       .expect(404)
 
     assert.equal(deleted, false);
@@ -349,7 +401,9 @@ describe("/article/ DELETE", () => {
     } = await request(app)
       .delete("/article/")
       .set("x-auth", logInToken)
-      .send({ id: new ObjectId() })
+      .send({
+        id: new ObjectId()
+      })
       .expect(404)
 
     assert.equal(deleted, false);
@@ -367,11 +421,16 @@ describe("/article/archive/", () => {
     const archiveID = articles[2]._id;
 
     const {
-      body: { archived, message }
+      body: {
+        archived,
+        message
+      }
     } = await request(app)
       .post("/article/archive")
       .set("x-auth", logInToken)
-      .send({ id: archiveID })
+      .send({
+        id: archiveID
+      })
       .expect(200);
 
     assert.equal(message, "Article archived");
@@ -381,8 +440,8 @@ describe("/article/archive/", () => {
       archive,
       archiveDate
     } = await ArticleLog.findOne({
-      _id: archiveID
-    })
+        _id: archiveID
+      })
       .select("archive archiveDate")
       .exec();
 
@@ -393,26 +452,30 @@ describe("/article/archive/", () => {
   it("POST not archive existing archive", async () => {
     const archiveID = articles[6]._id;
 
-    await ArticleLog.updateOne(
-      { _id: archiveID },
-      {
-        $set: {
-          archive: leftColumnId,
-          archiveDate: new Date()
-        }
+    await ArticleLog.updateOne({
+      _id: archiveID
+    }, {
+      $set: {
+        archive: leftColumnId,
+        archiveDate: new Date()
       }
-    ).exec();
+    }).exec();
 
     const archiveThroughRoute = async _id => {
       return await request(app)
         .post("/article/archive")
         .set("x-auth", logInToken)
-        .send({ id: archiveID })
+        .send({
+          id: archiveID
+        })
         .expect(400);
     };
 
     const {
-      body: { archived, error }
+      body: {
+        archived,
+        error
+      }
     } = await archiveThroughRoute(archiveID);
 
     assert.equal(archived, false);

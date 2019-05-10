@@ -48,7 +48,7 @@ router.post("/", Authenticate, async (req, res) => {
     title,
     url,
     column,
-    position
+    position = 0
   } = req.body;
 
   const article = new ArticleLog({
