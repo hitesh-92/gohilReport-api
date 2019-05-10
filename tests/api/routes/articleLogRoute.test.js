@@ -77,7 +77,7 @@ describe("/article/ GET", () => {
 });
 
 describe("/article/ POST", () => {
-  it.only("create and save new article", () => {
+  it("create and save new article", () => {
     const articleData = {
       title: "return201",
       url: "www.201.com",
@@ -119,7 +119,7 @@ describe("/article/ POST", () => {
       });
   });
 
-  it.skip("save new Article, find in db using response _id", () => {
+  it("save new Article, find in db using response _id", () => {
     const data = {
       title: "return 2019",
       url: "www.2019.com",
@@ -220,7 +220,37 @@ describe("/article/ POST", () => {
     assert.equal(oldSecondArticle.title, articles[1].title);
   });
 
-  it("invalid position, sets article to last in column")
+  it.only("invalid position, sets article to last in column", async () => {
+
+    const data = {
+      _id: new ObjectId(),
+      title: 'somerandomTitle',
+      url: 'www.sometest.co',
+      column: leftColumnId,
+      position: 10
+    }
+
+    const {
+      body: {
+        createdArticle: {_id}
+      }
+    } = await request(app)
+      .post('/article/')
+      .set('x-auth', logInToken)
+      .send(data)
+      .expect(201)
+
+
+    const {
+      position
+    } = await ArticleLog.findOne({ _id })
+      .select('position')
+      .lean()
+      .exec();
+    
+    assert.equal(position, 3);
+
+  });
 
 });
 
