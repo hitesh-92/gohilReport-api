@@ -48,8 +48,10 @@ router.post("/", Authenticate, async (req, res) => {
     title,
     url,
     column,
-    position = 0
+    // position = 0
   } = req.body;
+
+  let { position = 0  } = req.body
 
   const article = new ArticleLog({
     _id: new ObjectId(),
@@ -71,6 +73,14 @@ router.post("/", Authenticate, async (req, res) => {
   data.articleSaved = true;
 
   await ArticleLog.shiftPositions(position, column);
+
+  const validPosition = await validatePosition(position, column)
+
+  if (typeof (validPosition) == 'number') {
+    position = validPosition
+  }
+  console.log(validPosition)
+
   await updatePosition(log._id, position)
 
   res.status(201).json(data);
@@ -86,6 +96,23 @@ router.post("/", Authenticate, async (req, res) => {
       log = null;
     } finally {
       return log;
+    }
+  };
+
+  async function validatePosition(position, columnId) {
+    //returns true or highest position
+    const articles = await ArticleLog.find(
+      { 'column': { $in: columnId } }
+    )
+      .select('position')
+      .sort({ position: 1 })
+      .lean()
+      .exec();
+
+    if (position > articles.length) {
+      return articles.length
+    } else {
+      return true
     }
   };
 

@@ -220,7 +220,7 @@ describe("/article/ POST", () => {
     assert.equal(oldSecondArticle.title, articles[1].title);
   });
 
-  it.only("invalid position, sets article to last in column", async () => {
+  it("invalid position, sets article to last in column", async () => {
 
     const data = {
       _id: new ObjectId(),
