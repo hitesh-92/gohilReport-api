@@ -65,7 +65,7 @@ describe("/article/ GET", () => {
 });
 
 describe("/article/ POST", () => {
-  it("create and save new article", () => {
+  it.skip("create and save new article", () => {
     const articleData = {
       title: "return201",
       url: "www.201.com",
@@ -99,7 +99,7 @@ describe("/article/ POST", () => {
       });
   });
 
-  it("save new Article, find in db using response _id", () => {
+  it.skip("save new Article, find in db using response _id", () => {
     const data = {
       title: "return 2019",
       url: "www.2019.com",
@@ -141,7 +141,7 @@ describe("/article/ POST", () => {
     assert.equal(position, article.position);
   })
 
-  it.only("adds articles to first position in column and edits others", async () => {
+  it("adds articles to first position in column and edits others", async () => {
 
     var data = {
       title: "articelLog title",
@@ -162,7 +162,7 @@ describe("/article/ POST", () => {
       .send(data)
       .expect(201)
 
-    var ids = [ newArticleId, articles[0]._id, articles[1]._id ]
+    const ids = [ newArticleId, articles[0]._id, articles[1]._id ]
 
     const [
       newArticle,
@@ -176,11 +176,6 @@ describe("/article/ POST", () => {
       .sort({ position: 1 })
       .lean()
       .exec();
-
-    console.log('\n\n')
-    console.log(newArticle)
-    console.log(oldFirstArticle)
-    console.log(oldSecondArticle)
 
     assert.equal(newArticle.position, 1);
     assert.equal(newArticle.title, data.title);

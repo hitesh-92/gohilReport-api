@@ -43,12 +43,13 @@ router.get("/single", (req, res) => {
     });
 });
 
-router.post("/", Authenticate, (req, res) => {
-  const { title, url, column } = req.body;
-
-  let data = {
-    articleSaved: false
-  };
+router.post("/", Authenticate, async (req, res) => {
+  const {
+    title,
+    url,
+    column,
+    position
+  } = req.body;
 
   const article = new ArticleLog({
     _id: new ObjectId(),
@@ -57,18 +58,52 @@ router.post("/", Authenticate, (req, res) => {
     column
   });
 
-  article
-    .save()
-    .then(log => {
-      data.createdArticle = log;
-      data.articleSaved = true;
+  const data = {
+    articleSaved: false
+  };
 
-      res.status(201).json(data);
-    })
-    .catch(err => {
-      data.error = err;
-      res.status(400).json(data);
-    });
+  const log = await saveArticle(article);
+  if( log == null ) {
+    return res.status(400).json(data);
+  };
+
+  data.createdArticle = log;
+  data.articleSaved = true;
+
+  await ArticleLog.shiftPositions(position, column);
+  await updatePosition(log._id, position)
+
+  res.status(201).json(data);
+
+  // -----
+
+  async function saveArticle(article){
+    var log;
+
+    try {
+      log = await article.save();
+    } catch (error) {
+      log = null;
+    } finally {
+      return log;
+    }
+  };
+
+  async function updatePosition(_id, position){
+    let updated;
+
+    try {
+      updated = await ArticleLog.updateOne(
+        { _id }, { $set: {position} }, {new: true}
+      )
+      .lean()
+      .exec();
+    } catch (error) {
+      updated = null;
+    } finally {
+      return updated;
+    }
+  };
 });
 
 router.post("/archive", Authenticate, (req, res) => {
