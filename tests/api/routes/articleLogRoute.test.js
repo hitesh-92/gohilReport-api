@@ -358,7 +358,7 @@ describe("/article/ PATCH", () => {
 
 describe("/article/switch PATCH", () => {
 
-  it.only("switch position two articles in column", async () => {
+  it("switch position two articles in column", async () => {
 
     const data = {
       selected: {
@@ -466,7 +466,18 @@ describe("/article/ DELETE", () => {
 
 describe("/article/archive/", () => {
 
-  it("GET get all archived articles")
+  it("GET get all archived articles", async () => {
+
+    const {
+      articles
+    } = await request(app)
+      .get('/article/archive')
+      .set('x-auth', logInToken)
+      .expect(200)
+    
+    assert.equal(articles.length, 2)
+
+  });
 
   it("null position propery and readjust positions")
 
