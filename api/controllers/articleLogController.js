@@ -1,3 +1,5 @@
+
+const { Types: {ObjectId} } = require('mongoose');
 const ArticleLog = require('../models/articleLog');
 
 exports.patch = async (req, res) => {
@@ -72,6 +74,53 @@ exports.patch = async (req, res) => {
             _id
         }, {
             $set: body
+        });
+    };
+
+};
+
+exports.switchPositions = async (req, res) => {
+
+    const {
+        selected,
+        moveTo
+    } = req.body;
+
+    const idsValid = validateId(selected.id) == validateId(moveTo.id);
+
+    if(!idsValid){
+        return res.status(400).json({ status: false });
+    }
+
+    const selectedRequest = switchRequest(selected);
+    const moveToRequest = switchRequest(moveTo);
+
+    const [
+        { nModified: selectedSwitched },
+        { nModified: moveToSwitched }
+    ] = await Promise.all([selectedRequest, moveToRequest]);
+
+    if (selectedSwitched && moveToSwitched){
+        return res.status(200).json({status: true})
+    }
+
+    // -----
+
+    function validateId(id){
+        return ObjectId.isValid(id) == true;
+    }
+
+    async function switchRequest({
+        id: _id,
+        position
+    }){
+        return new Promise(resolve => {
+            resolve(
+                ArticleLog.updateOne(
+                    { _id },
+                    { $set: { position } }
+                )
+            );
         });
     };
 

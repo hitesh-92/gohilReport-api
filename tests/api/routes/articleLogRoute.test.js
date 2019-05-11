@@ -358,7 +358,7 @@ describe("/article/ PATCH", () => {
 
 describe("/article/switch PATCH", () => {
 
-  it.skip("switch position two articles in column", async () => {
+  it.only("switch position two articles in column", async () => {
 
     const data = {
       selected: {
@@ -378,6 +378,8 @@ describe("/article/switch PATCH", () => {
       .set('x-auth', logInToken)
       .send(data)
       .expect(200); 
+
+    assert.equal(status, true)
 
     const [
       firstArticle,
