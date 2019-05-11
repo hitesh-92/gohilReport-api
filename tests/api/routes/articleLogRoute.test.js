@@ -361,8 +361,14 @@ describe("/article/switch PATCH", () => {
   it.skip("switch position two articles in column", async () => {
 
     const data = {
-      id: articles[0]._id,
-      position: 2
+      selected: {
+        id: articles[0]._id,
+        position: 2
+      },
+      moveTo: {
+        id: articles[1]._id,
+        position: 1
+      }
     };
 
     const {
@@ -371,9 +377,7 @@ describe("/article/switch PATCH", () => {
       .patch('/article/switch')
       .set('x-auth', logInToken)
       .send(data)
-      .expect(200);
-
-    assert.equal(status, true);
+      .expect(200); 
 
     const [
       firstArticle,

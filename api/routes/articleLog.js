@@ -195,6 +195,8 @@ router.post("/archive", Authenticate, (req, res) => {
 
 router.patch("/", Authenticate, articleLogController.patch)
 
+router.patch("/switch", Authenticate, articleLogController.switchPositions)
+
 router.delete("/", Authenticate, (req, res) => {
   
   const { id } = req.body;
