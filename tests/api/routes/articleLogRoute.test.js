@@ -358,7 +358,7 @@ describe("/article/ PATCH", () => {
 
 describe("/article/switch PATCH", () => {
 
-  it.skip("edits position of exisiting article", async () => {
+  it.skip("switch position two articles in column", async () => {
 
     const data = {
       id: articles[0]._id,
@@ -368,7 +368,7 @@ describe("/article/switch PATCH", () => {
     const {
       body: { status }
     } = await request(app)
-      .patch('/article/')
+      .patch('/article/switch')
       .set('x-auth', logInToken)
       .send(data)
       .expect(200);
