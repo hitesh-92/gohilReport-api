@@ -163,8 +163,8 @@ describe("/article/ POST", () => {
     const {
       position
     } = await ArticleLog.findOne({
-        _id: article._id
-      })
+      _id: article._id
+    })
       .select('position')
       .lean()
       .exec();
@@ -232,7 +232,7 @@ describe("/article/ POST", () => {
 
     const {
       body: {
-        createdArticle: {_id}
+        createdArticle: { _id }
       }
     } = await request(app)
       .post('/article/')
@@ -247,7 +247,7 @@ describe("/article/ POST", () => {
       .select('position')
       .lean()
       .exec();
-    
+
     assert.equal(position, 3);
 
   });
@@ -255,8 +255,6 @@ describe("/article/ POST", () => {
 });
 
 describe("/article/ PATCH", () => {
-
-  it("edits position of articles")
 
   it("updates article title/url", () => {
 
@@ -356,28 +354,47 @@ describe("/article/ PATCH", () => {
     assert.equal(message, 'Unable find article with ID');
   })
 
-  it.skip("adds new article and assigns position", async () => {
+});
 
-    const article = new ArticleLog({
-      _id: new ObjectId(),
-      title: 'something new',
-      url: 'www.siteee.com',
-      column: leftColumnId,
-      position: 3
-    });
+describe("/article/switch PATCH", () => {
 
-    await article.save()
+  it.skip("edits position of exisiting article", async () => {
+
+    const data = {
+      id: articles[0]._id,
+      position: 2
+    };
 
     const {
-      body: {
-        position
-      }
-    } = await ArticleLog.findOne({
-      _id: article._id
-    })
+      body: { status }
+    } = await request(app)
+      .patch('/article/')
+      .set('x-auth', logInToken)
+      .send(data)
+      .expect(200);
 
-    assert.equal(position, article.position)
-  })
+    assert.equal(status, true);
+
+    const [
+      firstArticle,
+      editedArticle
+    ] = await ArticleLog.find({
+      '_id': { $in: [
+          ObjectId(articles[0]._id),
+          ObjectId(articles[1]._id)
+        ] }
+      })
+      .select('_id title position')
+      .sort({ position: 1 })
+      .lean()
+      .exec();
+
+    assert.equal(firstArticle.title, articles[1].title);
+    assert.equal(firstArticle.position, 1);
+    assert.equal(editedArticle.title, articles[0].title);
+    assert.equal(editedArticle.position, 2);
+
+  });
 
 });
 
@@ -470,8 +487,8 @@ describe("/article/archive/", () => {
       archive,
       archiveDate
     } = await ArticleLog.findOne({
-        _id: archiveID
-      })
+      _id: archiveID
+    })
       .select("archive archiveDate")
       .exec();
 
@@ -485,11 +502,11 @@ describe("/article/archive/", () => {
     await ArticleLog.updateOne({
       _id: archiveID
     }, {
-      $set: {
-        archive: leftColumnId,
-        archiveDate: new Date()
-      }
-    }).exec();
+        $set: {
+          archive: leftColumnId,
+          archiveDate: new Date()
+        }
+      }).exec();
 
     const archiveThroughRoute = async _id => {
       return await request(app)

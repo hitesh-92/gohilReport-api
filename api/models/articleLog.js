@@ -154,6 +154,7 @@ articleLogSchema.statics
 
 articleLogSchema.statics
   .shiftPositions = async function (insertPosition, columnId) {
+    //  increment +1 all article positions below 'insertPosition'
 
     var ArticleLog = this;
 
@@ -164,18 +165,18 @@ articleLogSchema.statics
     async function updateArticlePositions(resolve, reject) {
       const articles = await fetchColumnArticles(columnId, insertPosition);
       if (articles == null) {
-        return reject(Error('Failed fetching articles'));
+        return reject(Error('Failed fetching articles 1'));
       };
-
+      
       const updated = await updateArticles(articles);
       if (updated == null) {
-        return reject(Error('Failed updating articles'));
+        return reject(Error('Failed updating articles 2'));
       };
-
+      
       if (updated != null) {
         return resolve(true)
       } else {
-        return reject(Error('Failed updating articles'));
+        return reject(Error('Failed updating articles 3'));
       }
     };
 
@@ -183,7 +184,7 @@ articleLogSchema.statics
 
     async function fetchColumnArticles(columnId, insertPosition) {
       let allArticles;
-
+      
       try {
         allArticles = await ArticleLog
           .find({
@@ -199,6 +200,7 @@ articleLogSchema.statics
           .lean()
           .exec();
       } catch (error) {
+        console.log(`ERROR:\n${error}`)
         allArticles = null
       } finally {
         return allArticles

@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const articleLogController = require('../controllers/articleLogController');
 const ArticleLog = require("../models/articleLog");
 const Column = require("../models/column");
 const Authenticate = require("../middleware/auth");
@@ -44,19 +45,14 @@ router.get("/single", (req, res) => {
 });
 
 router.post("/", Authenticate, async (req, res) => {
-  const {
-    title,
-    url,
-    column,
-    // position = 0
-  } = req.body;
+  const { column } = req.body;
 
   let { position = 0  } = req.body
 
   const article = new ArticleLog({
     _id: new ObjectId(),
-    title,
-    url,
+    title: req.body.title,
+    url: req.body.url,
     column
   });
 
@@ -69,9 +65,6 @@ router.post("/", Authenticate, async (req, res) => {
     return res.status(400).json(data);
   };
 
-  data.createdArticle = log;
-  data.articleSaved = true;
-
   await ArticleLog.shiftPositions(position, column);
 
   const validPosition = await validatePosition(position, column)
@@ -79,9 +72,12 @@ router.post("/", Authenticate, async (req, res) => {
   if (typeof (validPosition) == 'number') {
     position = validPosition
   }
-  console.log(validPosition)
 
   await updatePosition(log._id, position)
+
+  data.articleSaved = true;
+  data.createdArticle = log;
+  data.createdArticle.position = position;
 
   res.status(201).json(data);
 
@@ -197,55 +193,7 @@ router.post("/archive", Authenticate, (req, res) => {
     .catch(err => res.status(500).json({ error: err }));
 });
 
-router.patch("/", Authenticate, (req, res) => {
-  let data = { status: false };
-
-  const { 
-    title = null,
-    url = null,
-    id = null
-  } = req.body;
-
-  async function updateArticle(_id, title, url) {
-    let body = {};
-
-    if (title) body.title = title;
-    if (url) body.url = url;
-
-    return await ArticleLog.updateOne({ _id   }, { $set: body });
-  }
-
-  if( title == null && url == null ) {
-    data.message = 'No title or url provided';
-    return res.status(400).json(data)
-  }
-
-  ArticleLog.findById(id)
-    .select('_id')
-    .exec()
-    .then(article => {
-      if ( article == null ) return;
-      return updateArticle(id, title, url);
-    })
-    .then( ({
-      nModified: patched = null
-    } = {}) => {
-      
-      let status = 200;
-
-      if ( patched == null ) {
-        data.error = { message: 'Unable find article with ID' };
-        status = 400;
-      } else if ( !patched ) {
-        data.error = { message: 'Unsuccessful update' };
-        status = 400;
-      } else {
-        data.status = true;
-      }
-
-      res.status(status).send(data);
-    });
-});
+router.patch("/", Authenticate, articleLogController.patch)
 
 router.delete("/", Authenticate, (req, res) => {
   
