@@ -464,7 +464,7 @@ describe("/article/ DELETE", () => {
   });
 });
 
-describe("/article/archive/", () => {
+describe.only("/article/archive/", () => {
 
   it("GET get all archived articles", async () => {
 
@@ -481,7 +481,38 @@ describe("/article/archive/", () => {
     assert.equal(archives.length, 2);
   });
 
-  it("null position propery and readjust positions")
+  it.skip("POST null position propery and re-adjust positions", async () => {
+
+    //  arhive first article in column
+    //  test if article archived is true
+    //  get column articles and test only 1 and is articles[1]
+
+    const data = {
+      id: articles[0]._id
+    };
+
+    const {
+      body: {
+        archived
+      }
+    } = await request(app)
+      .post('/article/archive')
+      .set('x-auth', logInToken)
+      .send(data)
+      .expect(200);
+    
+    assert.equal(archived, true);
+
+    const column = await ArticleLog.find({
+        'column': leftColumnId
+      })
+      .select('position title')
+      .lean()
+      .exec();  
+
+    assert.equal(column.length, 1);
+    assert.equal(column[0].title, articles[1].title)
+  });
 
   it("POST archive existing article", async () => {
     const archiveID = articles[2]._id;
