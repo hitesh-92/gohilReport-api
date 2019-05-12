@@ -44,6 +44,8 @@ router.get("/single", (req, res) => {
     });
 });
 
+router.get('/archive', articleLogController.getArchives);
+
 router.post("/", Authenticate, async (req, res) => {
   const { column } = req.body;
 

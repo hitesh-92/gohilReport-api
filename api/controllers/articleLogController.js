@@ -1,6 +1,81 @@
 
-const { Types: {ObjectId} } = require('mongoose');
+const { Types: {
+    ObjectId
+} } = require('mongoose');
 const ArticleLog = require('../models/articleLog');
+const Column = require('../models/column');
+
+exports.getArchives = async (req, res) => {
+    const data = { status: false }
+
+    const columnId = await fetchColumnId();
+    
+    if( columnId == null ){
+        data.error = {
+            message: 'No archive column found'
+        };
+
+        return res.status(404).json(data);
+    }
+
+    const archives = await fetchArchives(columnId);
+    
+    if( archives == null ){
+        data.error = {
+            message: 'Error finding archived articles'
+        };
+
+        return res.status(400).json(data);
+    };
+
+    data.status = true;
+    data.archives = archives;
+
+    res.status(200).json(data);
+
+    // -----
+
+    async function fetchColumnId(){
+        let columnId;
+
+        try {
+            const { 
+                _id
+            } = await Column.findOne({
+                title: 'archive'
+            })
+            .select('_id')
+            .lean()
+            .exec();
+            columnId = _id;
+        } catch (error) {
+            columnId = null;
+        } finally {
+            return columnId;
+        }
+
+    };
+
+    async function fetchArchives(columnId){
+        let articles;
+
+        try {
+            
+            articles = await ArticleLog.find(
+                { 'column': columnId }
+            )
+            .select('_id title url column createdAt')
+            .lean()
+            .exec();
+
+        } catch (error) {
+            articles = null;
+        } finally {
+            return articles;
+        }
+
+    };
+};
 
 exports.patch = async (req, res) => {
     let data = { status: false };

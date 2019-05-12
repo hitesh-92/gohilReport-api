@@ -469,14 +469,16 @@ describe("/article/archive/", () => {
   it("GET get all archived articles", async () => {
 
     const {
-      articles
+      body: {
+        archives,
+        status
+      }
     } = await request(app)
       .get('/article/archive')
-      .set('x-auth', logInToken)
       .expect(200)
     
-    assert.equal(articles.length, 2)
-
+    assert.equal(status, true);
+    assert.equal(archives.length, 2);
   });
 
   it("null position propery and readjust positions")
