@@ -163,8 +163,8 @@ describe("/article/ POST", () => {
     const {
       position
     } = await ArticleLog.findOne({
-      _id: article._id
-    })
+        _id: article._id
+      })
       .select('position')
       .lean()
       .exec();
@@ -232,7 +232,9 @@ describe("/article/ POST", () => {
 
     const {
       body: {
-        createdArticle: { _id }
+        createdArticle: {
+          _id
+        }
       }
     } = await request(app)
       .post('/article/')
@@ -243,7 +245,9 @@ describe("/article/ POST", () => {
 
     const {
       position
-    } = await ArticleLog.findOne({ _id })
+    } = await ArticleLog.findOne({
+        _id
+      })
       .select('position')
       .lean()
       .exec();
@@ -372,12 +376,14 @@ describe("/article/switch PATCH", () => {
     };
 
     const {
-      body: { status }
+      body: {
+        status
+      }
     } = await request(app)
       .patch('/article/switch')
       .set('x-auth', logInToken)
       .send(data)
-      .expect(200); 
+      .expect(200);
 
     assert.equal(status, true)
 
@@ -385,13 +391,17 @@ describe("/article/switch PATCH", () => {
       firstArticle,
       editedArticle
     ] = await ArticleLog.find({
-      '_id': { $in: [
-          ObjectId(articles[0]._id),
-          ObjectId(articles[1]._id)
-        ] }
+        '_id': {
+          $in: [
+            ObjectId(articles[0]._id),
+            ObjectId(articles[1]._id)
+          ]
+        }
       })
       .select('_id title position')
-      .sort({ position: 1 })
+      .sort({
+        position: 1
+      })
       .lean()
       .exec();
 
@@ -464,7 +474,7 @@ describe("/article/ DELETE", () => {
   });
 });
 
-describe.only("/article/archive/", () => {
+describe("/article/archive/", () => {
 
   it("GET get all archived articles", async () => {
 
@@ -476,16 +486,27 @@ describe.only("/article/archive/", () => {
     } = await request(app)
       .get('/article/archive')
       .expect(200)
-    
+
     assert.equal(status, true);
     assert.equal(archives.length, 2);
   });
 
-  it.skip("POST null position propery and re-adjust positions", async () => {
+  it("POST null position propery and re-adjust positions", async () => {
 
-    //  arhive first article in column
-    //  test if article archived is true
-    //  get column articles and test only 1 and is articles[1]
+    //extra articles to test with
+    await ArticleLog.create({
+      _id: new ObjectId(),
+      title: '0onE3',
+      url: 'www.sdfj.com',
+      column: leftColumnId,
+      position: 3
+    }, {
+      _id: new ObjectId(),
+      title: '77WWo0',
+      url: 'www.sdfj.com',
+      column: leftColumnId,
+      position: 4
+    }, );
 
     const data = {
       id: articles[0]._id
@@ -500,18 +521,22 @@ describe.only("/article/archive/", () => {
       .set('x-auth', logInToken)
       .send(data)
       .expect(200);
-    
+
     assert.equal(archived, true);
 
     const column = await ArticleLog.find({
-        'column': leftColumnId
+        'column': leftColumnId,
+        position: {
+          $gte: 1
+        }
       })
       .select('position title')
       .lean()
-      .exec();  
+      .exec();
 
-    assert.equal(column.length, 1);
     assert.equal(column[0].title, articles[1].title)
+    assert.equal(column[1].title, '0onE3')
+    assert.equal(column[2].title, '77WWo0')
   });
 
   it("POST archive existing article", async () => {
@@ -537,8 +562,8 @@ describe.only("/article/archive/", () => {
       archive,
       archiveDate
     } = await ArticleLog.findOne({
-      _id: archiveID
-    })
+        _id: archiveID
+      })
       .select("archive archiveDate")
       .exec();
 
@@ -552,11 +577,11 @@ describe.only("/article/archive/", () => {
     await ArticleLog.updateOne({
       _id: archiveID
     }, {
-        $set: {
-          archive: leftColumnId,
-          archiveDate: new Date()
-        }
-      }).exec();
+      $set: {
+        archive: leftColumnId,
+        archiveDate: new Date()
+      }
+    }).exec();
 
     const archiveThroughRoute = async _id => {
       return await request(app)
