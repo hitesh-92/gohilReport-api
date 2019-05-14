@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const articleLogController = require('../controllers/articleLogController');
+const Contoller = require('../controllers/articleLog');
 const ArticleLog = require("../models/articleLog");
-const Column = require("../models/column");
 const Authenticate = require("../middleware/auth");
 const mongoose = require("mongoose");
 const {
@@ -44,7 +43,7 @@ router.get("/single", (req, res) => {
     });
 });
 
-router.get('/archive', articleLogController.getArchives);
+router.get('/archive', Contoller.getArchives);
 
 router.post("/", Authenticate, async (req, res) => {
   const { column } = req.body;
@@ -131,75 +130,11 @@ router.post("/", Authenticate, async (req, res) => {
   };
 });
 
-router.post('/archive', Authenticate, articleLogController.archiveArticle);
+router.post('/archive', Authenticate, Contoller.archiveArticle);
 
-// router.post("/archive", Authenticate, (req, res) => {
+router.patch("/", Authenticate, Contoller.patch);
 
-//   let data = {
-//     archived: false
-//   };
-
-//   const { id: articleId } = req.body;
-
-//   if ( ObjectId.isValid(articleId) == false ) {
-//     res.status(400).send({ error: "Invalid id" })
-//     return
-//   }
-
-//   const fetchArticle = async (_id) =>
-//     await ArticleLog.findOne({ _id })
-//       .select("_id archive")
-//       .exec();
-
-//   const fetchArchiveColumn = async () =>
-//     await Column.findOne({ title: "archive" })
-//       .select("_id")
-//       .exec();
-
-//   const fetchData = async () => {
-//     const article = await fetchArticle(articleId);
-//     const { _id } = await fetchArchiveColumn();
-//     return [article, _id];
-//   };
-
-//   fetchData()
-//     .then(async ([article, columnId]) => {
-
-//       if (article.archive != undefined) {
-//         data.error = "Article is already archived";
-//         res.status(400).json(data);
-//         return;
-//       }
-
-//       const { nModified } = await ArticleLog.updateOne(
-//         { _id: article._id },
-//         {
-//           $set: {
-//             archive: columnId,
-//             archiveDate: new Date()
-//           }
-//         }
-//       );
-
-//       let status = 501;
-
-//       //nModified should be 1 if archive successful
-//       if (nModified) {
-//         data.archived = true;
-//         data.message = "Article archived";
-//         status = 200;
-//       } else {
-//         data.error = "Error archiving article";
-//       }
-
-//       res.status(status).json(data);
-//     })
-//     .catch(err => res.status(500).json({ error: err }));
-// });
-
-router.patch("/", Authenticate, articleLogController.patch)
-
-router.patch("/switch", Authenticate, articleLogController.switchPositions)
+router.patch("/switch", Authenticate, Contoller.switchPositions);
 
 router.delete("/", Authenticate, (req, res) => {
   

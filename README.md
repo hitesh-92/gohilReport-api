@@ -70,3 +70,4 @@ node start
 - [ ] Remove and refactor anonymous functions where appropriate
 - [ ] Restructure API
 - [ ] Add admin authentication
+- [ ] Update HTTP routes
