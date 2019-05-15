@@ -2,7 +2,7 @@
 
 <br>
 
-Collection of news articles used for reference
+Collection of news links
 
 <br>
 
@@ -12,19 +12,19 @@ Collection of news articles used for reference
 Method | Endpoint | Private | Request Body | Response
 --- | --- | --- | --- | ---
 GET | /column/ | - | - | { left, center, right }
-GET | /column/:title | - | - |  { articles }
-POST | /column/ | true | { title, articleIDs }| { createdColumn }
-PATCH | /column/:title | true | { column, ids } | { message }
-DELETE | /column/:column | true | - | { deleted, message }
+GET | /column/single | - | { title } |  { articles }
+POST | /column/ | true | { title }| { createdColumn }
+PATCH | /column/:title |  ✓ | { column, ids } | { message }
+DELETE | /column/:column |  ✓ | - | { deleted, message }
 
 ##### Article
 Method | Endpoint | Private | Request Body | Response
 --- | --- | --- | --- | ---
-GET | /:articleId | true | - | { article }
-POST | /article/ | true | { title, url } | { createdArticle, articleSaved }
-POST | /article/archive | true | { id } | { archived }
-PATCH | /article/:articleId | true | { title, url, createdAt } | { oldArticle, status }
-DELETE | /article/:articleId | true | - | { deleted, log }
+GET | /:articleId |  ✓ | - | { article }
+POST | /article/ |  ✓ | { title, url } | { createdArticle, articleSaved }
+POST | /article/archive |  ✓ | { id } | { archived }
+PATCH | /article/:articleId |  ✓ | { title, url, createdAt } | { oldArticle, status }
+DELETE | /article/:articleId |  ✓ | - | { deleted, log }
 
 
 ##### User
@@ -65,9 +65,10 @@ node start
 <br>
 
 ##### TODO
-- [ ] Complete frontend management system with Angular ( priority 
+- [ ] Complete [management system](https://github.com/hitesh-92/gohilReportManager) with Angular ( priority )
 - [ ] User validation / tests for jwt
 - [ ] Remove and refactor anonymous functions where appropriate
-- [ ] Restructure API
+- [ ] Restructure to include API controllers
 - [ ] Add admin authentication
 - [ ] Update HTTP routes
+- [ ] Add option to attach link to article logs
