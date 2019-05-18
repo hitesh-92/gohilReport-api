@@ -9,11 +9,11 @@ Collection of news links
 #### HTTP endpoints
 
 ##### Column
-Method | Endpoint | Private | Request Body | Response
+Method | Endpoint | Auth | Request Body | Response
 --- | --- | --- | --- | ---
 GET | /column/ | - | - | { left, center, right }
 GET | /column/single | - | { title } |  { articles }
-POST | /column/ | true | { title }| { createdColumn }
+POST | /column/ | ✓ | { title }| { createdColumn }
 PATCH | /column/:title |  ✓ | { column, ids } | { message }
 DELETE | /column/:column |  ✓ | - | { deleted, message }
 
@@ -43,7 +43,7 @@ Requiremnts:
 * MongoDB + client
 
 add config file: ```server/config.json```
-```json
+```javascript
 {
     "development": {
       "PORT": 8000,
@@ -62,7 +62,6 @@ Run local server:
 node start
 ```
 
-<br>
 
 ##### TODO
 - [ ] Complete [management system](https://github.com/hitesh-92/gohilReportManager) with Angular ( priority )
@@ -71,4 +70,7 @@ node start
 - [ ] Restructure to include API controllers
 - [ ] Add admin authentication
 - [ ] Update HTTP routes
-- [ ] Add option to attach link to article logs
+- [ ] Add option to attach image link to article log
+- [ ] Update article log patch to allow for image url edits
+- [ ] Switch articleLogs column
+- [ ] Add GraphQL
