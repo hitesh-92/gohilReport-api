@@ -8,7 +8,7 @@
     "test": "cls && SET \"NODE_ENV=test\" && mocha --timeout 4000 tests/**/*.test.js --check-leaks -c -R list",
     "test-watch": "nodemon --exec \"npm test\"",
     "start-watch": "nodemon --exec \"npm start\"",
-    "linux-start":"NODE_ENV=development nodemon app.js"
+    "linux-start": "NODE_ENV=development nodemon app.js"
   },
   "author": "Hitesh",
   "license": "ISC",
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "mocha": "^5.2.0",
+    "nodemon": "^1.19.0",
     "supertest": "^3.3.0"
   }
 }
