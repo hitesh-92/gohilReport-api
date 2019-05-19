@@ -9,7 +9,7 @@
     "test-watch": "nodemon --exec \"npm test\"",
     "start-watch": "nodemon --exec \"npm start\"",
     "linux-start": "NODE_ENV=development nodemon app.js",
-    "linux-test":"NODE_ENV=test PORT=8080 mocha tests/**/*.test.js --check-leaks -c -R list"
+    "linux-test":"NODE_ENV=test PORT=8080 nodemon --exec mocha tests/**/*.test.js --check-leaks -c -R list"
   },
   "author": "Hitesh",
   "license": "ISC",
