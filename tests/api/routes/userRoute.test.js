@@ -11,7 +11,7 @@ describe("user/ Routes", () => {
                 email: 'random@email.com',
                 password: 'needs10chars'
             }
-            
+
             return request(app)
             .post('/user/signup/')
             .send(userData)

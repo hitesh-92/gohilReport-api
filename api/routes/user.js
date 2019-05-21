@@ -8,8 +8,8 @@ const mongoose = require('mongoose')
 // const Authenticate = require('../middleware/auth')
 
 router.post('/signup', (req,res) => {
-    
-    let data = { 
+
+    let data = {
         email: req.body.email,
         added: false
     }
@@ -35,7 +35,7 @@ router.post('/signup', (req,res) => {
 
 router.post('/login', (req,res) => {
 
-    let data = { 
+    let data = {
         email: req.body.email,
         loggedIn: false
     }
@@ -61,14 +61,15 @@ router.post('/login', (req,res) => {
             res.status(401).send(data)
         } else {
             data.loggedIn = true
+            data.token = token;
             res.status(200).send(data)
         }
-    })   
+    })
     .catch(error => {
         data.error = error
         data.message = 'Unable to login. Contact'
         res.status(400).send(data)
-    }) 
+    })
 
 })
 
