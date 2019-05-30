@@ -35,7 +35,7 @@ const getSingleArticle = (req, res, ArticleLog) => {
       data.message = "Server Error Processing Rquest. Contact";
       res.status(500).json(data);
     });
-}
+};
 
 const saveNewArticle = async (req, res, ArticleLog) => {
   const { column } = req.body;
@@ -120,7 +120,7 @@ const saveNewArticle = async (req, res, ArticleLog) => {
       return updated;
     }
   };
-}
+};
 
 const updateArticle = async (req, res, ArticleLog) => {
     let data = {
@@ -287,7 +287,7 @@ const deleteArticle = async(req, res, ArticleLog) => {
       data.error = err;
       res.status(501).json(data);
     });
-}
+};
 
 module.exports = {
   getSingleArticle,

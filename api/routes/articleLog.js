@@ -5,10 +5,6 @@ const ArchiveController = require('../controllers/archive');
 const ArticleLog = require("../models/articleLog");
 const Column = require('../models/column');
 const Authenticate = require("../middleware/auth");
-const mongoose = require("mongoose");
-const {
-  Types: { ObjectId }
-} = mongoose;
 
 router.get('/single', (req, res) => { Controller.getSingleArticle(req, res, ArticleLog) });
 
