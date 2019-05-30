@@ -76,6 +76,41 @@ const getArchives = async (req, res, ArticleLog, Column) => {
     };
 };
 
+const getSingleArticle = (req, res, ArticleLog) => {
+  const { id } = req.body
+
+  var data = { found: null }
+
+  if ( !(ObjectId.isValid(id)) ) {
+    data.message = "Invalid Article ID provided";
+    return res.status(400).json(data);
+  }
+
+  ArticleLog.findOne({_id: id})
+    .lean()
+    .exec()
+    .then(log => {
+      let status = 404;
+
+      data.article = log;
+
+      if (log == null) {
+        data.message = "No Article found with given requestId";
+        data.found = false;
+      } else {
+        data.found = true;
+        status = 200;
+      }
+
+      res.status(status).json(data);
+    })
+    .catch(err => {
+      data.error = err;
+      data.message = "Server Error Processing Rquest. Contact";
+      res.status(500).json(data);
+    });
+}
+
 const saveNewArticle = async (req, res, ArticleLog) => {
   const { column } = req.body;
 
@@ -436,6 +471,7 @@ const deleteArticle = async(req, res, ArticleLog) => {
 }
 
 module.exports = {
+  getSingleArticle,
   saveNewArticle,
   getArchives,
   updateArticle,
