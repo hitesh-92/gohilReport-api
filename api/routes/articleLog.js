@@ -137,36 +137,6 @@ router.patch("/", Authenticate, (req, res) => { Contoller.updateArticle(req, res
 
 router.patch("/switch", Authenticate, (req, res) => { Contoller.switchPositions(req, res, ArticleLog) });
 
-router.delete("/", Authenticate, (req, res) => {
-
-  const { id } = req.body;
-
-  let data = { deleted: false };
-
-  if ( ObjectId.isValid(id) == false ) {
-    data.error = "Bad article id";
-    return res.status(404).json(data);
-  }
-
-  ArticleLog.findOneAndDelete({ _id: id })
-    .then(article => {
-
-      let status = 404;
-
-      if (article == null) {
-        data.error = "Invalid request to delete";
-      } else {
-        data.log = article;
-        data.deleted = true;
-        status = 200;
-      }
-
-      res.status(status).json(data);
-    })
-    .catch(err => {
-      data.error = err;
-      res.status(501).json(data);
-    });
-});
+router.delete("/", Authenticate, (req, res) => Contoller.deleteArticle(req, res, ArticleLog) );
 
 module.exports = router;

@@ -319,9 +319,41 @@ const archiveArticle = async (req, res, ArticleLog, Column) => {
 
 };
 
+const deleteArticle = async(req, res, ArticleLog) => {
+  const { id } = req.body;
+
+  let data = { deleted: false };
+
+  if ( ObjectId.isValid(id) == false ) {
+    data.error = "Bad article id";
+    return res.status(404).json(data);
+  }
+
+  ArticleLog.findOneAndDelete({ _id: id })
+    .then(article => {
+
+      let status = 404;
+
+      if (article == null) {
+        data.error = "Invalid request to delete";
+      } else {
+        data.log = article;
+        data.deleted = true;
+        status = 200;
+      }
+
+      res.status(status).json(data);
+    })
+    .catch(err => {
+      data.error = err;
+      res.status(501).json(data);
+    });
+}
+
 module.exports = {
   getArchives,
   updateArticle,
   switchPositions,
-  archiveArticle
+  archiveArticle,
+  deleteArticle
 }
