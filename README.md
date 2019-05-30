@@ -74,3 +74,4 @@ node start
 - [ ] Update article log patch to allow for image url edits
 - [ ] Switch articleLogs column
 - [ ] Add GraphQL
+- [ ] Debug test case: /article/archive post position property (sometimes fails)
