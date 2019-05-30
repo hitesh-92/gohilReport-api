@@ -1,10 +1,8 @@
 const {
     Types: { ObjectId }
 } = require('mongoose');
-const ArticleLog = require('../models/articleLog');
-const Column = require('../models/column');
 
-exports.getArchives = async (req, res) => {
+const getArchives = async (req, res, ArticleLog, Column) => {
     const data = {
         status: false
     }
@@ -78,15 +76,15 @@ exports.getArchives = async (req, res) => {
     };
 };
 
-exports.patch = async (req, res) => {
+const updateArticle = async (req, res, ArticleLog) => {
     let data = {
         status: false
     };
 
     const {
         title = null,
-            url = null,
-            id = null
+        url = null,
+        id = null
     } = req.body;
 
     if (
@@ -157,7 +155,7 @@ exports.patch = async (req, res) => {
 
 };
 
-exports.switchPositions = async (req, res) => {
+const switchPositions = async (req, res, ArticleLog) => {
 
     const {
         selected,
@@ -214,7 +212,7 @@ exports.switchPositions = async (req, res) => {
 
 };
 
-exports.archiveArticle = async (req, res) => {
+const archiveArticle = async (req, res, ArticleLog, Column) => {
 
     let data = {
         archived: false
@@ -320,3 +318,10 @@ exports.archiveArticle = async (req, res) => {
     }
 
 };
+
+module.exports = {
+  getArchives,
+  updateArticle,
+  switchPositions,
+  archiveArticle
+}

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Contoller = require('../controllers/articleLog');
 const ArticleLog = require("../models/articleLog");
+const Column = require('../models/column');
 const Authenticate = require("../middleware/auth");
 const mongoose = require("mongoose");
 const {
@@ -43,7 +44,7 @@ router.get("/single", (req, res) => {
     });
 });
 
-router.get('/archive', Contoller.getArchives);
+router.get('/archive', (req, res) => { Contoller.getArchives(req, res, ArticleLog, Column) });
 
 router.post("/", Authenticate, async (req, res) => {
   const { column } = req.body;
@@ -130,14 +131,14 @@ router.post("/", Authenticate, async (req, res) => {
   };
 });
 
-router.post('/archive', Authenticate, Contoller.archiveArticle);
+router.post('/archive', Authenticate, (req, res) => { Contoller.archiveArticle(req, res, ArticleLog, Column) });
 
-router.patch("/", Authenticate, Contoller.patch);
+router.patch("/", Authenticate, (req, res) => { Contoller.updateArticle(req, res, ArticleLog) });
 
-router.patch("/switch", Authenticate, Contoller.switchPositions);
+router.patch("/switch", Authenticate, (req, res) => { Contoller.switchPositions(req, res, ArticleLog) });
 
 router.delete("/", Authenticate, (req, res) => {
-  
+
   const { id } = req.body;
 
   let data = { deleted: false };
@@ -149,9 +150,9 @@ router.delete("/", Authenticate, (req, res) => {
 
   ArticleLog.findOneAndDelete({ _id: id })
     .then(article => {
-      
+
       let status = 404;
-      
+
       if (article == null) {
         data.error = "Invalid request to delete";
       } else {
