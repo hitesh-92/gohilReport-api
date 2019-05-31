@@ -171,9 +171,42 @@ const updateColumn = (req, res, Column) => {
     })
 };
 
+const deleteColumn = (req,res, Column) => {
+
+    const { title } = req.body
+
+    let data = {
+        deleted: false
+    }
+
+    Column
+    .findOneAndDelete({ title })
+    .exec()
+    .then(log => {
+
+        let status = 400
+
+        if(log === null){
+            data.message = 'Invalid Column Provided'
+        } else {
+            status = 200
+            data.message = 'success'
+            data.deleted = true
+        }
+
+        res.status(status).json(data)
+    })
+    .catch(err => {
+        data.error = err
+        res.status(500).json(data)
+    })
+
+}
+
 module.exports = {
   get_allColumns,
   get_singleColumn,
   saveNewColumn,
-  updateColumn
+  updateColumn,
+  deleteColumn
 }
