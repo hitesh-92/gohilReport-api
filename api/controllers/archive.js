@@ -1,3 +1,7 @@
+const {
+    Types: { ObjectId }
+} = require('mongoose');
+
 const getArchives = async (req, res, ArticleLog, Column) => {
     const data = {
         status: false
