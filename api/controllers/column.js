@@ -8,7 +8,7 @@ const get_allColumns = (req, res, ArticleLog, Column) => {
 
     const fetchColumns = async () => await Column
     .find({
-        'title': {$in: [ 'left', 'center', 'right' ]}
+        'title': {$in: [ 'left', 'center', 'right', 'archive', 'alert' ]}
     })
     .select('_id title')
     .lean()
@@ -35,8 +35,8 @@ const get_allColumns = (req, res, ArticleLog, Column) => {
 
     fetchColumns()
     .then(columns => fetchAllArticles(columns))
-    .then( ([center, left, right]) =>
-      res.status(200).json({left, center, right})
+    .then( ([center, left, right, archive, alert]) =>
+      res.status(200).json({left, center, right, archive, alert})
     )
 };
 
