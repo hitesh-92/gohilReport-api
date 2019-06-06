@@ -65,13 +65,13 @@ node start
 
 ##### TODO
 - [ ] Complete [management system](https://github.com/hitesh-92/gohilReportManager) with Angular ( priority )
-- [ ] User validation / tests for jwt
-- [ ] Remove and refactor anonymous functions where appropriate
-- [ ] Restructure to include API controllers
+- [ ] Remove and refactor anonymous functions where appropriate ( easier debug )
 - [ ] Add admin authentication
-- [ ] Update HTTP routes
+- [ ] Update ReadMe HTTP routes
 - [ ] Add option to attach image link to article log
 - [ ] Update article log patch to allow for image url edits
-- [ ] Switch articleLogs column
 - [ ] Add GraphQL
-- [ ] Debug test case: /article/archive post position property (sometimes fails)
+- [ ] Debug test case: POST /article/archive ( position property sometimes fails )
+- [ ] Set up docker container
+- [ ] Add in logger ( monitor activity )
+- [ ] Set up inital db structure
