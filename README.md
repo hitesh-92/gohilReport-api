@@ -71,7 +71,6 @@ node start
 - [ ] Add option to attach image link to article log
 - [ ] Update article log patch to allow for image url edits
 - [ ] Add GraphQL
-- [ ] Debug test case: POST /article/archive ( position property sometimes fails )
 - [ ] Set up docker container
 - [ ] Add in logger ( monitor activity )
 - [ ] Set up inital db structure
