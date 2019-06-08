@@ -1,37 +1,12 @@
 const express = require('express')
 const router = express.Router()
 
+const Controller = require('../controllers/users');
 const User = require('../models/user')
+// const mongoose = require('mongoose')
 
-const mongoose = require('mongoose')
 
-// const Authenticate = require('../middleware/auth')
-
-router.post('/signup', (req,res) => {
-
-    let data = {
-        email: req.body.email,
-        added: false
-    }
-
-    const user = new User({
-        _id: mongoose.Types.ObjectId(),
-        email: data.email,
-        password: req.body.password,
-        createdAt: Date.now()
-    })
-
-    user.save()
-    .then(user => {
-        if(user) data.added = true
-        res.status(200).send(data)
-    })
-    .catch(err => {
-        data.error = err
-        res.status(400).send(data)
-    })
-
-});
+router.post('/signup', Controller.register(User) );
 
 router.post('/login', (req,res) => {
 
