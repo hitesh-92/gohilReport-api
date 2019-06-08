@@ -531,6 +531,7 @@ describe("/article/archive/", () => {
         }
       })
       .select('position title')
+      .sort({position: 1})
       .lean()
       .exec();
 
