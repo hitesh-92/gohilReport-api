@@ -1,24 +1,38 @@
-version: '3.1'
+version: '3.5'
 services:
 
   # API
   gohilreport-api:
     container_name: gohilreport-api
+    restart: always
     build: ./
-    command: NODE_ENV=development npm start
+    command: npm start
     working_dir: /usr/src/gohilReport-api
+    environment:
+      NODE_ENV: development
+    links:
+      - mongo
     ports:
       - "8000:8000"
+    # networks:
+    #   - mongo
 
   # MongoDB
   mongo:
     image: mongo:3.4-xenial
-    container_name: mongodb
+    container_name: mongo
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
     command: mongod
+    ports:
+      - "27017:27017"
+    # expose:
+    #   - 27017
+    # networks:
+    #   - mongo
+
 
   mongo-express:
     image: mongo-express:0.49
@@ -28,3 +42,8 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
+
+
+  # networks:
+  #   mongo:
+  #     external: true
