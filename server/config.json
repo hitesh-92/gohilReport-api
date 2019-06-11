@@ -1,7 +1,7 @@
 {
     "development": {
         "PORT": 8000,
-        "MONGODB_URI": "mongodb://localhost:27017/gReport",
+        "MONGODB_URI": "mongodb://mongo:27017/gReport",
         "jwtSecret": "p4ssw0rd"
     },
     "test": {

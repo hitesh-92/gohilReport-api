@@ -1,11 +1,11 @@
-version: '3.5'
+version: '3'
 services:
 
   # API
-  gohilreport-api:
+  api:
     container_name: gohilreport-api
     restart: always
-    build: ./
+    build: .
     command: npm start
     working_dir: /usr/src/gohilReport-api
     environment:
@@ -14,26 +14,20 @@ services:
       - mongo
     ports:
       - "8000:8000"
-    # networks:
-    #   - mongo
 
   # MongoDB
   mongo:
-    image: mongo:3.4-xenial
     container_name: mongo
+    image: mongo:3.4-xenial
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
+    #environment:
+    #  MONGO_INITDB_ROOT_USERNAME: root
+    #  MONGO_INITDB_ROOT_PASSWORD: password
     command: mongod
     ports:
       - "27017:27017"
-    # expose:
-    #   - 27017
-    # networks:
-    #   - mongo
-
-
+  
+  # Mongo Web Client
   mongo-express:
     image: mongo-express:0.49
     restart: always
@@ -42,8 +36,3 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
-
-
-  # networks:
-  #   mongo:
-  #     external: true
