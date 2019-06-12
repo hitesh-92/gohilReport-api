@@ -1,10 +1,7 @@
 ## Gohil Report
 
-<br>
-
-Collection of news links
-
-<br>
+   REST API for [Gohil Report](http://www.gohilreport.com)  
+   Made with Node.js and MongoDB  
 
 #### HTTP endpoints
 
@@ -28,7 +25,6 @@ PATCH | / |  ✓ | { id, title || url   } | { oldArticle, status }
 PATCH | /switch |  ✓ | { selected, moveTo } | { status }
 DELETE | / |  ✓ | { id } | { deleted, log }
 
-
 ##### /user/
 Method | Endpoint | Private | Request Body | Response
 --- | --- | --- | --- | ---
@@ -47,7 +43,7 @@ docker-compse up --build
 * API:            localhost:8000
 * Mongo-Expess:   localhost:8081
 
-Access mongo express through web browser
+Access mongo express through web browser  
 
 #### Configure Local Server
 Requiremnts:
@@ -99,7 +95,7 @@ Docker
 `TODO`
 
 ___
-
+  
 ##### TODO
 - [ ] ! restructure /article/single to take param of title. request body not allowed in GET
 - [ ] Complete [management system](https://github.com/hitesh-92/gohilReportManager) with Angular ( priority )
