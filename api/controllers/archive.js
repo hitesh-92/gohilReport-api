@@ -2,7 +2,12 @@ const {
     Types: { ObjectId }
 } = require('mongoose');
 
-const getArchives = async (req, res, ArticleLog, Column) => {
+module.exports = {
+  getArchives,
+  archiveArticle
+}
+
+async function getArchives(req, res, ArticleLog, Column){
     const data = {
         status: false
     }
@@ -76,7 +81,7 @@ const getArchives = async (req, res, ArticleLog, Column) => {
     };
 };
 
-const archiveArticle = async (req, res, ArticleLog, Column) => {
+async function archiveArticle(req, res, ArticleLog, Column){
 
     let data = {
         archived: false
@@ -182,8 +187,3 @@ const archiveArticle = async (req, res, ArticleLog, Column) => {
     }
 
 };
-
-module.exports = {
-  getArchives,
-  archiveArticle
-}
