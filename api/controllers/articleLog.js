@@ -2,7 +2,15 @@ const {
     Types: { ObjectId }
 } = require('mongoose');
 
-const getSingleArticle = (req, res, ArticleLog) => {
+module.exports = {
+  getSingleArticle,
+  saveNewArticle,
+  updateArticle,
+  switchPositions,
+  deleteArticle
+}
+
+function getSingleArticle(req, res, ArticleLog){
 
   const id = req.params.id
 
@@ -38,7 +46,7 @@ const getSingleArticle = (req, res, ArticleLog) => {
     });
 };
 
-const saveNewArticle = async (req, res, ArticleLog) => {
+async function saveNewArticle(req, res, ArticleLog){
   const { column } = req.body;
 
   let { position = 0  } = req.body
@@ -123,7 +131,7 @@ const saveNewArticle = async (req, res, ArticleLog) => {
   };
 };
 
-const updateArticle = async (req, res, ArticleLog) => {
+async function updateArticle(req, res, ArticleLog){
     let data = {
         status: false
     };
@@ -203,7 +211,7 @@ const updateArticle = async (req, res, ArticleLog) => {
 
 };
 
-const switchPositions = async (req, res, ArticleLog) => {
+async function switchPositions(req, res, ArticleLog){
 
     const {
         selected,
@@ -260,7 +268,7 @@ const switchPositions = async (req, res, ArticleLog) => {
 
 };
 
-const deleteArticle = async(req, res, ArticleLog) => {
+async function deleteArticle(req, res, ArticleLog){
   const { id } = req.body;
 
   let data = { deleted: false };
@@ -290,11 +298,3 @@ const deleteArticle = async(req, res, ArticleLog) => {
       res.status(501).json(data);
     });
 };
-
-module.exports = {
-  getSingleArticle,
-  saveNewArticle,
-  updateArticle,
-  switchPositions,
-  deleteArticle
-}
