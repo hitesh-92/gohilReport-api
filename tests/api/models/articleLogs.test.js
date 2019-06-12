@@ -1,8 +1,8 @@
 const moment = require("moment");
-const mongoose = require("mongoose");
+
 const {
   Types: { ObjectId }
-} = mongoose;
+} = require("mongoose");
 
 const ArticleLog = require("../../../api/models/articleLog");
 const { columnIds } = require("../../seedData");
@@ -12,12 +12,13 @@ const {
 } = require("../../seedData");
 
 describe("MODEL articleLog", () => {
-  it("create new log with 4 properties", async () => {
+  it("create new log", async () => {
     const body = {
       _id: new ObjectId(),
       title: "createLog",
       url: "www.has4props.com",
-      column: columnId
+      column: columnId,
+      image: 'https://bit.ly/2R9xD2J'
     };
 
     const article = new ArticleLog(body);
@@ -28,7 +29,8 @@ describe("MODEL articleLog", () => {
       url,
       createdAt,
       updatedAt,
-      column
+      column,
+      image
     } = await article.save();
 
     assert.equal(typeof title, "string");
@@ -36,6 +38,7 @@ describe("MODEL articleLog", () => {
     assert.equal(typeof createdAt, "object");
     assert.equal(typeof updatedAt, "object");
     assert.equal(typeof column._id, "object");
+    assert.equal(typeof image, "string");
   }); //
 
   it("updateLogs method updates articles status", () => {
@@ -54,7 +57,7 @@ describe("MODEL articleLog", () => {
           .subtract(1, "days");
 
         return new ArticleLog({
-          _id: mongoose.Types.ObjectId(),
+          _id: ObjectId(),
           title,
           url,
           status,

@@ -18,6 +18,10 @@ const articleLogSchema = new Schema({
     type: String,
     required: true
   },
+  image:{
+    type: String,
+    trim: true
+  },
   status: {
     type: Number,
     default: 0
@@ -317,7 +321,7 @@ articleLogSchema.statics
     ) {
 
       // slice articles array from where id is found
-      // update all with positions-=1 
+      // update all with positions-=1
 
       const articlePosition = findPosition(articles, articleId);
 
