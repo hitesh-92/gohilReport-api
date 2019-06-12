@@ -2,7 +2,15 @@ const {
     Types: { ObjectId }
 } = require('mongoose');
 
-const get_allColumns = (req, res, ArticleLog, Column) => {
+module.exports = {
+  get_allColumns,
+  get_singleColumn,
+  saveNewColumn,
+  updateColumn,
+  deleteColumn
+}
+
+function get_allColumns (req, res, ArticleLog, Column){
 
     const data = {}
 
@@ -40,7 +48,7 @@ const get_allColumns = (req, res, ArticleLog, Column) => {
     )
 };
 
-const get_singleColumn = (req, res, ArticleLog, Column) => {
+function get_singleColumn (req, res, ArticleLog, Column){
 
     const { title } = req.body
 
@@ -84,7 +92,7 @@ const get_singleColumn = (req, res, ArticleLog, Column) => {
 
 };
 
-const saveNewColumn = (req, res, Column) => {
+function saveNewColumn (req, res, Column){
 
     let data = {
         title: req.body.title,
@@ -126,7 +134,7 @@ const saveNewColumn = (req, res, Column) => {
     })
 };
 
-const updateColumn = (req, res, Column) => {
+function updateColumn (req, res, Column){
 
     let data = {}
 
@@ -171,7 +179,7 @@ const updateColumn = (req, res, Column) => {
     })
 };
 
-const deleteColumn = (req,res, Column) => {
+function deleteColumn (req,res, Column){
 
     const { title } = req.body
 
@@ -201,12 +209,4 @@ const deleteColumn = (req,res, Column) => {
         res.status(500).json(data)
     })
 
-}
-
-module.exports = {
-  get_allColumns,
-  get_singleColumn,
-  saveNewColumn,
-  updateColumn,
-  deleteColumn
 }
