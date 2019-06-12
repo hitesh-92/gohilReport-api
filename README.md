@@ -97,7 +97,6 @@ Docker
 ___
 
 ##### TODO
-- [ ] ! restructure /article/single to take param of title. request body not allowed in GET
 - [ ] Complete [management system](https://github.com/hitesh-92/gohilReportManager) with Angular ( priority )
 - [ ] Remove and refactor anonymous functions where appropriate ( easier debug )
 - [ ] Add admin user
@@ -107,5 +106,3 @@ ___
 - [ ] Add GraphQL
 - [ ] Add in logger ( monitor activity )
 - [ ] Set up inital db structure ( migration )
-- [ ] refactor controller/articleLog.js-function:updateArticle id=null. respond with error
-- [ ] refactor controller/column.js-function:deleteColumn request accepts title. change to id
