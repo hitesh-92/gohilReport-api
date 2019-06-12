@@ -37,7 +37,7 @@ POST | /login | - | { email, password } | { loggedIn, token }
 
 ___
 
-##### Docker
+#### Docker
 
 Run from gohilReport-api/
 ```
@@ -45,16 +45,16 @@ docker-compse up --build
 ```
 
 * API:            localhost:8000
-* Mongo-Expess:   localhist:8081
+* Mongo-Expess:   localhost:8081
 
 Access mongo express through web browser
 
-##### Configure Local Server
+#### Configure Local Server
 Requiremnts:
 * NodeJS
 * MongoDB
 
-add config file: ```server/config.json```
+add config file: `server/config.json`
 ```javascript
 {
     "development": {
@@ -80,8 +80,28 @@ npm start
 npm run linux-start
 ```
 
+___
+
+#### Testing
+
+Local Server
+( Windows )
+```
+npm run test-watch
+```
+
+( Linux / Mac )
+```
+npm run linux-test
+```
+
+Docker
+`TODO`
+
+___
 
 ##### TODO
+- [ ] ! restructure /article/single to take param of title. request body not allowed in GET
 - [ ] Complete [management system](https://github.com/hitesh-92/gohilReportManager) with Angular ( priority )
 - [ ] Remove and refactor anonymous functions where appropriate ( easier debug )
 - [ ] Add admin user
