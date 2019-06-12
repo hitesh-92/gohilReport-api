@@ -17,7 +17,7 @@ DELETE | / |  ✓ | { title } | { deleted, message }
 ##### /article/
 Method | Endpoint | Auth | Req. Body | Response
 --- | --- | --- | --- | ---
-GET | /single/:id |  ✓ | { id } | { article }
+GET | /single/:id |  ✓ | - | { article }
 GET | /archive |  ✓ | { id } | { archives }
 POST | / |  ✓ | { title, url } | { createdArticle, articleSaved }
 POST | /archive |  ✓ | { id } | { archived }
