@@ -2,15 +2,20 @@ const {
     Types: { ObjectId }
 } = require('mongoose');
 
-const register = (User) => (req, res) => {
+module.exports = {
+  register,
+  login
+};
+
+function register(User){
+  return function handleUserRegistration(req, res){
 
     let data = {
         email: req.body.email,
         added: false
     }
 
-
-    const user = new User({
+    var user = new User({
         _id: new ObjectId(),
         email: data.email,
         password: req.body.password,
@@ -27,9 +32,11 @@ const register = (User) => (req, res) => {
         res.status(400).json(data)
     })
 
+  }
 }
 
-const login = (User) => (req, res) => {
+function login(User){
+  return function handleUserLogin(req, res){
 
     let data = {
         email: req.body.email,
@@ -46,19 +53,19 @@ const login = (User) => (req, res) => {
     .then( async (user) => {
 
         if (user === false) {
-            data.message = 'Unable to find user'
-            return res.status(404).send(data)
+          data.message = 'Unable to find user'
+          return res.status(404).send(data)
         }
 
         const token = await user.createAuthToken()
 
         if (!token) {
-            data.message = 'Unable to authenticate user'
-            res.status(401).send(data)
+          data.message = 'Unable to authenticate user'
+          res.status(401).send(data)
         } else {
-            data.loggedIn = true
-            data.token = token;
-            res.status(200).send(data)
+          data.loggedIn = true
+          data.token = token;
+          res.status(200).send(data)
         }
     })
     .catch(error => {
@@ -67,6 +74,5 @@ const login = (User) => (req, res) => {
         res.status(400).send(data)
     })
 
-}
-
-module.exports = { register, login }
+  }
+};
