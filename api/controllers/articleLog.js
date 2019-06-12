@@ -3,7 +3,8 @@ const {
 } = require('mongoose');
 
 const getSingleArticle = (req, res, ArticleLog) => {
-  const { id } = req.body
+
+  const id = req.params.id
 
   var data = { found: null }
 

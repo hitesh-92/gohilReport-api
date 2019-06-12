@@ -1,3 +1,4 @@
+console.log('\x1Bc');
 const Column = require('../api/models/column');
 const ArticleLog = require('../api/models/articleLog');
 const User = require('../api/models/user');
@@ -97,13 +98,13 @@ const columns = buildColumns( columnIds )
 const articles = buildArticles( articleData, columnIds )
 const users = buildUserData( userData )
 
-module.exports = { 
+module.exports = {
     articles,
     columnIds,
-    columns, 
+    columns,
     users,
-    testDelete, 
-    testSeed, 
+    testDelete,
+    testSeed,
     testSeedUsers,
     logInToken: userData[0].tokens[0].token
 };

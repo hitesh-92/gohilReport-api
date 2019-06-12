@@ -20,6 +20,8 @@ describe("/article/ GET", () => {
   it("find saved article", async () => {
     const article = articles[0];
 
+    const id = article.id;
+
     const {
       body: {
         found,
@@ -28,10 +30,7 @@ describe("/article/ GET", () => {
         }
       }
     } = await request(app)
-      .get('/article/single')
-      .send({
-        id: article._id
-      })
+      .get(`/article/single/${id}`)
       .expect(200)
 
     assert.strictEqual(found, true);
@@ -47,10 +46,7 @@ describe("/article/ GET", () => {
         message
       }
     } = await request(app)
-      .get('/article/single')
-      .send({
-        id: badId
-      })
+      .get(`/article/single/${badId}`)
       .expect(400)
 
     assert.equal(found, null)
@@ -59,16 +55,15 @@ describe("/article/ GET", () => {
 
   it("not find article", async () => {
 
+    const randomId = new ObjectId();
+
     const {
       body: {
         found,
         message
       }
     } = await request(app)
-      .get('/article/single')
-      .send({
-        id: new ObjectId()
-      })
+      .get(`/article/single/${randomId}`)
       .expect(404)
 
     assert.equal(found, false)
