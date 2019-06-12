@@ -17,7 +17,7 @@ DELETE | / |  ✓ | { title } | { deleted, message }
 ##### /article/
 Method | Endpoint | Auth | Req. Body | Response
 --- | --- | --- | --- | ---
-GET | /single |  ✓ | { id } | { article }
+GET | /single/:id |  ✓ | { id } | { article }
 GET | /archive |  ✓ | { id } | { archives }
 POST | / |  ✓ | { title, url } | { createdArticle, articleSaved }
 POST | /archive |  ✓ | { id } | { archived }
@@ -95,7 +95,7 @@ Docker
 `TODO`
 
 ___
-  
+
 ##### TODO
 - [ ] ! restructure /article/single to take param of title. request body not allowed in GET
 - [ ] Complete [management system](https://github.com/hitesh-92/gohilReportManager) with Angular ( priority )
