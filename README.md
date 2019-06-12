@@ -8,39 +8,51 @@ Collection of news links
 
 #### HTTP endpoints
 
-##### Column
-Method | Endpoint | Auth | Request Body | Response
+##### /column/
+Method | Endpoint | Auth | Req. Body | Response
 --- | --- | --- | --- | ---
-GET | /column/ | - | - | { left, center, right }
-GET | /column/single | - | { title } |  { articles }
-POST | /column/ | ✓ | { title }| { createdColumn }
-PATCH | /column/:title |  ✓ | { column, ids } | { message }
-DELETE | /column/:column |  ✓ | - | { deleted, message }
+GET | / | - | - | { left, center, right, archive, alert }
+GET | /single | - | { title } |  { articles }
+POST | / | ✓ | { title }| { createdColumn }
+PATCH | / |  ✓ | { column, id } | { column }
+DELETE | / |  ✓ | { title } | { deleted, message }
 
-##### Article
+##### /article/
+Method | Endpoint | Auth | Req. Body | Response
+--- | --- | --- | --- | ---
+GET | /single |  ✓ | { id } | { article }
+GET | /archive |  ✓ | { id } | { archives }
+POST | / |  ✓ | { title, url } | { createdArticle, articleSaved }
+POST | /archive |  ✓ | { id } | { archived }
+PATCH | / |  ✓ | { id, title || url   } | { oldArticle, status }
+PATCH | /switch |  ✓ | { selected, moveTo } | { status }
+DELETE | / |  ✓ | { id } | { deleted, log }
+
+
+##### /user/
 Method | Endpoint | Private | Request Body | Response
 --- | --- | --- | --- | ---
-GET | /:articleId |  ✓ | - | { article }
-POST | /article/ |  ✓ | { title, url } | { createdArticle, articleSaved }
-POST | /article/archive |  ✓ | { id } | { archived }
-PATCH | /article/:articleId |  ✓ | { title, url, createdAt } | { oldArticle, status }
-DELETE | /article/:articleId |  ✓ | - | { deleted, log }
+POST | /signup | - | { email, password } | { email, added }
+POST | /login | - | { email, password } | { loggedIn, token }
 
+___
 
-##### User
-Method | Endpoint | Private | Request Body | Response
---- | --- | --- | --- | ---
-POST | /user/signup | - | { email, password } | { email, added }
-POST | /user/login | - | { email, password } | { loggedIn }
+##### Docker
 
-NOTE: login response header contains jwt
+Run from gohilReport-api/
+```
+docker-compse up --build
+```
 
-<br>
+* API:            localhost:8000
+* Mongo-Expess:   localhist:8081
 
-##### Config local server
+Access mongo express through web browser
+
+##### Configure Local Server
 Requiremnts:
 * NodeJS
-* MongoDB + client
+* MongoDB
 
 add config file: ```server/config.json```
 ```javascript
@@ -58,19 +70,26 @@ add config file: ```server/config.json```
 ```
 
 Run local server:
+( windows )
 ```
-node start
+npm start
+```
+
+( Linux / Mac )
+```
+npm run linux-start
 ```
 
 
 ##### TODO
 - [ ] Complete [management system](https://github.com/hitesh-92/gohilReportManager) with Angular ( priority )
 - [ ] Remove and refactor anonymous functions where appropriate ( easier debug )
-- [ ] Add admin authentication
+- [ ] Add admin user
 - [ ] Update ReadMe HTTP routes
 - [ ] Add option to attach image link to article log
 - [ ] Update article log patch to allow for image url edits
 - [ ] Add GraphQL
-- [ ] Set up docker container
 - [ ] Add in logger ( monitor activity )
-- [ ] Set up inital db structure
+- [ ] Set up inital db structure ( migration )
+- [ ] refactor controller/articleLog.js-function:updateArticle id=null. respond with error
+- [ ] refactor controller/column.js-function:deleteColumn request accepts title. change to id
