@@ -51,11 +51,12 @@ Requiremnts:
 * MongoDB
 
 add config file: `server/config.json`
+Note: development env is for docker
 ```javascript
 {
     "development": {
       "PORT": 8000,
-      "MONGODB_URI": "mongodb://localhost:27017/gReport",
+      "MONGODB_URI": "mongodb://mongo:27017/gReport",
       "jwtSecret": "jwtSecret"
     },
     "test": {
