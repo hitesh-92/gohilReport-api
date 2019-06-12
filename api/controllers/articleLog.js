@@ -131,13 +131,14 @@ const updateArticle = async (req, res, ArticleLog) => {
     const {
         title = null,
         url = null,
-        id = null
+        id
     } = req.body;
 
-    if (
-        title == null &&
-        url == null
-    ) {
+    if ( ObjectId.isValid(id) == false ) {
+      data.error = "Bad article id";
+      return res.status(404).json(data);
+    }
+    else if ( title == null && url == null ) {
         data.message = 'No title or url provided';
         return res.status(400).json(data)
     };
