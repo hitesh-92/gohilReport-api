@@ -181,20 +181,20 @@ function updateColumn (req, res, Column){
 
 function deleteColumn (req,res, Column){
 
-    const { title } = req.body
+    const { id } = req.body
 
     let data = {
         deleted: false
     }
 
     Column
-    .findOneAndDelete({ title })
+    .findOneAndDelete({ _id: id })
     .exec()
     .then(log => {
 
         let status = 400
 
-        if(log === null){
+        if(log == null){
             data.message = 'Invalid Column Provided'
         } else {
             status = 200
