@@ -355,7 +355,7 @@ describe("/article/ PATCH", () => {
     const { _id } = articles[0];
 
     const {
-      status
+      body: { status }
     } = await request(app)
     .patch('/article/removelink')
     .set('x-auth', logInToken)

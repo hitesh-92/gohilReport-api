@@ -6,6 +6,7 @@ module.exports = {
   getSingleArticle,
   saveNewArticle,
   updateArticle,
+  removeLink,
   switchPositions,
   deleteArticle
 }
@@ -221,6 +222,24 @@ async function updateArticle(req, res, ArticleLog){
             $set: body
         });
     };
+
+};
+
+async function removeLink(req, res, ArticleLog){
+
+  const { id } = req.body;
+
+  const data = { status: false }
+
+  if( ObjectId.isValid(id) == false ){
+    return res.status(400).json(data);
+  }
+
+  await ArticleLog.updateOne({ _id: id }, { $set: { image: null } });
+
+  data.status = true;
+
+  res.status(200).json(data);
 
 };
 
