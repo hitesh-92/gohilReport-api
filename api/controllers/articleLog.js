@@ -47,55 +47,36 @@ function getSingleArticle(req, res, ArticleLog){
 };
 
 async function saveNewArticle(req, res, ArticleLog){
+
   const { column } = req.body;
-
-  let { position = 0  } = req.body
-
-  const article = new ArticleLog({
-    _id: new ObjectId(),
-    title: req.body.title,
-    url: req.body.url,
-    column
-  });
+  let { position = 0  } = req.body;
 
   const data = {
     articleSaved: false
   };
 
-  const log = await saveArticle(article);
-  if( log == null ) {
-    return res.status(400).json(data);
-  };
+  var article = createArticle(req.body);
+
+  if(article ==  null) return res.status(400).json(data);
+
+  article.save();
 
   await ArticleLog.shiftPositions(position, column);
 
-  const validPosition = await validatePosition(position, column)
+  const validPosition = await validatePosition(position, column);
 
   if (typeof (validPosition) == 'number') {
     position = validPosition
-  }
+  };
 
-  await updatePosition(log._id, position)
+  await updatePosition(article._id, position);
 
   data.articleSaved = true;
-  data.createdArticle = log;
-  data.createdArticle.position = position;
+  data.createdArticle = article;
 
   res.status(201).json(data);
 
   // -----
-
-  async function saveArticle(article){
-    var log;
-
-    try {
-      log = await article.save();
-    } catch (error) {
-      log = null;
-    } finally {
-      return log;
-    }
-  };
 
   async function validatePosition(position, columnId) {
     //returns true or highest position
@@ -129,6 +110,33 @@ async function saveNewArticle(req, res, ArticleLog){
       return updated;
     }
   };
+
+  function createArticle({
+    title = '',
+    url = '',
+    image = '',
+    position = 0,
+    column
+  }){
+
+    const validColumnId = ObjectId.isValid(column);
+    if( !title || !url || !column || !validColumnId ) return null;
+
+    title = title.trim();
+    url = url.trim();
+    image = image.trim();
+
+    return new ArticleLog({
+      _id: new ObjectId(),
+      title,
+      url,
+      image,
+      position,
+      column
+    });
+
+  }
+
 };
 
 async function updateArticle(req, res, ArticleLog){

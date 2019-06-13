@@ -3,9 +3,9 @@
    REST API for [Gohil Report](http://www.gohilreport.com)  
    Made with Node.js and MongoDB  
 
-#### HTTP endpoints
+#### HTTP endpoints  
 
-##### /column/
+##### /column/  
 Method | Endpoint | Auth | Req. Body | Response
 --- | --- | --- | --- | ---
 GET | / | - | - | { left, center, right, archive, alert }
@@ -14,7 +14,7 @@ POST | / | ✓ | { title }| { createdColumn }
 PATCH | / |  ✓ | { column, id } | { column }
 DELETE | / |  ✓ | { title } | { deleted, message }
 
-##### /article/
+##### /article/  
 Method | Endpoint | Auth | Req. Body | Response
 --- | --- | --- | --- | ---
 GET | /single/:id |  ✓ | - | { article }
@@ -25,7 +25,7 @@ PATCH | / |  ✓ | { id, title || url   } | { oldArticle, status }
 PATCH | /switch |  ✓ | { selected, moveTo } | { status }
 DELETE | / |  ✓ | { id } | { deleted, log }
 
-##### /user/
+##### /user/  
 Method | Endpoint | Private | Request Body | Response
 --- | --- | --- | --- | ---
 POST | /signup | - | { email, password } | { email, added }
@@ -33,7 +33,7 @@ POST | /login | - | { email, password } | { loggedIn, token }
 
 ___
 
-#### Docker
+#### Docker  
 
 Run from gohilReport-api/
 ```
@@ -48,7 +48,7 @@ Access mongo express through web browser
 #### Configure Local Server
 Requiremnts:
 * NodeJS
-* MongoDB
+* MongoDB  
 
 add config file: `server/config.json`
 Note: development env is for docker
@@ -64,9 +64,9 @@ Note: development env is for docker
       "MONGODB_URI": "mongodb://localhost:27017/gReportTest",
       "jwtSecret": "jwtSecretTest"
 }
-```
+```  
 
-Run local server:
+Run local server:  
 ( windows )
 ```
 npm start
@@ -75,13 +75,13 @@ npm start
 ( Linux / Mac )
 ```
 npm run linux-start
-```
+```  
 
 ___
 
 #### Testing
 
-Local Server
+Local Server  
 ( Windows )
 ```
 npm run test-watch
@@ -90,9 +90,9 @@ npm run test-watch
 ( Linux / Mac )
 ```
 npm run linux-test
-```
+```  
 
-Docker
+Docker  
 `TODO`
 
 ___
@@ -107,3 +107,4 @@ ___
 - [ ] Add GraphQL
 - [ ] Add in logger ( monitor activity )
 - [ ] Set up inital db structure ( migration )
+- [ ] on saving new article. if not position property given, set to last in given column
