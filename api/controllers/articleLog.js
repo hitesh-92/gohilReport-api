@@ -140,6 +140,7 @@ async function saveNewArticle(req, res, ArticleLog){
 };
 
 async function updateArticle(req, res, ArticleLog){
+
     let data = {
         status: false
     };
@@ -147,14 +148,17 @@ async function updateArticle(req, res, ArticleLog){
     const {
         title = null,
         url = null,
+        image = null,
         id
     } = req.body;
+
+    // Validations
 
     if ( ObjectId.isValid(id) == false ) {
       data.error = "Bad article id";
       return res.status(404).json(data);
     }
-    else if ( title == null && url == null ) {
+    else if ( !title && !url && !image ) {
         data.message = 'No title or url provided';
         return res.status(400).json(data)
     };
@@ -170,7 +174,7 @@ async function updateArticle(req, res, ArticleLog){
 
     const {
         nModified: patched = null
-    } = await updateArticle(id, title, url);
+    } = await updateArticle(id, title, url, image);
 
     let status = 400;
 
@@ -204,11 +208,12 @@ async function updateArticle(req, res, ArticleLog){
         }
     };
 
-    async function updateArticle(_id, title, url) {
+    async function updateArticle(_id, title, url, image) {
         let body = {};
 
-        if (title) body.title = title;
-        if (url) body.url = url;
+        if (title) body.title = title.trim();
+        if (url) body.url = url.trim();
+        if (image) body.image = image.trim();
 
         return await ArticleLog.updateOne({
             _id

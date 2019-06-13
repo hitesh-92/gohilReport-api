@@ -320,6 +320,36 @@ describe("/article/ PATCH", () => {
     assert.equal(title, data.title)
   });
 
+  it("update article image link", async () => {
+
+    const { _id, image } = articles[0];
+
+    var updateData = {
+      id: _id,
+      image: 'www.newwww.com'
+    }
+
+    const {
+      body: { status }
+    } = await request(app)
+    .patch('/article/')
+    .set('x-auth', logInToken)
+    .send(updateData)
+    .expect(200);
+
+    assert.equal(status, true);
+
+    const {
+      image: updatedLink
+    } = await ArticleLog
+    .findById(_id)
+    .lean()
+    .exec();
+
+    assert.equal(updatedLink, updateData.image);
+
+  });
+
   it("rejects request with no title/url", async () => {
 
     const data = {
