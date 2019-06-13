@@ -350,6 +350,28 @@ describe("/article/ PATCH", () => {
 
   });
 
+  it("removes link from exisitng article", async () => {
+
+    const { _id } = articles[0];
+
+    const {
+      status
+    } = await request(app)
+    .patch('/article/removelink')
+    .set('x-auth', logInToken)
+    .send({ id: _id })
+    .expect(200);
+
+    assert.equal(status, true);
+
+    const {
+      image
+    } = await ArticleLog.findById(_id).lean().exec();
+
+    assert.equal(image, null);
+
+  });
+
   it("rejects request with no title/url", async () => {
 
     const data = {
