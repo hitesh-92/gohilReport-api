@@ -9,9 +9,9 @@ const { Types: {ObjectId} } = mongoose
 const {articleData, userData} = require('./data.json')
 
 function createColumnIds(){
-    let ids = []
-    for(let i=0; i<5; i++) ids.push( ObjectId() )
-    return ids
+    let ids = [];
+    for(let i=0; i<5; i++) ids.push( ObjectId() );
+    return ids;
 }
 
 function buildColumns(ids){
@@ -34,11 +34,13 @@ function buildArticles(data, columnIds){
         return articles.map( ({
             title,
             url,
+            image,
             position
         }) => new ArticleLog({
             _id: ObjectId(),
             title,
             url,
+            image,
             column: columnId,
             position
         }) )
