@@ -107,4 +107,3 @@ ___
 - [ ] Add GraphQL
 - [ ] Add in logger ( monitor activity )
 - [ ] Set up inital db structure ( migration )
-- [ ] on saving new article. if not position property given, set to last in given column
