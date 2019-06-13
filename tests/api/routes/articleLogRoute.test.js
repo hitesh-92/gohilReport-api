@@ -72,25 +72,50 @@ describe("/article/ GET", () => {
 });
 
 describe("/article/ POST", () => {
-  it("create and save new article", () => {
+  it("create and save new article", async () => {
     const articleData = {
       title: "return201",
       url: "www.201.com",
+      image: "www.image-link.com",
       column: leftColumnId
     };
 
-    return request(app)
-      .post("/article/")
-      .set("x-auth", logInToken)
-      .send(articleData)
-      .expect(201)
-      .then(({
-        body: {
-          articleSaved
-        }
-      }) => {
-        assert.equal(articleSaved, true);
-      });
+    const {
+      body: {
+        articleSaved,
+        createdArticle: { _id: articleId }
+      }
+    } = await request(app)
+    .post('/article/')
+    .set('x-auth', logInToken)
+    .send(articleData)
+    .expect(201)
+
+    assert.equal(articleSaved, true);
+
+    const {
+      title,
+      url,
+      image
+    } = await ArticleLog.findById(articleId)
+
+    assert.equal(title , articleData.title);
+    assert.equal(url , articleData.url);
+    assert.equal(image , articleData.image);
+
+
+    // return request(app)
+    //   .post("/article/")
+    //   .set("x-auth", logInToken)
+    //   .send(articleData)
+    //   .expect(201)
+    //   .then(({
+    //     body: {
+    //       articleSaved
+    //     }
+    //   }) => {
+    //     assert.equal(articleSaved, true);
+    //   });
   });
 
   it("does not saved article with invalid data", () => {

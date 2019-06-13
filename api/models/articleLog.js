@@ -20,7 +20,8 @@ const articleLogSchema = new Schema({
   },
   image:{
     type: String,
-    trim: true
+    trim: true,
+    default: null
   },
   status: {
     type: Number,
