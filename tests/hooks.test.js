@@ -1,5 +1,7 @@
-global.assert = require('assert');
-global.request = require('supertest');
+console.log('\x1Bc');
+
+global.assert = require('assert');      // !
+global.request = require('supertest');  // !
 
 const ArticleLog = require('../api/models/articleLog')
 const User = require('../api/models/user')
@@ -14,7 +16,7 @@ const {
     users
 } = require('./seedData')
 
-beforeEach( async () => 
+beforeEach( async () =>
     await Promise.all([
         testDelete(ArticleLog),
         testDelete(User),
@@ -22,7 +24,7 @@ beforeEach( async () =>
     ])
 )
 
-beforeEach( async () => 
+beforeEach( async () =>
     await Promise.all([
         testSeed(Column, columns),
         testSeed(ArticleLog, articles),
