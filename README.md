@@ -5,7 +5,7 @@
 
 #### HTTP endpoints  
 
-##### /column/  
+##### /column
 Method | Endpoint | Auth | Req. Body | Response
 --- | --- | --- | --- | ---
 GET | / | - | - | { left, center, right, archive, alert }
@@ -14,7 +14,7 @@ POST | / | ✓ | { title }| { createdColumn }
 PATCH | / |  ✓ | { column, id } | { column }
 DELETE | / |  ✓ | { title } | { deleted, message }
 
-##### /article/  
+##### /article
 Method | Endpoint | Auth | Req. Body | Response
 --- | --- | --- | --- | ---
 GET | /single/:id |  ✓ | - | { article }
@@ -26,8 +26,8 @@ PATCH | /removeimage |  ✓ | { id } | { status }
 PATCH | /switch |  ✓ | { selected, moveTo } | { status }
 DELETE | / |  ✓ | { id } | { deleted, log }
 
-##### /user/  
-Method | Endpoint | Private | Request Body | Response
+##### /user
+Method | Endpoint | Private | Req. Body | Response
 --- | --- | --- | --- | ---
 POST | /signup | - | { email, password } | { email, added }
 POST | /login | - | { email, password } | { loggedIn, token }
