@@ -6,7 +6,7 @@ module.exports = {
   getSingleArticle,
   saveNewArticle,
   updateArticle,
-  removeLink,
+  removeImage,
   switchPositions,
   deleteArticle
 }
@@ -225,7 +225,7 @@ async function updateArticle(req, res, ArticleLog){
 
 };
 
-async function removeLink(req, res, ArticleLog){
+async function removeImage(req, res, ArticleLog){
 
   const { id } = req.body;
 

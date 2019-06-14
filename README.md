@@ -21,7 +21,8 @@ GET | /single/:id |  ✓ | - | { article }
 GET | /archive |  ✓ | { id } | { archives }
 POST | / |  ✓ | { title, url } | { createdArticle, articleSaved }
 POST | /archive |  ✓ | { id } | { archived }
-PATCH | / |  ✓ | { id, title || url   } | { oldArticle, status }
+PATCH | / |  ✓ | { id, title, url, image   } | { oldArticle, status }
+PATCH | /removeimage |  ✓ | { id } | { status }
 PATCH | /switch |  ✓ | { selected, moveTo } | { status }
 DELETE | / |  ✓ | { id } | { deleted, log }
 
@@ -43,15 +44,15 @@ docker-compse up --build
 * API:            localhost:8000
 * Mongo-Expess:   localhost:8081
 
-Access mongo express through web browser  
+_Mongo-express: mongodb web client_
 
-#### Configure Local Server
+#### Configure Server
 Requiremnts:
 * NodeJS
 * MongoDB  
 
 add config file: `server/config.json`
-Note: development env is for docker
+_Note: development env is for docker_
 ```javascript
 {
     "development": {
@@ -67,12 +68,12 @@ Note: development env is for docker
 ```  
 
 Run local server:  
-( windows )
+Windows  
 ```
 npm start
 ```
 
-( Linux / Mac )
+Linux / Mac  
 ```
 npm run linux-start
 ```  
@@ -82,7 +83,7 @@ ___
 #### Testing
 
 Local Server  
-( Windows )
+Windows
 ```
 npm run test-watch
 ```
@@ -91,10 +92,6 @@ npm run test-watch
 ```
 npm run linux-test
 ```  
-
-Docker  
-`TODO`
-
 ___
 
 ##### TODO

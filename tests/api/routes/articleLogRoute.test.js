@@ -357,7 +357,7 @@ describe("/article/ PATCH", () => {
     const {
       body: { status }
     } = await request(app)
-    .patch('/article/removelink')
+    .patch('/article/removeimage')
     .set('x-auth', logInToken)
     .send({ id: _id })
     .expect(200);

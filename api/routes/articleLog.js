@@ -16,7 +16,7 @@ router.post('/archive', Authenticate, (req, res) => { ArchiveController.archiveA
 
 router.patch("/", Authenticate, (req, res) => { Controller.updateArticle(req, res, ArticleLog) });
 
-router.patch('/removelink', Authenticate, (req, res) => { Controller.removeLink(req, res, ArticleLog) })
+router.patch('/removeimage', Authenticate, (req, res) => { Controller.removeImage(req, res, ArticleLog) })
 
 router.patch("/switch", Authenticate, (req, res) => { Controller.switchPositions(req, res, ArticleLog) });
 
