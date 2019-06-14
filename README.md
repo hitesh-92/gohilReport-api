@@ -51,7 +51,7 @@ Requiremnts:
 * NodeJS
 * MongoDB  
 
-add config file: `server/config.json`
+  add config file: `server/config.json`  
 _Note: development env is for docker_
 ```javascript
 {
@@ -64,6 +64,7 @@ _Note: development env is for docker_
       "PORT": 8080,
       "MONGODB_URI": "mongodb://localhost:27017/gReportTest",
       "jwtSecret": "jwtSecretTest"
+    }
 }
 ```  
 
@@ -88,7 +89,7 @@ Windows
 npm run test-watch
 ```
 
-( Linux / Mac )
+Linux / Mac  
 ```
 npm run linux-test
 ```  
@@ -97,10 +98,6 @@ ___
 ##### TODO
 - [ ] Complete [management system](https://github.com/hitesh-92/gohilReportManager) with Angular ( priority )
 - [ ] Remove and refactor anonymous functions where appropriate ( easier debug )
-- [ ] Add admin user
-- [ ] Update ReadMe HTTP routes
-- [ ] Add option to attach image link to article log
-- [ ] Update article log patch to allow for image url edits
 - [ ] Add GraphQL
 - [ ] Add in logger ( monitor activity )
 - [ ] Set up inital db structure ( migration )
