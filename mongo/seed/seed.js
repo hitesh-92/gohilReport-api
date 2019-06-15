@@ -47,7 +47,7 @@ function buildArticles(columnTitle, columnId){
       image: `www.${title}-image.com`,
       position: NumberInt(i+1),
       column: columnId,
-      status: status,
+      status: NumberInt(status),
       createdAt: ISODate(),
       updatedAt: ISODate()
     });
