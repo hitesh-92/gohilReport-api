@@ -21,10 +21,7 @@ services:
   mongo:
     container_name: mongo
     build: ./mongo
-    # image: mongo:4.0-xenial
     restart: always
     command: mongod
     ports:
       - "27017:27017"
-    # volumes:
-    #   - ./mongo/data:/data/db

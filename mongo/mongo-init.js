@@ -1,4 +1,4 @@
-db = db.getSiblingDB('gReport') 
+db = db.getSiblingDB('gReport');
 
 var [columns, articles] = buildData();
 
@@ -16,7 +16,7 @@ let res = [
   })
 ]
 
-printjson(res)
+printjson(res);
 
 function buildData(){
   let columns = [], articles = [];
@@ -35,7 +35,7 @@ function buildData(){
   });
 
   return [columns, articles];
-}
+};
 
 function build(title){
 
@@ -63,7 +63,7 @@ function build(title){
         _id: new ObjectId,
         title: title,
         url: `www.${title}.com`,
-        image: `www.${title}${i}-image.com`,
+        image: `www.${title}-image.com`,
         position: NumberInt(i+1),
         column: columnId,
         status: NumberInt(status),
@@ -75,4 +75,4 @@ function build(title){
     return articles;
   };
 
-}
+};
