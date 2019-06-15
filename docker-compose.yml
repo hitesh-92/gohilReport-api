@@ -3,7 +3,7 @@ services:
 
   # API
   api:
-    container_name: gohilreport-api
+    container_name: api
     restart: always
     build: .
     command: npm start
@@ -14,12 +14,17 @@ services:
       - mongo
     ports:
       - "8000:8000"
+    volumes:
+      - ./:/usr/src/gohilReport-api
 
   # MongoDB
   mongo:
     container_name: mongo
-    image: mongo:4.0-xenial
+    build: ./mongo
+    # image: mongo:4.0-xenial
     restart: always
     command: mongod
     ports:
-      - "27017:27017" 
+      - "27017:27017"
+    volumes:
+      - ./mongo/data:/data/db

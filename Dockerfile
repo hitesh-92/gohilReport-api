@@ -1,4 +1,4 @@
-FROM node:12.3.1
+FROM node:alpine
 
 WORKDIR /usr/src/gohilReport-api
 

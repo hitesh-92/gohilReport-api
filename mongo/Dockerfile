@@ -1,3 +1,3 @@
-FROM mongo:3.4-xenial
+FROM mongo:4.0-xenial
 
-ADD /seed/ /docker-entrypoint-initdb.d/seed/
+COPY mongo-init.js /docker-entrypoint-initdb.d/
