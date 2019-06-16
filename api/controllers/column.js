@@ -16,7 +16,7 @@ function get_allColumns (req, res, ArticleLog, Column){
 
     const fetchColumns = async () => await Column
     .find({
-        'title': {$in: [ 'left', 'center', 'right', 'archive', 'alert' ]}
+        'title': { $in: [ 'left', 'center', 'right', 'alert' ] }
     })
     .select('_id title')
     .lean()
@@ -28,24 +28,24 @@ function get_allColumns (req, res, ArticleLog, Column){
                 ArticleLog.find({
                     'column': {$in: column}
                 })
-                .select('_id title url status column')
+                .select('_id title url status column position image')
                 .lean()
                 .exec()
             )
         })
-    }
+    };
 
     const fetchAllArticles = async (columns) => {
         const requests = columns.map( ({_id}) => articleQuery(_id) )
         return await Promise.all(requests)
     }
 
-
     fetchColumns()
-    .then(columns => fetchAllArticles(columns))
-    .then( ([center, left, right, archive, alert]) =>
-      res.status(200).json({left, center, right, archive, alert})
-    )
+    .then(columns => fetchAllArticles(columns)) //returns articles array sorted by column title a-z
+    .then( ([alert, center, left, right]) =>
+      res.status(200).json({alert, center, left, right})
+    );
+
 };
 
 function get_singleColumn (req, res, ArticleLog, Column){

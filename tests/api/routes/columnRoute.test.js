@@ -18,11 +18,12 @@ const Column = require('../../../api/models/column');
 
 describe('column/ Routes', () => {
 
-  describe('GET /', () => {
+  describe.only('GET /', () => {
 
     it('return all column with articles', async () => {
 
       var {
+        // body
         body: {
           left,
           center,
@@ -33,6 +34,7 @@ describe('column/ Routes', () => {
       .get('/column/')
       .expect(200);
 
+
       let totalArticleCount = (
         left.length + center.length+ right.length + alert.length
       );
@@ -40,14 +42,15 @@ describe('column/ Routes', () => {
       assert.equal(totalArticleCount, 8);
 
       var [
-        left1,,,center2,right1,right2,,,alert1
+        left1,,center1,center2,right1,right2,,,alert1
       ] = articles;
 
       assert.equal(left[0].title, left1.title);
+      assert.equal(center[0].status, center1.status)
       assert.equal(center[1].url, center2.url);
       assert.equal(right[0].image, right1.image);
       assert.equal(right[1].position, right2.position);
-      assert.equal(alert[0].title, alert1.title);
+      assert.equal(alert[0].createdAt, alert1.createAt);
 
     });
 
