@@ -1,8 +1,8 @@
-const { app } = require('../../../app')
+const { app } = require('../../../app');
 
 const {
   Types: { ObjectId }
-} = require('mongoose')
+} = require('mongoose');
 
 const {
   articles,
@@ -12,43 +12,42 @@ const {
     rightColumnId
   ],
   logInToken
-} = require('../../seedData')
+} = require('../../seedData');
 
 const Column = require('../../../api/models/column');
-// const ArticleLog = require('../../../api/models/articleLog')
 
 describe('column/ Routes', () => {
 
   describe('GET /', () => {
 
     it('return all column with articles', async () => {
-      // return request(app)
-      //   .get('/column/')
-      //   .expect(200)
-      //   .then(({
-      //     body: {
-      //       center,
-      //       left,
-      //       right
-      //     }
-      //   }) => {
-      //     assert.equal(left.length, 2)
-      //     assert.equal(center.length, 2)
-      //     assert.equal(right.length, 2)
-      //   })
 
       var {
         body: {
-          left: leftArticles,
-          center: centerArticles,
-          right: rightArticles,
-          alert: alertArticles
+          left,
+          center,
+          right,
+          alert
         }
       } = await request(app)
       .get('/column/')
       .expect(200);
 
-      // assert.equal()
+      let totalArticleCount = (
+        left.length + center.length+ right.length + alert.length
+      );
+
+      assert.equal(totalArticleCount, 8);
+
+      var [
+        left1,,,center2,right1,right2,,,alert1
+      ] = articles;
+
+      assert.equal(left[0].title, left1.title);
+      assert.equal(center[1].url, center2.url);
+      assert.equal(right[0].image, right1.image);
+      assert.equal(right[1].position, right2.position);
+      assert.equal(alert[0].title, alert1.title);
 
     });
 
