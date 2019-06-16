@@ -5,35 +5,54 @@ const {
 } = require('mongoose')
 
 const {
-  columnIds: [leftColumnId],
+  articles,
+  columnIds: [
+    leftColumnId,
+    centerColumnId,
+    rightColumnId
+  ],
   logInToken
 } = require('../../seedData')
 
-const Column = require('../../../api/models/column')
+const Column = require('../../../api/models/column');
 // const ArticleLog = require('../../../api/models/articleLog')
 
 describe('column/ Routes', () => {
 
   describe('GET /', () => {
 
-    it('return all column with articles', () => {
-      return request(app)
-        .get('/column/')
-        .expect(200)
-        .then(({
-          body: {
-            center,
-            left,
-            right
-          }
-        }) => {
-          assert.equal(left.length, 2)
-          assert.equal(center.length, 2)
-          assert.equal(right.length, 2)
-        })
-    })
+    it.only('return all column with articles', async () => {
+      // return request(app)
+      //   .get('/column/')
+      //   .expect(200)
+      //   .then(({
+      //     body: {
+      //       center,
+      //       left,
+      //       right
+      //     }
+      //   }) => {
+      //     assert.equal(left.length, 2)
+      //     assert.equal(center.length, 2)
+      //     assert.equal(right.length, 2)
+      //   })
 
-  })
+      var {
+        body: {
+          left: leftArticles,
+          center: centerArticles,
+          right: rightArticles,
+          alert: alertArticles
+        }
+      } = await request(app)
+      .get('/column/')
+      .expect(200);
+
+      // assert.equal()
+
+    });
+
+  });
 
   describe('GET /single', () => {
 
@@ -72,7 +91,7 @@ describe('column/ Routes', () => {
       assert.equal(message, 'Column not found')
       assert.equal(error, true)
     });
-  })
+  });
 
   describe('POST /', () => {
 
@@ -137,7 +156,7 @@ describe('column/ Routes', () => {
         })
     })
 
-  })
+  });
 
   describe('PATCH /', () => {
 
@@ -219,7 +238,7 @@ describe('column/ Routes', () => {
     })
 
 
-  })
+  });
 
   describe('DELETE /:column', () => {
 
@@ -262,6 +281,6 @@ describe('column/ Routes', () => {
       assert.equal(message, 'Invalid Column Provided')
       assert.equal(deleted, false)
     })
-  })
+  });
 
 });
