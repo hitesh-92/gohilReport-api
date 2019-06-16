@@ -36,7 +36,7 @@ function createColumnIds() {
 }
 
 function buildColumns(ids) {
-  const titles = ['left', 'center', 'right', 'archive']
+  const titles = ['left', 'center', 'right', 'archive', 'alert']
   return titles.map((title, i) => new Column({
     _id: new ObjectId(ids[i]),
     title

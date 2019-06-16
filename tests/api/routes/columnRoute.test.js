@@ -21,7 +21,7 @@ describe('column/ Routes', () => {
 
   describe('GET /', () => {
 
-    it.only('return all column with articles', async () => {
+    it('return all column with articles', async () => {
       // return request(app)
       //   .get('/column/')
       //   .expect(200)
