@@ -10,9 +10,9 @@ const options = {
 mongoose.Promise = global.Promise;
 mongoose.connect(db_uri, options);
 
-mongoose.connection.on('connected', () =>
-  console.log('MognoDB Connected to API')
-)
+// mongoose.connection.on('connected', () =>
+//   console.log('\nMognoDB Connected to API\n')
+// )
 
 mongoose.connection.on('error', err => {
   console.log('Error establishing connection with MongoDB ==> \n', err);
