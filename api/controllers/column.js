@@ -29,7 +29,7 @@ function get_allColumns (req, res, ArticleLog, Column){
                     'column': {$in: column}
                 })
                 .select('_id title url status column position image')
-                .sort({position: -1})
+                .sort({position: 1})
                 .lean()
                 .exec()
             )
@@ -67,6 +67,7 @@ function get_singleColumn (req, res, ArticleLog, Column){
         return ArticleLog.find({
             'column': {$in: column._id}
         })
+        .sort({position: 1})
         .lean()
         .exec()
     })
