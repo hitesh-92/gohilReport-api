@@ -29,6 +29,7 @@ function get_allColumns (req, res, ArticleLog, Column){
                     'column': {$in: column}
                 })
                 .select('_id title url status column position image')
+                .sort({position: -1})
                 .lean()
                 .exec()
             )
