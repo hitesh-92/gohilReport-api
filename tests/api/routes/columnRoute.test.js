@@ -20,7 +20,7 @@ const {
 
 const Column = require('../../../api/models/column');
 
-describe('column/ Routes', () => {
+describe('column/ ', () => {
 
   describe('GET /', () => {
 
@@ -59,7 +59,7 @@ describe('column/ Routes', () => {
 
   });
 
-  describe('GET /single', () => {
+  describe('GET /:title', () => {
 
     it('find column and return articles', async () => {
       const {
@@ -68,11 +68,8 @@ describe('column/ Routes', () => {
           articles
         }
       } = await request(app)
-        .get('/column/single/')
-        .send({
-          title: 'left'
-        })
-        .expect(200)
+        .get('/column/left')
+        .expect(200);
 
       assert.equal(error, false)
       assert.equal(articles.length, 2)
@@ -86,11 +83,8 @@ describe('column/ Routes', () => {
           error
         }
       } = await request(app)
-        .get('/column/single')
-        .send({
-          title: 'badColumn'
-        })
-        .expect(400)
+        .get('/column/badColumn')
+        .expect(400);
 
       assert.equal(columnData, null)
       assert.equal(message, 'Column not found')
