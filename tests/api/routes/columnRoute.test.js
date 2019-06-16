@@ -1,7 +1,11 @@
-const { app } = require('../../../app');
+const {
+  app
+} = require('../../../app');
 
 const {
-  Types: { ObjectId }
+  Types: {
+    ObjectId
+  }
 } = require('mongoose');
 
 const {
@@ -18,12 +22,11 @@ const Column = require('../../../api/models/column');
 
 describe('column/ Routes', () => {
 
-  describe.only('GET /', () => {
+  describe('GET /', () => {
 
     it('return all column with articles', async () => {
 
       var {
-        // body
         body: {
           left,
           center,
@@ -31,18 +34,18 @@ describe('column/ Routes', () => {
           alert
         }
       } = await request(app)
-      .get('/column/')
-      .expect(200);
+        .get('/column/')
+        .expect(200);
 
 
       let totalArticleCount = (
-        left.length + center.length+ right.length + alert.length
+        left.length + center.length + right.length + alert.length
       );
 
       assert.equal(totalArticleCount, 8);
 
       var [
-        left1,,center1,center2,right1,right2,,,alert1
+        left1, , center1, center2, right1, right2, , , alert1
       ] = articles;
 
       assert.equal(left[0].title, left1.title);

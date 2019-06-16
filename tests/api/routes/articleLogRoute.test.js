@@ -84,13 +84,15 @@ describe("/article/ POST", () => {
     const {
       body: {
         articleSaved,
-        createdArticle: { _id: articleId }
+        createdArticle: {
+          _id: articleId
+        }
       }
     } = await request(app)
-    .post('/article/')
-    .set('x-auth', logInToken)
-    .send(articleData)
-    .expect(201);
+      .post('/article/')
+      .set('x-auth', logInToken)
+      .send(articleData)
+      .expect(201);
 
     assert.equal(articleSaved, true);
 
@@ -100,9 +102,9 @@ describe("/article/ POST", () => {
       image
     } = await ArticleLog.findById(articleId).lean().exec();
 
-    assert.equal(title , articleData.title);
-    assert.equal(url , articleData.url);
-    assert.equal(image , articleData.image);
+    assert.equal(title, articleData.title);
+    assert.equal(url, articleData.url);
+    assert.equal(image, articleData.image);
   });
 
   it("does not saved article with invalid data", () => {
@@ -322,7 +324,10 @@ describe("/article/ PATCH", () => {
 
   it("update article image link", async () => {
 
-    const { _id, image } = articles[0];
+    const {
+      _id,
+      image
+    } = articles[0];
 
     var updateData = {
       id: _id,
@@ -330,21 +335,23 @@ describe("/article/ PATCH", () => {
     }
 
     const {
-      body: { status }
+      body: {
+        status
+      }
     } = await request(app)
-    .patch('/article/')
-    .set('x-auth', logInToken)
-    .send(updateData)
-    .expect(200);
+      .patch('/article/')
+      .set('x-auth', logInToken)
+      .send(updateData)
+      .expect(200);
 
     assert.equal(status, true);
 
     const {
       image: updatedLink
     } = await ArticleLog
-    .findById(_id)
-    .lean()
-    .exec();
+      .findById(_id)
+      .lean()
+      .exec();
 
     assert.equal(updatedLink, updateData.image);
 
@@ -352,15 +359,21 @@ describe("/article/ PATCH", () => {
 
   it("removes link from exisitng article", async () => {
 
-    const { _id } = articles[0];
+    const {
+      _id
+    } = articles[0];
 
     const {
-      body: { status }
+      body: {
+        status
+      }
     } = await request(app)
-    .patch('/article/removeimage')
-    .set('x-auth', logInToken)
-    .send({ id: _id })
-    .expect(200);
+      .patch('/article/removeimage')
+      .set('x-auth', logInToken)
+      .send({
+        id: _id
+      })
+      .expect(200);
 
     assert.equal(status, true);
 
@@ -590,7 +603,9 @@ describe("/article/archive/", () => {
         }
       })
       .select('position title')
-      .sort({position: 1})
+      .sort({
+        position: 1
+      })
       .lean()
       .exec();
 
