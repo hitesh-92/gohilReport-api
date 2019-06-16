@@ -50,11 +50,11 @@ function get_allColumns (req, res, ArticleLog, Column){
 
 function get_singleColumn (req, res, ArticleLog, Column){
 
-    const { title } = req.body
+    const title = req.params.title
 
     let data = {}
 
-    Column.findOne({title})
+    Column.findOne({title: title})
     .lean()
     .exec()
     .then( async (column) => {

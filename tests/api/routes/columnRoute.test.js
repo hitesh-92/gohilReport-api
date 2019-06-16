@@ -59,7 +59,7 @@ describe('column/ ', () => {
 
   });
 
-  describe('GET /:title', () => {
+  describe.only('GET /:title', () => {
 
     it('find column and return articles', async () => {
       const {
