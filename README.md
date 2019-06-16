@@ -101,3 +101,4 @@ ___
 - [ ] Add GraphQL
 - [ ] Add in logger ( monitor activity )
 - [ ] Set up inital db structure ( migration )
+- [ ] Duplicate database folders /db & /mogno merge and format dockerfile
