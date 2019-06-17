@@ -432,7 +432,7 @@ describe("/article/ PATCH", () => {
 
 });
 
-describe("/article/switch PATCH", () => {
+describe.only("/article/switch PATCH", () => {
 
   it("switch position two articles in column", async () => {
 
@@ -478,6 +478,30 @@ describe("/article/switch PATCH", () => {
     assert.equal(new_secondArticle.position, 2);
 
   });
+
+  it("rejects articles from different columns", async () => {
+
+    const data = {
+      selected: articles[5]._id,
+      moveTo: articles[0]._id
+    };
+
+    const {
+      body: {
+        status,
+        error
+      }
+    } = await request(app)
+    .patch('/article/switch')
+    .set('x-auth', logInToken)
+    .send(data)
+    .expect(404);
+
+    assert.equal(status, false);
+    assert.equal(error, 'column');
+  });
+
+  it("rejects invalid if invalid id")
 
 });
 
