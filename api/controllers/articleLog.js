@@ -257,7 +257,7 @@ async function switchPositions(req, res, ArticleLog){
     // need to fetch articles before can validate same columns
     const [checkColumns, makeSwitch] = await fetchArticles(req.body);
 
-    if( checkColumns == 'error' ) return res.status(404).json({status: false, error: 'articleId'});
+    if( checkColumns == 'error' ) return res.status(400).json({status: false, error: 'articleId'});
     else if( checkColumns() == false ) return res.status(404).json({status: false, error: 'column'});
 
     var switched = await makeSwitch();

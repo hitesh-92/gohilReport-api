@@ -501,7 +501,26 @@ describe.only("/article/switch PATCH", () => {
     assert.equal(error, 'column');
   });
 
-  it("rejects invalid if invalid id")
+  it("rejects invalid if invalid id", async () => {
+    const data = {
+      selected: new ObjectId(),
+      moveTo: articles[0]._id,
+    };
+
+    const {
+      body: {
+        status,
+        error
+      }
+    } = await request(app)
+    .patch('/article/switch')
+    .set('x-auth', logInToken)
+    .send(data)
+    .expect(400);
+
+    assert.equal(status, false);
+    assert.equal(error, 'articleId');
+  })
 
 });
 
