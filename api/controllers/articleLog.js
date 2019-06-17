@@ -244,59 +244,85 @@ async function removeImage(req, res, ArticleLog){
 };
 
 async function switchPositions(req, res, ArticleLog){
+    // make use of transactions in next major update!
 
-    const {
-        selected,
-        moveTo
-    } = req.body;
-
-    const idsValid = validateId(selected.id) == validateId(moveTo.id);
-
-    if (!idsValid) {
+    // validate Ids
+    const validIds = checkIds(req.body);
+    if (!validIds) {
         return res.status(400).json({
             status: false
         });
     }
 
-    const selectedRequest = switchRequest(selected);
-    const moveToRequest = switchRequest(moveTo);
+    // need to fetch articles before can validate same columns
+    const [checkColumns, makeSwitch] = await fetchArticles(req.body);
 
-    const [{
-            nModified: selectedSwitched
-        },
-        {
-            nModified: moveToSwitched
-        }
-    ] = await Promise.all([selectedRequest, moveToRequest]);
+    if( checkColumns == 'error' ) return res.status(404).json({status: false});
+    else if( checkColumns() == false ) return res.status(404).json('Invalid Request');
 
-    if (selectedSwitched && moveToSwitched) {
-        return res.status(200).json({
-            status: true
-        })
-    }
+    var switched = await makeSwitch();
+
+    if(switched) return res.json({status: true})
+    else res.status(400).json({status: false, error: 'bigProblem'})
 
     // -----
 
-    function validateId(id) {
-        return ObjectId.isValid(id) == true;
+    function checkIds({selected, moveTo}){
+      if( ObjectId.isValid(selected) == false ) return false;
+      if( ObjectId.isValid(moveTo) == false ) return false;
+      return true;
     }
 
-    async function switchRequest({
-        id: _id,
-        position
-    }) {
-        return new Promise(resolve => {
-            resolve(
-                ArticleLog.updateOne({
-                    _id
-                }, {
-                    $set: {
-                        position
-                    }
-                })
-            );
-        });
-    };
+    async function fetchArticles({selected:selectedId, moveTo:moveToId}){
+
+      var selectedArticle = await fetchArticle(selectedId);
+      var moveToArticle = await fetchArticle(moveToId);
+
+      const bothArticlesExits = selectedArticle != null && moveToArticle != null;
+
+      if(bothArticlesExits) return [equalColumns, switchRequest];
+      else return ['error', ''];
+
+      function equalColumns(){
+        const firstArticleColumn = selectedArticle.column.toString();
+        const secondArticleColumn = moveToArticle.column.toString();
+        return firstArticleColumn === secondArticleColumn;
+      }
+
+      async function switchRequest(){
+
+        const {
+          position: selectedPosition
+        } = selectedArticle;
+
+        const {
+          position: moveToPosition
+        } = moveToArticle;
+
+        var { nModified: updatedSelected } = await updateArticle(selectedId, moveToPosition);
+        var { nModified: updatedMoveTo } = await updateArticle(moveToId, selectedPosition);
+
+        return updatedSelected == 1 && updatedMoveTo == 1;
+      }
+
+    }
+
+    async function fetchArticle(_id){
+      return ArticleLog.findOne({ _id })
+      .select('position column')
+      .lean()
+      .exec();
+    }
+
+    function validateSameColumns(first, second){
+      return first.toString() == second.toString()
+    }
+
+    async function updateArticle(_id, newPosition){
+      return await ArticleLog.updateOne(
+        { _id }, {$set: {position: newPosition} }
+      ).exec();
+    }
 
 };
 

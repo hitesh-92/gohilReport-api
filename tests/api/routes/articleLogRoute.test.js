@@ -437,14 +437,8 @@ describe("/article/switch PATCH", () => {
   it("switch position two articles in column", async () => {
 
     const data = {
-      selected: {
-        id: articles[0]._id,
-        position: 2
-      },
-      moveTo: {
-        id: articles[1]._id,
-        position: 1
-      }
+      selected: articles[0]._id,
+      moveTo: articles[1]._id
     };
 
     const {
@@ -460,13 +454,13 @@ describe("/article/switch PATCH", () => {
     assert.equal(status, true)
 
     const [
-      firstArticle,
-      editedArticle
+      new_firstArticle,
+      new_secondArticle
     ] = await ArticleLog.find({
         '_id': {
           $in: [
-            ObjectId(articles[0]._id),
-            ObjectId(articles[1]._id)
+            ObjectId(articles[1]._id),
+            ObjectId(articles[0]._id)
           ]
         }
       })
@@ -477,10 +471,11 @@ describe("/article/switch PATCH", () => {
       .lean()
       .exec();
 
-    assert.equal(firstArticle.title, articles[1].title);
-    assert.equal(firstArticle.position, 1);
-    assert.equal(editedArticle.title, articles[0].title);
-    assert.equal(editedArticle.position, 2);
+    assert.equal(new_firstArticle.title, articles[1].title);
+    assert.equal(new_firstArticle.position, 1);
+
+    assert.equal(new_secondArticle.title, articles[0].title);
+    assert.equal(new_secondArticle.position, 2);
 
   });
 
