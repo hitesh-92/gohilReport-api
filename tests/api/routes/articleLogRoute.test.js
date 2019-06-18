@@ -16,7 +16,7 @@ const {
 
 const ArticleLog = require("../../../api/models/articleLog");
 
-describe("/article/ GET", () => {
+describe.only("/article/ GET", () => {
   it("find saved article", async () => {
     const article = articles[0];
 
@@ -30,7 +30,7 @@ describe("/article/ GET", () => {
         }
       }
     } = await request(app)
-      .get(`/article/single/${id}`)
+      .get(`/article/${id}`)
       .expect(200)
 
     assert.strictEqual(found, true);
@@ -46,7 +46,7 @@ describe("/article/ GET", () => {
         message
       }
     } = await request(app)
-      .get(`/article/single/${badId}`)
+      .get(`/article/${badId}`)
       .expect(400)
 
     assert.equal(found, null)
@@ -63,12 +63,14 @@ describe("/article/ GET", () => {
         message
       }
     } = await request(app)
-      .get(`/article/single/${randomId}`)
+      .get(`/article/${randomId}`)
       .expect(404)
 
     assert.equal(found, false)
     assert.equal(message, 'No Article found with given requestId')
   });
+
+  it("respond with article and column");
 });
 
 describe("/article/ POST", () => {
@@ -432,7 +434,7 @@ describe("/article/ PATCH", () => {
 
 });
 
-describe.only("/article/switch PATCH", () => {
+describe("/article/switch PATCH", () => {
 
   it("switch position two articles in column", async () => {
 
