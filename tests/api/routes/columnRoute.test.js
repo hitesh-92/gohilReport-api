@@ -113,10 +113,9 @@ describe('column/ ', () => {
 
   describe('GET /ids', () => {
 
-    it.only('responds with column ids and titles', async () => {
+    it('responds with column ids and titles', async () => {
 
       const {
-        // body
         body: {
           columns
         }
@@ -125,11 +124,8 @@ describe('column/ ', () => {
       .set('x-auth', logInToken)
       .expect(200);
 
-      // console.log('\n\n --> \n', body)
-
       assert.equal(typeof columns, 'object');
       assert.equal(columns.length > 0, true);
-
     });
 
   });

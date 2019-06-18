@@ -52,54 +52,37 @@ function get_allColumns (req, res, ArticleLog, Column){
 async function get_singleColumn (req, res, ArticleLog, Column){
 
     const title = req.params.title.toString().toLowerCase();
-    let data = { error: true }
+
+    let data = {
+      error: true,
+      columnData: null
+    };
 
     const valid = validateTitle(title);
 
-    if(valid == false) return res.status(404).json(data);
+    if( valid == false ) {
+      data.message = 'Column not found';
+      return res.status(400).json(data);
+    }
 
-    if(valid === 'ids'){
+    if( valid === 'ids' ){
       data.columns = await fetchAllColumnData();
       data.error = false;
       return res.status(200).json(data);
     }
 
-    // Column.findOne({title: title})
-    // .lean()
-    // .exec()
-    // .then( async (column) => {
-    //
-    //     data.columnData = column || null
-    //
-    //     if(column == null) return
-    //
-    //     return ArticleLog.find({
-    //         'column': {$in: column._id}
-    //     })
-    //     .sort({position: 1})
-    //     .lean()
-    //     .exec()
-    // })
-    // .then(articles => {
-    //
-    //     let status = 200;
-    //     data.error = false
-    //
-    //     if(articles) data.articles = articles
-    //
-    //     if(data.columnData == null){
-    //         data.message = 'Column not found'
-    //         data.error = true
-    //         status = 400
-    //     }
-    //
-    //     res.status(status).json(data)
-    // })
-    // .catch(err => {
-    //     data.error = { status:true, message:err }
-    //     data.message = 'Error processing request'
-    //     res.status(500).json(data)
-    // })
+    const [columnData, fetchColumnArticles] = await fetchColumn(title);
+
+    if( columnData == false ) {
+      data.message = 'Column not found'
+      return res.status(400).json(data);
+    }
+
+    data.columnData = columnData;
+    data.articles = await fetchColumnArticles();
+    data.error = false;
+
+    res.status(200).json(data);
 
     // -----
 
@@ -113,6 +96,35 @@ async function get_singleColumn (req, res, ArticleLog, Column){
 
     async function fetchAllColumnData(){
       return await Column.find({}).select('title').exec();
+    }
+
+    async function fetchColumn(title){
+
+      var column = await findColumnByTitle(title);
+
+      if( column == null ) return [false, false];
+      else return [column, fetchArticles];
+
+      async function fetchArticles(){
+        return await findArticleByColumn(column._id);
+      };
+
+    }
+
+    async function findColumnByTitle(title){
+      return await Column.findOne({title})
+      .select('title')
+      .lean()
+      .exec();
+    }
+
+    async function findArticleByColumn(columnId){
+      return await ArticleLog.find({
+        'column': { $in: columnId }
+      })
+      .sort({position: 1})
+      .lean()
+      .exec();
     }
 
 };
