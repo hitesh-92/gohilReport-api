@@ -111,6 +111,26 @@ describe('column/ ', () => {
 
   });
 
+  describe.only('GET /ids', () => {
+
+    it('responds with column ids and titles', async () => {
+
+      const {
+        body: {
+          columns
+        }
+      } = await request(app)
+      .get('/column/ids')
+      .set('x-auth', logInToken)
+      .expect(200);
+
+      assert.equal(typeof columns, 'object');
+      assert.equal(columns.length > 0, true);
+
+    });
+
+  });
+
   describe('POST /', () => {
 
     it('save new column and find it', () => {
