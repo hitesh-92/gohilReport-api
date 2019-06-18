@@ -49,48 +49,71 @@ function get_allColumns (req, res, ArticleLog, Column){
 
 };
 
-function get_singleColumn (req, res, ArticleLog, Column){
+async function get_singleColumn (req, res, ArticleLog, Column){
 
-    const title = req.params.title
+    const title = req.params.title.toString().toLowerCase();
+    let data = { error: true }
 
-    let data = {}
+    const valid = validateTitle(title);
 
-    Column.findOne({title: title})
-    .lean()
-    .exec()
-    .then( async (column) => {
+    if(valid == false) return res.status(404).json(data);
 
-        data.columnData = column || null
+    if(valid === 'ids'){
+      data.columns = await fetchAllColumnData();
+      data.error = false;
+      return res.status(200).json(data);
+    }
 
-        if(column == null) return
+    // Column.findOne({title: title})
+    // .lean()
+    // .exec()
+    // .then( async (column) => {
+    //
+    //     data.columnData = column || null
+    //
+    //     if(column == null) return
+    //
+    //     return ArticleLog.find({
+    //         'column': {$in: column._id}
+    //     })
+    //     .sort({position: 1})
+    //     .lean()
+    //     .exec()
+    // })
+    // .then(articles => {
+    //
+    //     let status = 200;
+    //     data.error = false
+    //
+    //     if(articles) data.articles = articles
+    //
+    //     if(data.columnData == null){
+    //         data.message = 'Column not found'
+    //         data.error = true
+    //         status = 400
+    //     }
+    //
+    //     res.status(status).json(data)
+    // })
+    // .catch(err => {
+    //     data.error = { status:true, message:err }
+    //     data.message = 'Error processing request'
+    //     res.status(500).json(data)
+    // })
 
-        return ArticleLog.find({
-            'column': {$in: column._id}
-        })
-        .sort({position: 1})
-        .lean()
-        .exec()
-    })
-    .then(articles => {
+    // -----
 
-        let status = 200;
-        data.error = false
+    function validateTitle(title){
+      if(title === 'ids') return 'ids';
 
-        if(articles) data.articles = articles
+      const validTitles = ['alert', 'archive', 'left', 'center', 'right'];
+      for(let i of validTitles) if(i == title) return true;
+      return false;
+    }
 
-        if(data.columnData == null){
-            data.message = 'Column not found'
-            data.error = true
-            status = 400
-        }
-
-        res.status(status).json(data)
-    })
-    .catch(err => {
-        data.error = { status:true, message:err }
-        data.message = 'Error processing request'
-        res.status(500).json(data)
-    })
+    async function fetchAllColumnData(){
+      return await Column.find({}).select('title').exec();
+    }
 
 };
 
