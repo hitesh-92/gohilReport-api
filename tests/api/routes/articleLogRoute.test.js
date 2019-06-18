@@ -290,6 +290,28 @@ describe("/article/ POST", () => {
 
   });
 
+  it("creates new article without image url", async () => {
+
+    const data = {
+      title: 'asdasdasd',
+      url: 'adasdasd',
+      column: leftColumnId,
+      position: 1
+    }
+
+    const {
+      body: {
+        articleSaved
+      }
+    } = await request(app)
+    .post('/article/')
+    .set('x-auth', logInToken)
+    .send(data)
+    .expect(201);
+
+    assert.equal(articleSaved, true);
+  });
+
 });
 
 describe("/article/ PATCH", () => {
