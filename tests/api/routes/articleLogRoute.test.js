@@ -70,7 +70,27 @@ describe.only("/article/ GET", () => {
     assert.equal(message, 'No Article found with given requestId')
   });
 
-  it("respond with article and column");
+  it.only("respond with article and column", async () => {
+
+    const id = articles[0]._id.toHexString();
+
+    const {
+      body: {
+        article,
+        found,
+        column
+      }
+    } = await request(app)
+    .get(`/article/${id}`)
+    .set('x-auth', logInToken)
+    .expect(200);
+
+    assert.equal(article._id.toString(), id);
+    assert.equal(found, true);
+    assert.equal( ObjectId.isValid(column._id), true );
+
+  });
+
 });
 
 describe("/article/ POST", () => {
