@@ -47,7 +47,7 @@ describe('column/ ', () => {
       var [
         left1, , center1, center2, right1, right2, , , alert1
       ] = articles;
-      
+
       assert.equal(left[0].title, left1.title);
       assert.equal(center[0].status, center1.status)
       assert.equal(center[1].url, center2.url);
@@ -90,6 +90,25 @@ describe('column/ ', () => {
       assert.equal(message, 'Column not found')
       assert.equal(error, true)
     });
+
+    it('find all archive articles', async () => {
+
+      const {
+        body: {
+          columnData,
+          error,
+          articles
+        }
+      } = await request(app)
+      .get('/column/archive')
+      .expect(200)
+
+      assert.equal(error, false);
+      assert.equal(articles.length, 2);
+      assert.equal(columnData.title, 'archive');
+
+  });
+
   });
 
   describe('POST /', () => {

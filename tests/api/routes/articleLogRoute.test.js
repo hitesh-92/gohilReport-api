@@ -611,21 +611,6 @@ describe("/article/ DELETE", () => {
 
 describe("/article/archive/", () => {
 
-  it("GET get all archived articles", async () => {
-
-    const {
-      body: {
-        archives,
-        status
-      }
-    } = await request(app)
-      .get('/article/archive')
-      .expect(200)
-
-    assert.equal(status, true);
-    assert.equal(archives.length, 2);
-  });
-
   it("POST null position propery and re-adjust positions", async () => {
 
     //extra articles to test with
