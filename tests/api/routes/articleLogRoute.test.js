@@ -16,7 +16,7 @@ const {
 
 const ArticleLog = require("../../../api/models/articleLog");
 
-describe.only("/article/ GET", () => {
+describe("/article/ GET", () => {
   it("find saved article", async () => {
     const article = articles[0];
 
@@ -67,10 +67,10 @@ describe.only("/article/ GET", () => {
       .expect(404)
 
     assert.equal(found, false)
-    assert.equal(message, 'No Article found with given requestId')
+    assert.equal(message, 'Invalid Article')
   });
 
-  it.only("respond with article and column", async () => {
+  it("respond with article and column", async () => {
 
     const id = articles[0]._id.toHexString();
 

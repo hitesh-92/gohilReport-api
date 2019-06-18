@@ -11,7 +11,7 @@ module.exports = {
   deleteArticle
 }
 
-function getSingleArticle(req, res, ArticleLog){
+async function getSingleArticle(req, res, ArticleLog, Column){
 
   const id = req.params.id
 
@@ -22,29 +22,74 @@ function getSingleArticle(req, res, ArticleLog){
     return res.status(400).json(data);
   }
 
-  ArticleLog.findOne({_id: id})
-    .lean()
-    .exec()
-    .then(log => {
-      let status = 404;
+  const [validArticle, checkColumn] = await searchForArticle(id);
 
-      data.article = log;
+  if(validArticle == false) {
+    data.message = 'Invalid Article';
+    return res.status(400).json(data);
+  }
 
-      if (log == null) {
-        data.message = "No Article found with given requestId";
-        data.found = false;
+  const [validColumn, getData] = checkColumn();
+
+  if(validColumn == false){
+    data.message = 'Invalid Request';
+    return res.status(400).json(data);
+  }
+
+  const {article, column} = getData();
+
+  data.article = article;
+  data.column = column;
+  data.found = true;
+
+  res.status(200).json(data);
+
+  // -----
+
+  async function searchForArticle(_id){
+    let columnIndex = null;
+    var columns = await fetchAllColumns();
+    var article = await fetchArticle(_id);
+
+    if(article == null) return [false, false];
+    else return [true, matchArticleWithColumn];
+
+    function matchArticleWithColumn(){
+      const [match, index] = findArticleColumn(columns, article.column);
+
+      if(match) {
+        columnIndex = index;
+        return [match, getData];
       } else {
-        data.found = true;
-        status = 200;
+        return [false, ''];
       }
 
-      res.status(status).json(data);
-    })
-    .catch(err => {
-      data.error = err;
-      data.message = "Server Error Processing Rquest. Contact";
-      res.status(500).json(data);
-    });
+    }
+
+    function getData(){
+      return {
+        article,
+        column: columns[columnIndex]
+      };
+    }
+
+  }
+
+  async function fetchAllColumns(){
+    return await Column.find({}).select('_id title').exec();
+  }
+
+  async function fetchArticle(_id){
+    return ArticleLog.findOne({ _id }).lean().exec();
+  }
+
+  function findArticleColumn(columns, toFind){
+    for(let i in columns){
+      let match = columns[i]._id.toString() == toFind;
+      if(match) return [true, i];
+    }
+    return [false, ''];
+  }
 };
 
 async function saveNewArticle(req, res, ArticleLog){
