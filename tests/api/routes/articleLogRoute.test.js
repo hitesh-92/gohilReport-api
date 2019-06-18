@@ -49,7 +49,7 @@ describe("/article/ GET", () => {
       .get(`/article/${badId}`)
       .expect(400)
 
-    assert.equal(found, null)
+    assert.equal(found, false)
     assert.equal(message, "Invalid Article ID provided")
   });
 
@@ -58,13 +58,16 @@ describe("/article/ GET", () => {
     const randomId = new ObjectId();
 
     const {
+      // body
       body: {
         found,
         message
       }
     } = await request(app)
       .get(`/article/${randomId}`)
-      .expect(404)
+      .expect(404);
+
+      // console.log(body)
 
     assert.equal(found, false)
     assert.equal(message, 'Invalid Article')

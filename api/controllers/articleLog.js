@@ -15,7 +15,7 @@ async function getSingleArticle(req, res, ArticleLog, Column){
 
   const id = req.params.id
 
-  var data = { found: null }
+  var data = { found: false }
 
   if ( !(ObjectId.isValid(id)) ) {
     data.message = "Invalid Article ID provided";
@@ -26,7 +26,7 @@ async function getSingleArticle(req, res, ArticleLog, Column){
 
   if(validArticle == false) {
     data.message = 'Invalid Article';
-    return res.status(400).json(data);
+    return res.status(404).json(data);
   }
 
   const [validColumn, getData] = checkColumn();
