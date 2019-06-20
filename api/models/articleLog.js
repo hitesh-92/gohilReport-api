@@ -47,7 +47,7 @@ const articleLogSchema = new Schema({
 });
 
 articleLogSchema.statics
-  .updateStatus = async function () {
+  .updateStatus = async function updateStatus() {
     var ArticleLog = this;
 
     return await new Promise(updateStatus)
@@ -158,34 +158,65 @@ articleLogSchema.statics
   };
 
 articleLogSchema.statics
-  .shiftPositions = async function (insertPosition, columnId) {
+  .shiftPositions = async function shiftPositions(insertPosition, columnId) {
     //  increment +1 all article positions below 'insertPosition'
 
     var ArticleLog = this;
 
-    return new Promise(updateArticlePositions)
+    const updated = await updatePositions(insertPosition, columnId);
+    if( updated === null) return false;
+    return true;
 
     // -----
 
+    async function updatePositions(incrementFrom, column){
+      let updates;
+      try {
+        updates = await ArticleLog.updateMany(
+          {
+            column,
+            'position': { $gte: incrementFrom }
+          },
+          {
+            $inc: { position: 1 }
+          }
+        );
+      } catch (err) {
+        updates = null;
+      } finally {
+        return updates;
+      }
+    };
+
+
+    ////////////////////////////
+    // -----
+
+    /*
+
     async function updateArticlePositions(resolve, reject) {
+
       const articles = await fetchColumnArticles(columnId, insertPosition);
-      if (articles == null) {
+
+      if (articles === null) {
         return reject(Error('Failed fetching articles 1'));
       };
 
       const updated = await updateArticles(articles);
-      if (updated == null) {
+
+      if (updated === null) {
         return reject(Error('Failed updating articles 2'));
       };
 
-      if (updated != null) {
+      if (updated !== null) {
         return resolve(true)
       } else {
         return reject(Error('Failed updating articles 3'));
       }
+
     };
 
-    //
+    // -----
 
     async function fetchColumnArticles(columnId, insertPosition) {
       let allArticles;
@@ -205,7 +236,7 @@ articleLogSchema.statics
           .lean()
           .exec();
       } catch (error) {
-        console.log(`ERROR:\n${error}`)
+        // console.log(`ERROR:\n${error}`)
         allArticles = null
       } finally {
         return allArticles
@@ -218,7 +249,8 @@ articleLogSchema.statics
       const requests = articles.map(buildRequest);
 
       try {
-        updated = await Promise.all(requests);
+        // updated = await Promise.all(requests);
+        updated = await ArticleLog.updateMany(requests);
       } catch (error) {
         updated = null;
       } finally {
@@ -239,7 +271,10 @@ articleLogSchema.statics
           }));
         });
       };
+
     };
+
+    */
 
   };
 
