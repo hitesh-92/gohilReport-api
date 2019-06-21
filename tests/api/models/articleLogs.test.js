@@ -41,54 +41,53 @@ describe("MODEL articleLog", () => {
     assert.equal(typeof image, "string");
   }); //
 
-  it("updateLogs method updates articles status", () => {
-    const buildArticleData = () => {
+  it("updateLogs method updates articles status", async () => {
+
+    const [articleData, articleIds] = buildArticleData();
+
+    await ArticleLog.insertMany(articleData);
+    const count  = await ArticleLog.updateStatus();
+
+    assert.equal(count, 3);
+
+    var updatedArticles = await ArticleLog.find({ _id: { $in: articleIds } }).select('status').exec();
+
+    assert.equal(updatedArticles[0]._id.toString(), articleIds[0].toString())
+    assert.equal(updatedArticles[0].status, 1);
+
+    assert.equal(updatedArticles[0]._id.toString(), articleIds[0].toString())
+    assert.equal(updatedArticles[1].status, 2);
+
+    assert.equal(updatedArticles[0]._id.toString(), articleIds[0].toString())
+    assert.equal(updatedArticles[2].status, 3);
+
+    // -----
+
+    function buildArticleData() {
       const status = [0, 1, 2, 3];
       const monthIncrement = [1, 3, 6, 0];
+      const ids = [new ObjectId(), new ObjectId(), new ObjectId()]
       const data = [
-        { title: "firstPost", url: "www.oneee.com" },
-        { title: "secondPost", url: "www.twoo.com" },
-        { title: "thirdPost", url: "www.treee.com" }
+        { title: "firstPost", url: "www.oneee.com", _id: ids[0] },
+        { title: "secondPost", url: "www.twoo.com", _id: ids[1] },
+        { title: "thirdPost", url: "www.treee.com", _id: ids[2] }
       ];
 
-      const createArticle = ({ title, url }, status, months, column) => {
-        const time = moment()
-          .subtract(months, "months")
-          .subtract(1, "days");
+      const createArticle = ({ title, url, _id }, status, months, column) => ({
+        _id,
+        title,
+        url,
+        status,
+        column,
+        createdAt: moment().subtract(months, "months").subtract(1, "days")
+      });
 
-        return new ArticleLog({
-          _id: ObjectId(),
-          title,
-          url,
-          status,
-          column,
-          createdAt: time
-        });
-      };
-
-      return data.map((log, i) =>
+      var articlesData = data.map((log, i) =>
         createArticle(log, status[i], monthIncrement[i], columnIds[i])
       );
+
+      return [articlesData, ids];
     };
 
-    const saveArticles = async logs => {
-      for (let log of logs) await log.save();
-    };
-
-    const articleData = buildArticleData();
-    const articleIDs = articleData.map(log => log._id);
-
-    return saveArticles(articleData)
-      .then(() => ArticleLog.updateStatus())
-      .then(async (count) => {
-        const data = await ArticleLog.find({ _id: { $in: articleIDs } })
-          .select("status")
-          .exec();
-
-        assert.equal(data[0].status, 1);
-        assert.equal(data[1].status, 2);
-        assert.equal(data[2].status, 3);
-        assert.equal(count, 3);
-      });
   });
 });
