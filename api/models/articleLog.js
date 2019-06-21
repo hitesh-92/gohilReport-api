@@ -157,7 +157,7 @@ articleLogSchema.statics
 
 articleLogSchema.statics
   .shiftPositions = async function shiftPositions(insertPosition, columnId) {
-    //  increment +1 all article positions below 'insertPosition'
+    //  increment all article positions below 'insertPosition' by 1
 
     var ArticleLog = this;
 
@@ -168,9 +168,8 @@ articleLogSchema.statics
     // -----
 
     async function updatePositions(incrementFrom, column){
-      let updates;
       try {
-        updates = await ArticleLog.updateMany(
+        var updates = await ArticleLog.updateMany(
           {
             column,
             'position': { $gte: incrementFrom }
@@ -180,7 +179,7 @@ articleLogSchema.statics
           }
         );
       } catch (err) {
-        updates = null;
+        var updates = null;
       } finally {
         return updates;
       }
@@ -197,6 +196,8 @@ articleLogSchema.statics
     },
     archiveColumnId
   ) {
+    // archive article
+    // increment all position after article by 1
 
     var ArticleLog = this;
 
@@ -211,11 +212,7 @@ articleLogSchema.statics
     const hasUpdated = articlesUpdated > 0;
     const archived = hasArchived === 1;
 
-    // console.log(hasUpdated, archived);
-
     if(hasUpdated && archived) return true;
-
-    console.log(hasUpdated ,archived)
     return false;
 
     // -----

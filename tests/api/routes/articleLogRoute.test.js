@@ -745,6 +745,4 @@ describe("/article/archive/", () => {
 
   });
 
-  it("POST retain the columnId linked to when archived")
-
 });
