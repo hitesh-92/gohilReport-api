@@ -11,7 +11,7 @@ const {
 const {
   articles,
   logInToken,
-  columnIds: [leftColumnId]
+  columnIds: [leftColumnId,,,archiveColumnId]
 } = require("../../seedData");
 
 const ArticleLog = require("../../../api/models/articleLog");
@@ -631,7 +631,7 @@ describe("/article/ DELETE", () => {
   });
 });
 
-describe.only("/article/archive/", () => {
+describe("/article/archive/", () => {
 
   it("POST null position propery and re-adjust positions", async () => {
 
@@ -695,7 +695,7 @@ describe.only("/article/archive/", () => {
   });
 
   it("POST archive existing article", async () => {
-    const archiveID = articles[2]._id;
+    const article = articles[2];
 
     const {
       body: {
@@ -706,57 +706,43 @@ describe.only("/article/archive/", () => {
       .post("/article/archive")
       .set("x-auth", logInToken)
       .send({
-        id: archiveID
+        id: article._id
       })
       .expect(200);
 
     assert.equal(message, "Article archived");
     assert.equal(archived, true);
 
-    const {
-      archive,
-      archiveDate
-    } = await ArticleLog.findOne({
-        _id: archiveID
-      })
-      .select("archive archiveDate")
-      .exec();
+    const archivedArticle = await ArticleLog.findOne({
+        _id: article._id
+      }).exec();
 
-    assert.equal(ObjectId.isValid(archive), true);
-    assert.equal(typeof archiveDate, "object");
+    assert.equal(archivedArticle.position, null)
+    assert.equal(archivedArticle.column.toString(), archiveColumnId.toString())
+    assert.equal(archivedArticle.columnRef, article.column)
   });
 
   it("POST not archive existing archive", async () => {
-    const archiveID = articles[6]._id;
 
-    await ArticleLog.updateOne({
-      _id: archiveID
-    }, {
-      $set: {
-        archive: leftColumnId,
-        archiveDate: new Date()
-      }
-    }).exec();
-
-    const archiveThroughRoute = async _id => {
-      return await request(app)
-        .post("/article/archive")
-        .set("x-auth", logInToken)
-        .send({
-          id: archiveID
-        })
-        .expect(400);
-    };
+    // archiveColumnId
+    const {_id: archivedArticleId} = articles[6];
 
     const {
       body: {
         archived,
         error
       }
-    } = await archiveThroughRoute(archiveID);
+    } = await request(app)
+    .post("/article/archive")
+    .set("x-auth", logInToken)
+    .send({
+      id: archivedArticleId
+    })
+    .expect(400);
 
     assert.equal(archived, false);
     assert.equal(error, "Article is already archived");
+
   });
 
   it("POST retain the columnId linked to when archived")

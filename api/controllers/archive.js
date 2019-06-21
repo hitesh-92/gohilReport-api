@@ -119,8 +119,6 @@ async function archiveArticle(req, res, ArticleLog, Column){
   data.archived = true;
   data.message = 'Article archived';
 
-  console.log('DATA  =>>> ', data)
-
   return res.status(200).json(data);
 
   // -----

@@ -214,6 +214,8 @@ articleLogSchema.statics
     // console.log(hasUpdated, archived);
 
     if(hasUpdated && archived) return true;
+
+    console.log(hasUpdated ,archived)
     return false;
 
     // -----
