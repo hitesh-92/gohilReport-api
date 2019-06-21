@@ -631,24 +631,12 @@ describe("/article/ DELETE", () => {
   });
 });
 
-describe("/article/archive/", () => {
+describe.only("/article/archive/", () => {
 
   it("POST null position propery and re-adjust positions", async () => {
 
-    //extra articles to test with
-    await ArticleLog.create({
-      _id: new ObjectId(),
-      title: '0onE3',
-      url: 'www.sdfj.com',
-      column: leftColumnId,
-      position: 3
-    }, {
-      _id: new ObjectId(),
-      title: '77WWo0',
-      url: 'www.sdfj.com',
-      column: leftColumnId,
-      position: 4
-    }, );
+    await saveAdditionalArticles();
+    // console.log('\nTEST COL ID ==> ', leftColumnId)
 
     const data = {
       id: articles[0]._id
@@ -679,9 +667,31 @@ describe("/article/archive/", () => {
       .lean()
       .exec();
 
-    assert.equal(column[0].title, articles[1].title)
-    assert.equal(column[1].title, '0onE3')
-    assert.equal(column[2].title, '77WWo0')
+    assert.equal(column[0].title, articles[1].title);
+    assert.equal(column[1].title, '0onE3');
+    assert.equal(column[2].title, '77WWo0');
+
+    // -----
+
+    async function saveAdditionalArticles(){
+      await ArticleLog.insertMany([
+        {
+          _id: new ObjectId(),
+          title: '0onE3',
+          url: 'www.sdfj.com',
+          column: leftColumnId,
+          position: 3
+        },
+        {
+          _id: new ObjectId(),
+          title: '77WWo0',
+          url: 'www.sdfj.com',
+          column: leftColumnId,
+          position: 4
+        }
+      ])
+    }
+
   });
 
   it("POST archive existing article", async () => {
@@ -748,4 +758,7 @@ describe("/article/archive/", () => {
     assert.equal(archived, false);
     assert.equal(error, "Article is already archived");
   });
+
+  it("POST retain the columnId linked to when archived")
+
 });

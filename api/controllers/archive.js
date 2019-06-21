@@ -83,6 +83,89 @@ async function getArchives(req, res, ArticleLog, Column){
 
 async function archiveArticle(req, res, ArticleLog, Column){
 
+  // fetch article
+  // AL.removePosition(columnId)
+  // update article
+
+  var data = { archived: false };
+
+  const [validId, articleId] = validateId(req.body);
+
+  if( !validId ) {
+    data.error = 'Invalid id';
+    return res.status(400).json(data);
+  }
+
+  var [validArticle, isArchived, archiveArticle] = await fetchArticle(articleId);
+
+  if( !validArticle ){
+    data.error = 'Error finding information with data provided';
+    return res.status(404).json(data);
+  }
+  else if ( isArchived ){
+    data.error = 'Article is already archived';
+    return res.status(400).json(data);
+  }
+
+  const hasArchived = await archiveArticle();
+
+  // console.log('\nHASARCHIVEDDD ==> ', hasArchived);
+
+  if( !hasArchived ){
+    data.error = 'Error removing position from article';
+    return res.status(500).json(data);
+  }
+
+  data.archived = true;
+  data.message = 'Article archived';
+
+  console.log('DATA  =>>> ', data)
+
+  return res.status(200).json(data);
+
+  // -----
+
+  function validateId({id}){
+    const isValid = ObjectId.isValid(id) === true;
+    return [isValid, id];
+  }
+
+  async function fetchArticle(articleId){
+
+    var [archiveColumn, article] = await Promise.all([
+      fetchColumnByName('archive'),
+      fetchArticleById(articleId)
+    ]);
+
+    const validArticle = article !== null;
+    const isArchived = archiveColumn._id.toString() === article.column.toString();
+
+    if( !validArticle ) return [false, null, null];
+    else if( isArchived ) return [true, true, null];
+    else return [true, false, archiveArticle];
+
+    async function archiveArticle(){
+      const archiveId = archiveColumn._id;
+      return await ArticleLog.archive(article, archiveId);
+    }
+
+  }
+
+  async function fetchColumnByName(title){
+    return await Column.findOne({ title })
+    .lean()
+    .exec();
+  }
+
+  async function fetchArticleById(_id){
+    return await ArticleLog.findOne({ _id })
+    .lean()
+    .exec();
+  }
+
+
+  //////////////////////////////////
+/*
     let data = {
         archived: false
     };
@@ -118,7 +201,7 @@ async function archiveArticle(req, res, ArticleLog, Column){
         return res.status(500).json(data);
     }
 
-    const positionRemoved = await ArticleLog.removePosition(article._id)
+    const positionRemoved = await ArticleLog.removePosition(article._id, columnId)
 
     if (positionRemoved == null) {
         data.error = 'Error removing position from article'
@@ -185,5 +268,5 @@ async function archiveArticle(req, res, ArticleLog, Column){
             return archived;
         }
     }
-
+*/
 };

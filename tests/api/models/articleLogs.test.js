@@ -90,4 +90,5 @@ describe("MODEL articleLog", () => {
     };
 
   });
+
 });
