@@ -18,8 +18,9 @@ let res = [
 
 printjson(res);
 
-function buildData(){
-  let columns = [], articles = [];
+function buildData() {
+  let columns = [],
+    articles = [];
   var columnTitles = [
     'left',
     'center',
@@ -31,19 +32,19 @@ function buildData(){
   columnTitles.forEach(title => {
     let [cols, arts] = build(title);
     columns = [...columns, ...cols];
-    articles = [... articles, ...arts];
+    articles = [...articles, ...arts];
   });
 
   return [columns, articles];
 };
 
-function build(title){
+function build(title) {
 
   let id = new ObjectId();
 
-  return[ buildColumn(id, title), buildArticles(id, title) ];
+  return [buildColumn(id, title), buildArticles(id, title)];
 
-  function buildColumn(_id, title){
+  function buildColumn(_id, title) {
     return [{
       _id,
       title,
@@ -52,19 +53,19 @@ function build(title){
     }];
   };
 
-  function buildArticles(columnId, columnTitle){
+  function buildArticles(columnId, columnTitle) {
     let articles = [];
 
-    for (let i=0; i<9; i++){
-      let status = i==8 ? 0 : parseInt(i/2);
-      let title = `${columnTitle}-${i}`;
+    for (let i = 0; i < 9; i++) {
+      let status = i == 8 ? 0 : parseInt(i / 2);
+      let title = `${columnTitle}-${i+1}`;
 
       articles.push({
         _id: new ObjectId,
         title: title,
         url: `www.${title}.com`,
         image: `www.${title}-image.com`,
-        position: NumberInt(i+1),
+        position: NumberInt(i + 1),
         column: columnId,
         status: NumberInt(status),
         createdAt: ISODate(),

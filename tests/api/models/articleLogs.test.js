@@ -1,11 +1,15 @@
 const moment = require("moment");
 
 const {
-  Types: { ObjectId }
+  Types: {
+    ObjectId
+  }
 } = require("mongoose");
 
 const ArticleLog = require("../../../api/models/articleLog");
-const { columnIds } = require("../../seedData");
+const {
+  columnIds
+} = require("../../seedData");
 
 const {
   columnIds: [columnId]
@@ -46,11 +50,15 @@ describe("MODEL articleLog", () => {
     const [articleData, articleIds] = buildArticleData();
 
     await ArticleLog.insertMany(articleData);
-    const count  = await ArticleLog.updateStatus();
+    const count = await ArticleLog.updateStatus();
 
     assert.equal(count, 3);
 
-    var updatedArticles = await ArticleLog.find({ _id: { $in: articleIds } }).select('status').exec();
+    var updatedArticles = await ArticleLog.find({
+      _id: {
+        $in: articleIds
+      }
+    }).select('status').exec();
 
     assert.equal(updatedArticles[0]._id.toString(), articleIds[0].toString())
     assert.equal(updatedArticles[0].status, 1);
@@ -67,13 +75,28 @@ describe("MODEL articleLog", () => {
       const status = [0, 1, 2, 3];
       const monthIncrement = [1, 3, 6, 0];
       const ids = [new ObjectId(), new ObjectId(), new ObjectId()]
-      const data = [
-        { title: "firstPost", url: "www.oneee.com", _id: ids[0] },
-        { title: "secondPost", url: "www.twoo.com", _id: ids[1] },
-        { title: "thirdPost", url: "www.treee.com", _id: ids[2] }
+      const data = [{
+          title: "firstPost",
+          url: "www.oneee.com",
+          _id: ids[0]
+        },
+        {
+          title: "secondPost",
+          url: "www.twoo.com",
+          _id: ids[1]
+        },
+        {
+          title: "thirdPost",
+          url: "www.treee.com",
+          _id: ids[2]
+        }
       ];
 
-      const createArticle = ({ title, url, _id }, status, months, column) => ({
+      const createArticle = ({
+        title,
+        url,
+        _id
+      }, status, months, column) => ({
         _id,
         title,
         url,

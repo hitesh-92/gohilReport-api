@@ -27,10 +27,9 @@ const UserSchema = mongoose.Schema({
       required: true
     }
   }]
-} , {
+}, {
   timestamps: true
-}
-)
+})
 
 UserSchema.pre('save', function(next) {
 

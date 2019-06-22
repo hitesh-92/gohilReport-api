@@ -11,7 +11,7 @@ const {
 const {
   articles,
   logInToken,
-  columnIds: [leftColumnId,,,archiveColumnId]
+  columnIds: [leftColumnId, , , archiveColumnId]
 } = require("../../seedData");
 
 const ArticleLog = require("../../../api/models/articleLog");
@@ -67,7 +67,7 @@ describe("/article/ GET", () => {
       .get(`/article/${randomId}`)
       .expect(404);
 
-      // console.log(body)
+    // console.log(body)
 
     assert.equal(found, false)
     assert.equal(message, 'Invalid Article')
@@ -84,13 +84,13 @@ describe("/article/ GET", () => {
         column
       }
     } = await request(app)
-    .get(`/article/${id}`)
-    .set('x-auth', logInToken)
-    .expect(200);
+      .get(`/article/${id}`)
+      .set('x-auth', logInToken)
+      .expect(200);
 
     assert.equal(article._id.toString(), id);
     assert.equal(found, true);
-    assert.equal( ObjectId.isValid(column._id), true );
+    assert.equal(ObjectId.isValid(column._id), true);
 
   });
 
@@ -304,10 +304,10 @@ describe("/article/ POST", () => {
         articleSaved
       }
     } = await request(app)
-    .post('/article/')
-    .set('x-auth', logInToken)
-    .send(data)
-    .expect(201);
+      .post('/article/')
+      .set('x-auth', logInToken)
+      .send(data)
+      .expect(201);
 
     assert.equal(articleSaved, true);
   });
@@ -539,10 +539,10 @@ describe("/article/switch PATCH", () => {
         error
       }
     } = await request(app)
-    .patch('/article/switch')
-    .set('x-auth', logInToken)
-    .send(data)
-    .expect(404);
+      .patch('/article/switch')
+      .set('x-auth', logInToken)
+      .send(data)
+      .expect(404);
 
     assert.equal(status, false);
     assert.equal(error, 'column');
@@ -560,10 +560,10 @@ describe("/article/switch PATCH", () => {
         error
       }
     } = await request(app)
-    .patch('/article/switch')
-    .set('x-auth', logInToken)
-    .send(data)
-    .expect(400);
+      .patch('/article/switch')
+      .set('x-auth', logInToken)
+      .send(data)
+      .expect(400);
 
     assert.equal(status, false);
     assert.equal(error, 'articleId');
@@ -673,9 +673,8 @@ describe("/article/archive/", () => {
 
     // -----
 
-    async function saveAdditionalArticles(){
-      await ArticleLog.insertMany([
-        {
+    async function saveAdditionalArticles() {
+      await ArticleLog.insertMany([{
           _id: new ObjectId(),
           title: '0onE3',
           url: 'www.sdfj.com',
@@ -714,8 +713,8 @@ describe("/article/archive/", () => {
     assert.equal(archived, true);
 
     const archivedArticle = await ArticleLog.findOne({
-        _id: article._id
-      }).exec();
+      _id: article._id
+    }).exec();
 
     assert.equal(archivedArticle.position, null)
     assert.equal(archivedArticle.column.toString(), archiveColumnId.toString())
@@ -725,7 +724,9 @@ describe("/article/archive/", () => {
   it("POST not archive existing archive", async () => {
 
     // archiveColumnId
-    const {_id: archivedArticleId} = articles[6];
+    const {
+      _id: archivedArticleId
+    } = articles[6];
 
     const {
       body: {
@@ -733,12 +734,12 @@ describe("/article/archive/", () => {
         error
       }
     } = await request(app)
-    .post("/article/archive")
-    .set("x-auth", logInToken)
-    .send({
-      id: archivedArticleId
-    })
-    .expect(400);
+      .post("/article/archive")
+      .set("x-auth", logInToken)
+      .send({
+        id: archivedArticleId
+      })
+      .expect(400);
 
     assert.equal(archived, false);
     assert.equal(error, "Article is already archived");

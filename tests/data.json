@@ -1,75 +1,71 @@
 {
-    "articleData": [
-        {
-            "title": "test Article 1",
-            "url": "http://www.testarticleone.co",
-            "image": "http://link1.com",
-            "position": 1
-        },
-        {
-            "title": "two test tweet tweed",
-            "url": "http://sseecondd.com",
-            "position": 2
-        },
-        {
-            "title": "three thrid triad train",
-            "url": "http://thirrrd.com",
-            "image": "http://link3.com",
-            "position": 1
-        },
-        {
-            "title": "four fire free fear",
-            "url": "http://fore.com",
-            "position": 2
-        },
-        {
-            "title": "foe fee flew five",
-            "url": "http://fivee.com",
-            "image": "http://link5.com",
-            "position": 1
-        },
-        {
-            "title": "sax sea soi six",
-            "url": "http://sixsix.com",
-            "position": 2
-        },
-        {
-            "title": "seven vesen veenns",
-            "url": "http://se7en.com",
-            "image": "http://link7.com",
-            "position": 1
-        },
-        {
-            "title": "eight ate e8ght",
-            "url": "http://8atey-eight.com",
-            "position": 2
-        },
-        {
-          "title": "alert now nine",
-          "url": "www.nownownine.com",
-          "position": 1
-        },
-        {
-          "title": "nkew never nine",
-          "url": "www.newnewnewnewnine.com",
-          "position": 2
-        }
-    ],
-    "userData": [
-        {
-            "_id":"5cc86574c277c63b60b54f4c",
-            "email": "one@one.co",
-            "password": "charchar0n3",
-            "tokens": [
-                {
-                    "access":"auth",
-                    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjVjYzg2NTc0YzI3N2M2M2I2MGI1NGY0YyIsImFjY2VzcyI6ImF1dGgifSwiaWF0IjoxNTU2NjM3OTUyfQ.Jqgfw7ipPZD_bp55nd7VbYf3CBEmzpgSI6L8hQ_E6Ww"
-                }
-            ]
-        },
-        {
-            "email": "two@two.co",
-            "password": "tw3n7y2tw0z"
-        }
-    ]
+  "articleData": [{
+      "title": "test Article 1",
+      "url": "http://www.testarticleone.co",
+      "image": "http://link1.com",
+      "position": 1
+    },
+    {
+      "title": "two test tweet tweed",
+      "url": "http://sseecondd.com",
+      "position": 2
+    },
+    {
+      "title": "three thrid triad train",
+      "url": "http://thirrrd.com",
+      "image": "http://link3.com",
+      "position": 1
+    },
+    {
+      "title": "four fire free fear",
+      "url": "http://fore.com",
+      "position": 2
+    },
+    {
+      "title": "foe fee flew five",
+      "url": "http://fivee.com",
+      "image": "http://link5.com",
+      "position": 1
+    },
+    {
+      "title": "sax sea soi six",
+      "url": "http://sixsix.com",
+      "position": 2
+    },
+    {
+      "title": "seven vesen veenns",
+      "url": "http://se7en.com",
+      "image": "http://link7.com",
+      "position": 1
+    },
+    {
+      "title": "eight ate e8ght",
+      "url": "http://8atey-eight.com",
+      "position": 2
+    },
+    {
+      "title": "alert now nine",
+      "url": "www.nownownine.com",
+      "position": 1
+    },
+    {
+      "title": "nkew never nine",
+      "url": "www.newnewnewnewnine.com",
+      "position": 2
+    }
+  ],
+  "userData": [{
+      "_id": "5cc86574c277c63b60b54f4c",
+      "email": "one@one.co",
+      "password": "charchar0n3",
+      "tokens": [{
+        "access": "auth",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjVjYzg2NTc0YzI3N2M2M2I2MGI1NGY0YyIsImFjY2VzcyI6ImF1dGgifSwiaWF0IjoxNTU2NjM3OTUyfQ.Jqgfw7ipPZD_bp55nd7VbYf3CBEmzpgSI6L8hQ_E6Ww"
+      }]
+    },
+    {
+      "email": "two@two.co",
+      "password": "tw3n7y2tw0z"
+    }
+  ]
 }

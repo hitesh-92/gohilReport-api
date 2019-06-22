@@ -13,10 +13,10 @@ const {
   userData
 } = require('./data.json');
 
-const columnIds = createColumnIds()
-const columns = buildColumns(columnIds)
-const articles = buildArticles(articleData, columnIds)
-const users = buildUserData(userData)
+const columnIds = createColumnIds();
+const columns = buildColumns(columnIds);
+const articles = buildArticles(articleData, columnIds);
+const users = buildUserData(userData);
 
 module.exports = {
   articles,
@@ -40,15 +40,15 @@ function buildColumns(ids) {
   return titles.map((title, i) => new Column({
     _id: new ObjectId(ids[i]),
     title
-  }))
-}
+  }));
+};
 
 function buildArticles(data, columnIds) {
   let articlesArray = [];
 
   for (let i = 2; i <= data.length; i += 2) {
     articlesArray.push(data.slice(i - 2, i))
-  }
+  };
 
   return articlesArray.map((articles, i) => {
     const columnId = columnIds[i]
@@ -65,8 +65,8 @@ function buildArticles(data, columnIds) {
       column: columnId,
       position
     }))
-  }).flat(1)
-}
+  }).flat(1);
+};
 
 function buildUserData([userOne, userTwo]) {
 
@@ -80,17 +80,17 @@ function buildUserData([userOne, userTwo]) {
       access: 'auth',
       token: userOne.tokens[0].token
     }]
-  })
+  });
 
   const second = new User({
     _id: new ObjectId(),
     createdAt: Date.now(),
     email: userTwo.email,
     password: userTwo.password
-  })
+  });
 
-  return [first, second]
-}
+  return [first, second];
+};
 
 function testDelete(MODEL) {
   return new Promise((resolve, reject) => {
@@ -112,4 +112,4 @@ function testSeedUsers(data) {
   const userOne = new User(data[0]).save();
   const userTwo = new User(data[1]).save();
   return Promise.all([userOne, userTwo])
-}
+};

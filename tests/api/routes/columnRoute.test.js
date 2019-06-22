@@ -100,14 +100,14 @@ describe('column/ ', () => {
           articles
         }
       } = await request(app)
-      .get('/column/archive')
-      .expect(200)
+        .get('/column/archive')
+        .expect(200)
 
       assert.equal(error, false);
       assert.equal(articles.length, 2);
       assert.equal(columnData.title, 'archive');
 
-  });
+    });
 
   });
 
@@ -120,9 +120,9 @@ describe('column/ ', () => {
           columns
         }
       } = await request(app)
-      .get('/column/ids')
-      .set('x-auth', logInToken)
-      .expect(200);
+        .get('/column/ids')
+        .set('x-auth', logInToken)
+        .expect(200);
 
       assert.equal(typeof columns, 'object');
       assert.equal(columns.length > 0, true);
