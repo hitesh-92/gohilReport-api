@@ -605,7 +605,7 @@ describe("/article/archive/", () => {
 
     assert.equal(archivedArticle.position, null)
     assert.equal(archivedArticle.column.toString(), archiveColumnId.toString())
-    assert.equal(archivedArticle.columnRef, article.column)
+    assert.equal(archivedArticle.columnRef.toString(), article.column.toString())
   });
 
   it("POST not archive existing archive", async () => {
@@ -631,7 +631,7 @@ describe("/article/archive/", () => {
 
   describe.skip("PATCH", () => {
 
-    it("PATCH unarchive article has its previous column id", async () => {
+    it("PATCH unarchives article", async () => {
 
       // send request - archive existing article
       // send request - unarchive the article
@@ -641,24 +641,28 @@ describe("/article/archive/", () => {
       // * columnRef is null
       // * position is last out of all article in column
 
-      var article = articles[0];
+      assert.strictEqual(1, 1);
 
-      const {
-        body: archivedResponse
-      } = await requestToArchiveRoute('post', {
-        id: article._id
-      }, 200);
-
-      const {
-        body: unarchivedResponse
-      } = await requestToArchiveRoute('patch', {
-        id: article._id
-      }, 200);
-
-      // -----
-
-      assert.equal(archivedResponse.archived, true);
-
+      // var article = articles[0];
+      //
+      // var data = { id: article._id };
+      //
+      // const {
+      //   body: archivedResponse
+      // } = await requestToArchiveRoute('post', data, 200);
+      //
+      // const {
+      //   body: unarchivedResponse
+      // } = await requestToArchiveRoute('patch', data, 200);
+      //
+      // const unarchivedArticle = await ArticleLog.findOne({ _id }).lean().exec();
+      //
+      // assert.equal(archivedResponse.archived, true);
+      //
+      // assert.equal(unarchivedResponse.unarchived, true);
+      //
+      // assert.equal(unarchivedArticle.column, article.column);
+      // assert.equal(position)
     });
 
   });
@@ -666,16 +670,6 @@ describe("/article/archive/", () => {
 });
 
 // -----
-
-// async function archiveArticleById(sendData, expectStatus){
-//
-// };
-//
-// async function unarchiveArticleById(sendData, expectedStatus){
-//   return await request(app)
-//   .patch('/article/archive/')
-// };
-
 
 async function get_requestArticleRoute(id, expectStatus) {
   return await request(app)
@@ -725,7 +719,8 @@ async function requestToArchiveRoute(type, sendData, expectStatus) {
       .set("x-auth", logInToken)
       .send(sendData)
       .expect(expectStatus);
-  } else if (type === 'patch') {
+  }
+  else if (type === 'patch') {
     return await request(app)
       .patch(url)
       .set("x-auth", logInToken)

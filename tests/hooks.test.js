@@ -1,6 +1,6 @@
 console.log('\x1Bc');
 
-global.assert = require('assert'); // !
+global.assert = require('assert').strict; // !
 global.request = require('supertest'); // !
 
 const ArticleLog = require('../api/models/articleLog');
