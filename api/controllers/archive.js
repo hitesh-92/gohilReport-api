@@ -6,7 +6,8 @@ const {
 
 module.exports = {
   getArchives,
-  archiveArticle
+  archiveArticle,
+  unarchiveArticle
 }
 
 async function getArchives(req, res, ArticleLog, Column) {
@@ -160,4 +161,80 @@ async function archiveArticle(req, res, ArticleLog, Column) {
       .exec();
   }
 
+};
+
+function unarchiveArticle(ArticleLog){
+  return async function handleUnarchive(req, res){
+
+    const [validId, id] = validateId(req.body);
+
+    if ( !validId ) return;
+
+    const [validArticle, unarchive] = await fetchArticles(id);
+
+    if( !validArticle ) return;
+
+    const {
+      nModified: updated
+    } = await unarchive()
+
+    if( updated !== 1 ) return;
+
+    res.json({unarchived: true});
+
+    // -----
+
+    function validateId({id}){
+      const isValid = ObjectId.isValid(id)
+      return [isValid, id];
+    }
+
+    async function fetchArticles(id){
+
+      var article = await fetchArticleById(id);
+      var columnArticles;
+
+      const invalidArticle = article === null;
+      const isArchived = article.columnRef === null
+
+      if( invalidArticle || isArchived ) return [false, null];
+
+      columnArticles = fetchColumnArticles(article.columnRef);
+
+      return [true, restoreArticle];
+
+      async function restoreArticle(){
+        let newPosition;
+
+        {
+          columnArticles = await columnArticles;
+          newPosition = columnArticles.length + 1;
+        }
+
+        return await unarchiveArticle(article, newPosition);
+      }
+
+    }
+
+    async function fetchArticleById(_id){
+      return await ArticleLog.findOne({ _id }).lean().exec();
+    };
+
+    async function fetchColumnArticles(column){
+      return await ArticleLog.find({ column }).lean().exec();
+    };
+
+    async function unarchiveArticle({_id, columnRef}, position){
+      return await ArticleLog.updateOne(
+        { _id: id },
+        { $set: {
+          column: columnRef,
+          columnRef: null,
+          position: position
+        } }
+      );
+
+    };
+
+  }
 };

@@ -629,40 +629,31 @@ describe("/article/archive/", () => {
 
   });
 
-  describe.skip("PATCH", () => {
+  describe("PATCH", () => {
 
-    it("PATCH unarchives article", async () => {
+    it("unarchives article", async () => {
 
-      // send request - archive existing article
-      // send request - unarchive the article
-      // assert
-      // * column id is not archive id
-      // * column id is previous column id
-      // * columnRef is null
-      // * position is last out of all article in column
+      var article = articles[0];
 
-      assert.strictEqual(1, 1);
+      var data = { id: article._id };
 
-      // var article = articles[0];
-      //
-      // var data = { id: article._id };
-      //
-      // const {
-      //   body: archivedResponse
-      // } = await requestToArchiveRoute('post', data, 200);
-      //
-      // const {
-      //   body: unarchivedResponse
-      // } = await requestToArchiveRoute('patch', data, 200);
-      //
-      // const unarchivedArticle = await ArticleLog.findOne({ _id }).lean().exec();
-      //
-      // assert.equal(archivedResponse.archived, true);
-      //
-      // assert.equal(unarchivedResponse.unarchived, true);
-      //
-      // assert.equal(unarchivedArticle.column, article.column);
-      // assert.equal(position)
+      const {
+        body: archivedResponse
+      } = await requestToArchiveRoute('post', data, 200);
+
+      const {
+        body: unarchivedResponse
+      } = await requestToArchiveRoute('patch', data, 200);
+
+      var unarchivedArticle = await ArticleLog.findOne({ _id: data.id }).lean().exec();
+
+      assert.equal(archivedResponse.archived, true);
+
+      assert.equal(unarchivedResponse.unarchived, true);
+
+      assert.equal(unarchivedArticle.column.toString(), article.column.toString());
+      assert.equal(unarchivedArticle.position, 2);
+      assert.equal(unarchivedArticle.columnRef, null);
     });
 
   });
@@ -722,7 +713,7 @@ async function requestToArchiveRoute(type, sendData, expectStatus) {
   }
   else if (type === 'patch') {
     return await request(app)
-      .patch(url)
+      .patch(url + 'unarchive')
       .set("x-auth", logInToken)
       .send(sendData)
       .expect(expectStatus);

@@ -248,7 +248,7 @@ articleLogSchema.statics
         }
       }, {
         $inc: {
-          position: 1
+          position: -1
         }
       });
     };

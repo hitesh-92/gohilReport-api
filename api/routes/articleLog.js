@@ -22,6 +22,8 @@ router.post('/archive', Authenticate, (req, res) => {
   ArchiveController.archiveArticle(req, res, ArticleLog, Column)
 });
 
+router.patch('/archive/unarchive', Authenticate, ArchiveController.unarchiveArticle(ArticleLog) );
+
 router.patch("/", Authenticate, (req, res) => {
   Controller.updateArticle(req, res, ArticleLog)
 });
