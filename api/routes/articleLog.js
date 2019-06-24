@@ -6,11 +6,11 @@ const ArticleLog = require("../models/articleLog");
 const Column = require('../models/column');
 const Authenticate = require("../middleware/auth");
 
-router.get('/:id', (req, res) => {
+router.get('/:id', Authenticate, (req, res) => {
   Controller.getSingleArticle(req, res, ArticleLog, Column)
 });
 
-router.get('/archive', (req, res) => {
+router.get('/archive', Authenticate, (req, res) => {
   ArchiveController.getArchives(req, res, ArticleLog, Column)
 });
 

@@ -657,7 +657,7 @@ describe("/article/archive/", () => {
 async function get_requestArticleRoute(id, expectStatus) {
   return await request(app)
     .get(`/article/${id}`)
-    // .set("x-auth", logInToken)
+    .set("x-auth", logInToken)
     .expect(expectStatus);
 };
 
