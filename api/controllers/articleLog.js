@@ -102,35 +102,38 @@ async function getSingleArticle(req, res, ArticleLog, Column) {
 };
 
 function saveNewArticle(ArticleLog, Column) {
-  return async function handleSaveArticle(req, res){
-    console.log()
+  return async function handleSaveArticle(req, res) {
 
-    var data = { articleSaved: false };
+    var data = {
+      articleSaved: false
+    };
 
     // validate user input through middleware
     // check string title, url. image is optional. trim, regex, etc...
+    { // tmp hack
+      let hasTitle = req.body.hasOwnProperty('title');
+      if (hasTitle && req.body.title.length < 8 || !hasTitle) return res.status(400).json(data);
+    }
     // valid column id
     // if no position. default = 0
     { // tmp hack
       let positionGiven = req.body.hasOwnProperty('position');
-      if( positionGiven === false ) req.body.position = 0;
+      if (positionGiven === false) req.body.position = 0;
     }
-    // console.log( req.body )
+
+    // -----
 
     const validColumn = await validateColumnExists(req.body.column);
-    // console.log('validColumn', validColumn);
 
-    if( !validColumn ) return console.log('\nINVALID COLUMN ID - saveNewArticle\N');
+    if (!validColumn) return console.log('\nINVALID COLUMN ID - saveNewArticle\N');
 
     const [disruptsColumnPositions, articlePosition] = await validateArticlePosition(req.body);
-    // console.log(disruptsColumnPositions, articlePosition)
 
-    if( disruptsColumnPositions ){
-      const updatedArticles = await ArticleLog.shiftPositions(articlePosition+1, req.body.column);
-      if( updatedArticles === null ) return console.log('ERROR UPDATING COLUMN ARTICLE POSITION');
-    }
-    else {
-      if( articlePosition !== null ) req.body.position = articlePosition;
+    if (disruptsColumnPositions) {
+      const updatedArticles = await ArticleLog.shiftPositions(articlePosition, req.body.column);
+      if (updatedArticles === null) return console.log('ERROR UPDATING COLUMN ARTICLE POSITION');
+    } else {
+      if (articlePosition !== null) req.body.position = articlePosition;
     }
 
     const article = createArticle(req.body);
@@ -143,36 +146,43 @@ function saveNewArticle(ArticleLog, Column) {
 
     // -----
 
-    async function validateColumnExists(columnId){
+    async function validateColumnExists(columnId) {
       var column = await fetchColumnById(columnId);
       const columnExists = column != null;
       return columnExists;
     };
 
-    async function fetchColumnById(id){
-      return await Column.findOne({ _id: id }).exec();
+    async function fetchColumnById(id) {
+      return await Column.findOne({
+        _id: id
+      }).exec();
     };
 
-    async function validateArticlePosition({position, column: columnId}){
+    async function validateArticlePosition({
+      position,
+      column: columnId
+    }) {
       // if given position is to be last in column:
       // - no need to ArticleLog.shiftPositions
 
       const articleCount = await fetchColumnArticlesCount(columnId);
       const endOfColumn = articleCount + 1;
 
-      if( position === endOfColumn ) return [false, null];
+      if (position === endOfColumn) return [false, null];
 
       const inputPositionValid = validateInputPosition(position, endOfColumn);
 
-      if( inputPositionValid  ) return [true, position];
+      if (inputPositionValid) return [true, position];
       else return [false, endOfColumn];
     };
 
-    async function fetchColumnArticlesCount(columnId){
-      return await ArticleLog.find({ column: columnId }).countDocuments();
+    async function fetchColumnArticlesCount(columnId) {
+      return await ArticleLog.find({
+        column: columnId
+      }).countDocuments();
     };
 
-    function validateInputPosition(position, max){
+    function validateInputPosition(position, max) {
       const greaterThanDefault = position > 0;
       const withinMaxRange = position <= max;
       const inputPositionValid = greaterThanDefault && withinMaxRange;
@@ -185,106 +195,7 @@ function saveNewArticle(ArticleLog, Column) {
       image = null,
       position,
       column
-    }){
-      return new ArticleLog({
-        _id: new ObjectId(),
-        title,
-        url,
-        image,
-        position,
-        column
-      });
-    };
-
-/*
-    const {
-      column
-    } = req.body;
-
-    let {
-      position = 0
-    } = req.body;
-
-    const data = {
-      articleSaved: false
-    };
-
-    var article = createArticle(req.body);
-
-    if (article == null) return res.status(400).json(data);
-    // console.log('articleId ===> ', article._id)
-
-    const validPosition = await validatePosition(position, column);
-
-    console.log('validPosition ==> ', validPosition)
-
-    if (typeof(validPosition) == 'number') {
-      position = validPosition
-    };
-
-    await article.save();
-    await updatePosition(article._id, position);
-
-    data.articleSaved = true;
-    data.createdArticle = article;
-
-    // console.log('response data ==> ', data);
-
-    res.status(201).json(data);
-
-    // -----
-
-    async function validatePosition(position, columnId) {
-      //returns true or next position in column
-
-      const articleCount = await fetchColumnArticlesCount(columnId);
-
-      const inputPositionValid = validateInputPosition(position, articleCount);
-
-      if( inputPositionValid ) return [true, articleCount];
-      else {
-        let newPosition = articleCount + 1;
-        return [newPosition, articleCount];
-      }
-    };
-
-    async function updatePosition(_id, position) {
-      let updated;
-
-      try {
-        updated = await ArticleLog.updateOne({
-            _id
-          }, {
-            $set: {
-              position
-            }
-          }, {
-            new: true
-          })
-          .lean()
-          .exec();
-      } catch (error) {
-        updated = null;
-      } finally {
-        return updated;
-      }
-    };
-
-    function createArticle({
-      title = '',
-      url = '',
-      image = '',
-      position = 0,
-      column
     }) {
-
-      const validColumnId = ObjectId.isValid(column);
-      if (!title || !url || !column || !validColumnId) return null;
-
-      title = title.trim();
-      url = url.trim();
-      image = image.trim();
-
       return new ArticleLog({
         _id: new ObjectId(),
         title,
@@ -293,29 +204,8 @@ function saveNewArticle(ArticleLog, Column) {
         position,
         column
       });
-
     };
 
-    async function fetchColumnArticlesCount(columnId){
-      return await ArticleLog.find({ column: columnId }).countDocuments();
-    };
-
-    function validateInputPosition(position, articleCount){
-
-      const greaterThanDefault = position > 0;
-
-      const withinValidColumnPosition = position <= articleCount;
-
-      const inputPositionValid = greaterThanDefault && withinValidColumnPosition;
-
-      return inputPositionValid;
-
-    }
-
-    async function updateColumnArticles(){
-      return;
-    }
-*/
   };
 };
 

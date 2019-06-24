@@ -79,7 +79,7 @@ describe("/article/ GET", () => {
 
 });
 
-describe.only("/article/ POST", () => {
+describe("/article/ POST", () => {
 
   it("create and save new article", async () => {
     const articleData = {
@@ -112,10 +112,10 @@ describe.only("/article/ POST", () => {
     assert.equal(image, articleData.image);
   });
 
-  it.skip("does not saved article with invalid data", async () => {
+  it("does not saved article with invalid data", async () => {
     const data = {
-      title: false,
-      url: undefined,
+      title: '',
+      url: '',
       column: leftColumnId
     };
 
@@ -180,6 +180,7 @@ describe.only("/article/ POST", () => {
     var data = {
       title: "articelLog title",
       url: "www.articlee.com",
+      image: 'www.myimage.com',
       column: leftColumnId,
       position: 1
     };
@@ -192,31 +193,23 @@ describe.only("/article/ POST", () => {
       }
     } = await post_requestArticleRoute(data, 201);
 
-    const ids = [newArticleId, articles[0]._id, articles[1]._id]
-
     const [
-      newArticle,
-      oldFirstArticle,
-      oldSecondArticle
-    ] = await ArticleLog
-      .find({
-        '_id': {
-          $in: ids
-        }
-      })
-      .select('_id position title')
-      .sort({
-        position: 1
-      })
-      .lean()
-      .exec();
+      first, second, third
+    ] = await ArticleLog.find({
+      column: leftColumnId
+    })
+    .select('title position')
+    .sort({ position: 1 })
+    .lean().exec();
 
-    assert.equal(newArticle.position, 1);
-    assert.equal(newArticle.title, data.title);
-    assert.equal(oldFirstArticle.position, 2);
-    assert.equal(oldFirstArticle.title, articles[0].title);
-    assert.equal(oldSecondArticle.position, 3);
-    assert.equal(oldSecondArticle.title, articles[1].title);
+    assert.equal(first.title, data.title);
+    assert.equal(first.position, 1);
+
+    assert.equal(second.title, articles[0].title);
+    assert.equal(second.position, 2);
+
+    assert.equal(third.title, articles[1].title);
+    assert.equal(third.position, 3);
   });
 
   it("invalid position, sets article to last in column", async () => {
