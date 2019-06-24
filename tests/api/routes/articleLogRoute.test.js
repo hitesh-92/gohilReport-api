@@ -79,7 +79,8 @@ describe("/article/ GET", () => {
 
 });
 
-describe("/article/ POST", () => {
+describe.only("/article/ POST", () => {
+
   it("create and save new article", async () => {
     const articleData = {
       title: "return201",
@@ -111,7 +112,7 @@ describe("/article/ POST", () => {
     assert.equal(image, articleData.image);
   });
 
-  it("does not saved article with invalid data", async () => {
+  it.skip("does not saved article with invalid data", async () => {
     const data = {
       title: false,
       url: undefined,
@@ -127,7 +128,7 @@ describe("/article/ POST", () => {
     assert.equal(articleSaved, false);
   });
 
-  it.skip("save new Article, find in db using response _id", async () => {
+  it("save new Article, find in db using response _id", async () => {
 
     // ARTICLE POSITION AFTER SAVING = 0
 
@@ -218,12 +219,9 @@ describe("/article/ POST", () => {
     assert.equal(oldSecondArticle.title, articles[1].title);
   });
 
-  it("not setting position defaults to last position in column");
-
   it("invalid position, sets article to last in column", async () => {
 
     const data = {
-      _id: new ObjectId(),
       title: 'somerandomTitle',
       url: 'www.sometest.co',
       column: leftColumnId,
@@ -233,20 +231,45 @@ describe("/article/ POST", () => {
     const {
       body: {
         createdArticle: {
-          _id
+          _id: savedArticleId
         }
       }
     } = await post_requestArticleRoute(data, 201);
 
     const {
+      title,
+      url,
       position
-    } = await ArticleLog.findOne({
-        _id
-      })
-      .select('position')
-      .lean()
-      .exec();
+    } = await ArticleLog.findOne({ _id: savedArticleId }).select('title url position').exec();
 
+    assert.equal(title, data.title);
+    assert.equal(url, data.url);
+    assert.equal(position, 3);
+  });
+
+  it("no position given defaults to last position in column", async () => {
+
+    const data = {
+      title: 'put me last',
+      url: 'www.putmelast.com',
+      image: 'putmelastimgage.com',
+      column: leftColumnId
+    };
+
+    const {
+      body: {
+        createdArticle: {
+          _id: savedArticleId
+        }
+      }
+    } =  await post_requestArticleRoute(data, 201);
+
+    const {
+      title,
+      position
+    } = await ArticleLog.findOne({ _id: savedArticleId }).select('position title').exec();
+
+    assert.equal(title, data.title);
     assert.equal(position, 3);
   });
 

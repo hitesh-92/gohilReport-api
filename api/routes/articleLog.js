@@ -14,9 +14,7 @@ router.get('/archive', (req, res) => {
   ArchiveController.getArchives(req, res, ArticleLog, Column)
 });
 
-router.post('/', Authenticate, (req, res) => {
-  Controller.saveNewArticle(req, res, ArticleLog)
-});
+router.post('/', Authenticate, Controller.saveNewArticle(ArticleLog, Column) );
 
 router.post('/archive', Authenticate, (req, res) => {
   ArchiveController.archiveArticle(req, res, ArticleLog, Column)

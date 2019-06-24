@@ -101,111 +101,222 @@ async function getSingleArticle(req, res, ArticleLog, Column) {
   }
 };
 
-async function saveNewArticle(req, res, ArticleLog) {
+function saveNewArticle(ArticleLog, Column) {
+  return async function handleSaveArticle(req, res){
+    console.log()
 
-  const {
-    column
-  } = req.body;
-  let {
-    position = 0
-  } = req.body;
+    var data = { articleSaved: false };
 
-  const data = {
-    articleSaved: false
-  };
-
-  var article = createArticle(req.body);
-
-  if (article == null) return res.status(400).json(data);
-
-  article.save();
-
-  await ArticleLog.shiftPositions(position, column);
-
-  const validPosition = await validatePosition(position, column);
-
-  if (typeof(validPosition) == 'number') {
-    position = validPosition
-  };
-
-  await updatePosition(article._id, position);
-
-  data.articleSaved = true;
-  data.createdArticle = article;
-
-  res.status(201).json(data);
-
-  // -----
-
-  async function validatePosition(position, columnId) {
-    //returns true or highest position
-    const articles = await ArticleLog.find({
-        'column': {
-          $in: columnId
-        }
-      })
-      .select('position')
-      .sort({
-        position: 1
-      })
-      .lean()
-      .exec();
-
-    if (position > articles.length) {
-      return articles.length
-    } else {
-      return true
+    // validate user input through middleware
+    // check string title, url. image is optional. trim, regex, etc...
+    // valid column id
+    // if no position. default = 0
+    { // tmp hack
+      let positionGiven = req.body.hasOwnProperty('position');
+      if( positionGiven === false ) req.body.position = 0;
     }
-  };
+    // console.log( req.body )
 
-  async function updatePosition(_id, position) {
-    let updated;
+    const validColumn = await validateColumnExists(req.body.column);
+    // console.log('validColumn', validColumn);
 
-    try {
-      updated = await ArticleLog.updateOne({
-          _id
-        }, {
-          $set: {
-            position
-          }
-        }, {
-          new: true
-        })
-        .lean()
-        .exec();
-    } catch (error) {
-      updated = null;
-    } finally {
-      return updated;
+    if( !validColumn ) return console.log('\nINVALID COLUMN ID - saveNewArticle\N');
+
+    const [disruptsColumnPositions, articlePosition] = await validateArticlePosition(req.body);
+    // console.log(disruptsColumnPositions, articlePosition)
+
+    if( disruptsColumnPositions ){
+      const updatedArticles = await ArticleLog.shiftPositions(articlePosition+1, req.body.column);
+      if( updatedArticles === null ) return console.log('ERROR UPDATING COLUMN ARTICLE POSITION');
     }
-  };
+    else {
+      if( articlePosition !== null ) req.body.position = articlePosition;
+    }
 
-  function createArticle({
-    title = '',
-    url = '',
-    image = '',
-    position = 0,
-    column
-  }) {
+    const article = createArticle(req.body);
+    await article.save();
 
-    const validColumnId = ObjectId.isValid(column);
-    if (!title || !url || !column || !validColumnId) return null;
+    data.articleSaved = true;
+    data.createdArticle = article;
 
-    title = title.trim();
-    url = url.trim();
-    image = image.trim();
+    res.status(201).json(data);
 
-    return new ArticleLog({
-      _id: new ObjectId(),
+    // -----
+
+    async function validateColumnExists(columnId){
+      var column = await fetchColumnById(columnId);
+      const columnExists = column != null;
+      return columnExists;
+    };
+
+    async function fetchColumnById(id){
+      return await Column.findOne({ _id: id }).exec();
+    };
+
+    async function validateArticlePosition({position, column: columnId}){
+      // if given position is to be last in column:
+      // - no need to ArticleLog.shiftPositions
+
+      const articleCount = await fetchColumnArticlesCount(columnId);
+      const endOfColumn = articleCount + 1;
+
+      if( position === endOfColumn ) return [false, null];
+
+      const inputPositionValid = validateInputPosition(position, endOfColumn);
+
+      if( inputPositionValid  ) return [true, position];
+      else return [false, endOfColumn];
+    };
+
+    async function fetchColumnArticlesCount(columnId){
+      return await ArticleLog.find({ column: columnId }).countDocuments();
+    };
+
+    function validateInputPosition(position, max){
+      const greaterThanDefault = position > 0;
+      const withinMaxRange = position <= max;
+      const inputPositionValid = greaterThanDefault && withinMaxRange;
+      return inputPositionValid;
+    };
+
+    function createArticle({
       title,
       url,
-      image,
+      image = null,
       position,
       column
-    });
+    }){
+      return new ArticleLog({
+        _id: new ObjectId(),
+        title,
+        url,
+        image,
+        position,
+        column
+      });
+    };
 
-  }
+/*
+    const {
+      column
+    } = req.body;
 
+    let {
+      position = 0
+    } = req.body;
+
+    const data = {
+      articleSaved: false
+    };
+
+    var article = createArticle(req.body);
+
+    if (article == null) return res.status(400).json(data);
+    // console.log('articleId ===> ', article._id)
+
+    const validPosition = await validatePosition(position, column);
+
+    console.log('validPosition ==> ', validPosition)
+
+    if (typeof(validPosition) == 'number') {
+      position = validPosition
+    };
+
+    await article.save();
+    await updatePosition(article._id, position);
+
+    data.articleSaved = true;
+    data.createdArticle = article;
+
+    // console.log('response data ==> ', data);
+
+    res.status(201).json(data);
+
+    // -----
+
+    async function validatePosition(position, columnId) {
+      //returns true or next position in column
+
+      const articleCount = await fetchColumnArticlesCount(columnId);
+
+      const inputPositionValid = validateInputPosition(position, articleCount);
+
+      if( inputPositionValid ) return [true, articleCount];
+      else {
+        let newPosition = articleCount + 1;
+        return [newPosition, articleCount];
+      }
+    };
+
+    async function updatePosition(_id, position) {
+      let updated;
+
+      try {
+        updated = await ArticleLog.updateOne({
+            _id
+          }, {
+            $set: {
+              position
+            }
+          }, {
+            new: true
+          })
+          .lean()
+          .exec();
+      } catch (error) {
+        updated = null;
+      } finally {
+        return updated;
+      }
+    };
+
+    function createArticle({
+      title = '',
+      url = '',
+      image = '',
+      position = 0,
+      column
+    }) {
+
+      const validColumnId = ObjectId.isValid(column);
+      if (!title || !url || !column || !validColumnId) return null;
+
+      title = title.trim();
+      url = url.trim();
+      image = image.trim();
+
+      return new ArticleLog({
+        _id: new ObjectId(),
+        title,
+        url,
+        image,
+        position,
+        column
+      });
+
+    };
+
+    async function fetchColumnArticlesCount(columnId){
+      return await ArticleLog.find({ column: columnId }).countDocuments();
+    };
+
+    function validateInputPosition(position, articleCount){
+
+      const greaterThanDefault = position > 0;
+
+      const withinValidColumnPosition = position <= articleCount;
+
+      const inputPositionValid = greaterThanDefault && withinValidColumnPosition;
+
+      return inputPositionValid;
+
+    }
+
+    async function updateColumnArticles(){
+      return;
+    }
+*/
+  };
 };
 
 async function updateArticle(req, res, ArticleLog) {
