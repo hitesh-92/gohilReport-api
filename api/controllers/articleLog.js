@@ -466,4 +466,4 @@ async function deleteArticle(req, res, ArticleLog) {
       data.error = err;
       res.status(501).json(data);
     });
-};
+}

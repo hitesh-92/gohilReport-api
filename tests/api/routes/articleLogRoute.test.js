@@ -151,30 +151,6 @@ describe("/article/ POST", () => {
     assert.equal(savedArticle._id.toString(), _id.toString());
   });
 
-  it("**REDO** adds articles and edits positions", async () => {
-
-    var article = new ArticleLog({
-      _id: new ObjectId(),
-      title: 'some new title',
-      url: 'www.posittioning.com',
-      column: leftColumnId,
-      position: 3
-    });
-
-    await article.save();
-
-    const {
-      position
-    } = await ArticleLog.findOne({
-        _id: article._id
-      })
-      .select('position')
-      .lean()
-      .exec();
-
-    assert.equal(position, article.position);
-  })
-
   it("adds articles to first position in column and edits others", async () => {
 
     var data = {
