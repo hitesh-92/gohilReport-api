@@ -6,28 +6,29 @@
 #### HTTP endpoints  
 
 ##### /column
-Method | Endpoint | Auth | Req. Body | Response
+Method | Path | Auth | Req. Body | Response
 --- | --- | --- | --- | ---
-GET | / | - | - | { left, center, right, archive, alert }
-GET | /single | - | { title } |  { articles }
-POST | / | ✓ | { title }| { createdColumn }
-PATCH | / |  ✓ | { column, id } | { column }
-DELETE | / |  ✓ | { title } | { deleted, message }
+GET | / | - | - | { left, center, right, alert }
+GET | /:title | ✓ | - |  { articles, columnData, error }
+GET | /ids | ✓ | - |  { columns, columnData, error }
+POST | / | ✓ | { title }| { saved, column, message }
+PATCH | / | ✓ | { id, title } | { column }
+DELETE | / | ✓ | { id } | { deleted, message }
 
 ##### /article
-Method | Endpoint | Auth | Req. Body | Response
+Method | Path | Auth | Req. Body | Response
 --- | --- | --- | --- | ---
-GET | /single/:id |  ✓ | - | { article }
-GET | /archive |  ✓ | { id } | { archives }
-POST | / |  ✓ | { title, url } | { createdArticle, articleSaved }
-POST | /archive |  ✓ | { id } | { archived }
-PATCH | / |  ✓ | { id, title, url, image   } | { oldArticle, status }
-PATCH | /removeimage |  ✓ | { id } | { status }
-PATCH | /switch |  ✓ | { selected, moveTo } | { status }
-DELETE | / |  ✓ | { id } | { deleted, log }
+GET | /:id | ✓ | - | { article }
+POST | / | ✓ | { title, url, image, position, column } | { createdArticle, articleSaved }
+POST | /archive |  ✓ | { id } | { archived, message, error }
+PATCH | / | ✓ | { id, title, url, image   } | { status }
+PATCH | /switch | ✓ | { selectedId, moveToId } | { status }
+PATCH | /removeimage | ✓ | { id } | { status }
+PATCH | /archive/unarchive | ✓ | { id } | { unarchived }
+DELETE | / | ✓ | { id } | { deleted, log }
 
 ##### /user
-Method | Endpoint | Private | Req. Body | Response
+Method | Path | Auth | Req. Body | Response
 --- | --- | --- | --- | ---
 POST | /signup | - | { email, password } | { email, added }
 POST | /login | - | { email, password } | { loggedIn, token }
@@ -42,17 +43,14 @@ docker-compse up --build
 ```
 
 * API:            localhost:8000
-* Mongo-Expess:   localhost:8081
-
-_Mongo-express: mongodb web client_
 
 #### Configure Server
 Requiremnts:
 * NodeJS
 * MongoDB  
 
-  add config file: `server/config.json`  
-_Note: development env is for docker_
+add config file: `server/config.json`  
+
 ```javascript
 {
     "development": {
@@ -101,4 +99,5 @@ ___
 - [ ] Add GraphQL
 - [ ] Add in logger ( monitor activity )
 - [ ] Set up inital db structure ( migration )
-- [ ] Duplicate database folders /db & /mogno merge and format dockerfile
+- [ ] Duplicate database folders /db & /mongo. Merge and reformat dockerfile
+- [ ] Rewrite logic for paths POST/PATCH /column

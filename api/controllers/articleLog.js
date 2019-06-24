@@ -322,7 +322,6 @@ async function removeImage(req, res, ArticleLog) {
 };
 
 async function switchPositions(req, res, ArticleLog) {
-  // make use of transactions in next major update!
 
   // validate Ids
   const validIds = checkIds(req.body);

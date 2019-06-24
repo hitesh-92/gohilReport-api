@@ -16,7 +16,7 @@ const {
 
 const ArticleLog = require("../../../api/models/articleLog");
 
-describe("/article/ GET", () => {
+describe("/article/:id GET", () => {
   it("find saved article", async () => {
     const article = articles[0];
 
@@ -328,34 +328,6 @@ describe("/article/ PATCH", () => {
     assert.equal(updatedLink, updateData.image);
   });
 
-  it("removes link from exisitng article", async () => {
-
-    const {
-      _id
-    } = articles[0];
-
-    const {
-      body: {
-        status
-      }
-    } = await request(app)
-      .patch('/article/removeimage')
-      .set('x-auth', logInToken)
-      .send({
-        id: _id
-      })
-      .expect(200);
-
-    assert.equal(status, true);
-
-    const {
-      image
-    } = await ArticleLog.findById(_id).lean().exec();
-
-    assert.equal(image, null);
-
-  });
-
   it("rejects request with no title/url", async () => {
 
     const data = {
@@ -391,6 +363,37 @@ describe("/article/ PATCH", () => {
 
     assert.equal(status, false)
     assert.equal(message, 'Unable find article with ID');
+  });
+
+});
+
+describe("/article/removeimage", () => {
+
+  it("removes link from exisitng article", async () => {
+
+    const {
+      _id
+    } = articles[0];
+
+    const {
+      body: {
+        status
+      }
+    } = await request(app)
+      .patch('/article/removeimage')
+      .set('x-auth', logInToken)
+      .send({
+        id: _id
+      })
+      .expect(200);
+
+    assert.equal(status, true);
+
+    const {
+      image
+    } = await ArticleLog.findById(_id).lean().exec();
+
+    assert.equal(image, null);
   });
 
 });
@@ -523,101 +526,105 @@ describe("/article/ DELETE", () => {
 
 describe("/article/archive/", () => {
 
-  it("POST null position propery and re-adjust positions", async () => {
+  describe("POST", () => {
 
-    await saveAdditionalArticles();
+    it("null position propery and re-adjust positions", async () => {
 
-    const {
-      body: {
-        archived
-      }
-    } = await requestToArchiveRoute('post', {
-      id: articles[0]._id
-    }, 200);
+      await saveAdditionalArticles();
 
-    assert.equal(archived, true);
-
-    const column = await ArticleLog.find({
-        'column': leftColumnId,
-        position: {
-          $gte: 1
+      const {
+        body: {
+          archived
         }
-      })
-      .select('position title')
-      .sort({
-        position: 1
-      })
-      .lean()
-      .exec();
+      } = await requestToArchiveRoute('post', {
+        id: articles[0]._id
+      }, 200);
 
-    assert.equal(column[0].title, articles[1].title);
-    assert.equal(column[1].title, '0onE3');
-    assert.equal(column[2].title, '77WWo0');
+      assert.equal(archived, true);
 
-    // -----
+      const column = await ArticleLog.find({
+          'column': leftColumnId,
+          position: {
+            $gte: 1
+          }
+        })
+        .select('position title')
+        .sort({
+          position: 1
+        })
+        .lean()
+        .exec();
 
-    async function saveAdditionalArticles() {
-      await ArticleLog.insertMany([{
-          _id: new ObjectId(),
-          title: '0onE3',
-          url: 'www.sdfj.com',
-          column: leftColumnId,
-          position: 3
-        },
-        {
-          _id: new ObjectId(),
-          title: '77WWo0',
-          url: 'www.sdfj.com',
-          column: leftColumnId,
-          position: 4
+      assert.equal(column[0].title, articles[1].title);
+      assert.equal(column[1].title, '0onE3');
+      assert.equal(column[2].title, '77WWo0');
+
+      // -----
+
+      async function saveAdditionalArticles() {
+        await ArticleLog.insertMany([{
+            _id: new ObjectId(),
+            title: '0onE3',
+            url: 'www.zxcvbn.com',
+            column: leftColumnId,
+            position: 3
+          },
+          {
+            _id: new ObjectId(),
+            title: '77WWo0',
+            url: 'www.asdfgh.com',
+            column: leftColumnId,
+            position: 4
+          }
+        ]);
+      };
+
+    });
+
+    it("archive existing article", async () => {
+      const article = articles[2];
+
+      const {
+        body: {
+          archived,
+          message
         }
-      ])
-    }
+      } = await requestToArchiveRoute('post', {
+        id: article._id
+      }, 200);
 
-  });
+      assert.equal(message, "Article archived");
+      assert.equal(archived, true);
 
-  it("POST archive existing article", async () => {
-    const article = articles[2];
+      const archivedArticle = await ArticleLog.findOne({
+        _id: article._id
+      }).exec();
 
-    const {
-      body: {
-        archived,
-        message
-      }
-    } = await requestToArchiveRoute('post', {
-      id: article._id
-    }, 200);
+      assert.equal(archivedArticle.position, null)
+      assert.equal(archivedArticle.column.toString(), archiveColumnId.toString())
+      assert.equal(archivedArticle.columnRef.toString(), article.column.toString())
+    });
 
-    assert.equal(message, "Article archived");
-    assert.equal(archived, true);
+    it("not archive existing archive", async () => {
 
-    const archivedArticle = await ArticleLog.findOne({
-      _id: article._id
-    }).exec();
+      // archiveColumnId
+      const {
+        _id: archivedArticleId
+      } = articles[6];
 
-    assert.equal(archivedArticle.position, null)
-    assert.equal(archivedArticle.column.toString(), archiveColumnId.toString())
-    assert.equal(archivedArticle.columnRef.toString(), article.column.toString())
-  });
+      const {
+        body: {
+          archived,
+          error
+        }
+      } = await requestToArchiveRoute('post', {
+        id: archivedArticleId
+      }, 400);
 
-  it("POST not archive existing archive", async () => {
+      assert.equal(archived, false);
+      assert.equal(error, "Article is already archived");
 
-    // archiveColumnId
-    const {
-      _id: archivedArticleId
-    } = articles[6];
-
-    const {
-      body: {
-        archived,
-        error
-      }
-    } = await requestToArchiveRoute('post', {
-      id: archivedArticleId
-    }, 400);
-
-    assert.equal(archived, false);
-    assert.equal(error, "Article is already archived");
+    });
 
   });
 
@@ -653,6 +660,11 @@ describe("/article/archive/", () => {
 });
 
 // -----
+
+it.skip('TESTING',async () => {
+  const {body} = await requestToArchiveRoute(articles[0]._id, 200);
+  console.log(body)
+})
 
 async function get_requestArticleRoute(id, expectStatus) {
   return await request(app)

@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
   Controller.get_allColumns(req, res, ArticleLog, Column)
 });
 
-router.get('/:title', (req, res) => {
+router.get('/:title', Authenticate, (req, res) => {
   Controller.get_singleColumn(req, res, ArticleLog, Column)
 });
 

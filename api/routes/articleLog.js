@@ -10,10 +10,6 @@ router.get('/:id', Authenticate, (req, res) => {
   Controller.getSingleArticle(req, res, ArticleLog, Column)
 });
 
-router.get('/archive', Authenticate, (req, res) => {
-  ArchiveController.getArchives(req, res, ArticleLog, Column)
-});
-
 router.post('/', Authenticate, Controller.saveNewArticle(ArticleLog, Column) );
 
 router.post('/archive', Authenticate, (req, res) => {

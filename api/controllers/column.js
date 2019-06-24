@@ -155,8 +155,8 @@ function saveNewColumn(req, res, Column) {
 
   let data = {
     title: req.body.title,
-    error: {},
-    createdColumn: {},
+    // error: {},
+    // createdColumn: {},
     saved: false
   }
 
@@ -244,6 +244,7 @@ function updateColumn(req, res, Column) {
 
       const savedColumn = await updateColumn(columnId, updateTitle)
       data.column = savedColumn
+      console.log(data)
       res.status(200).json(data)
     })
     .catch(err => {

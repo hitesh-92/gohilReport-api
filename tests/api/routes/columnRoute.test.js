@@ -69,6 +69,7 @@ describe('column/ ', () => {
         }
       } = await request(app)
         .get('/column/left')
+        .set('x-auth', logInToken)
         .expect(200);
 
       assert.equal(error, false)
@@ -84,6 +85,7 @@ describe('column/ ', () => {
         }
       } = await request(app)
         .get('/column/badColumn')
+        .set('x-auth', logInToken)
         .expect(400);
 
       assert.equal(columnData, null)
@@ -101,6 +103,7 @@ describe('column/ ', () => {
         }
       } = await request(app)
         .get('/column/archive')
+        .set('x-auth', logInToken)
         .expect(200)
 
       assert.equal(error, false);
