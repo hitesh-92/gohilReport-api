@@ -133,7 +133,7 @@ describe('column/ ', () => {
 
   });
 
-  describe.only('POST /', () => {
+  describe('POST /', () => {
 
     it('save new column and find it', () => {
 

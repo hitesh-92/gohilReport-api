@@ -430,39 +430,77 @@ async function switchPositions(req, res, ArticleLog) {
 
 };
 
-async function deleteArticle(req, res, ArticleLog) {
-  const {
-    id
-  } = req.body;
+function deleteArticle(ArticleLog) {
+  return async function handleDeleteArtcile(req, res){
 
-  let data = {
-    deleted: false
-  };
+    { //tmp validations
+      let hasId = req.params.hasOwnProperty('id');
+      if( hasId === false ) return res.status(404).json({deleted:false, error:'Bad article id'});
+    }
+    {
+      let validId = ObjectId.isValid(req.params.id);
+      if( validId === false ) return res.status(404).json({deleted:false, error:'Bad article id'});
+    } //end validations
 
-  if (ObjectId.isValid(id) == false) {
-    data.error = "Bad article id";
-    return res.status(404).json(data);
+
+    const [validArticle, deleteArticle] = await findArticle(req.params);
+
+    if( validArticle === false ) return res.status(404).json({
+      deleted:false,
+      error:'Invalid request to delete'
+    });
+
+    const deleted = await deleteArticle();
+
+    res.json({deleted: true});
+
+    // -----
+
+    async function findArticle({id}){
+      var article = await fetchArticleById(id);
+
+      if( article === null ) return [false, null];
+      else return [true, handleDeleteArticle];
+
+      async function handleDeleteArticle(){
+        return await deleteArticleById(id);
+      }
+    }
+
+    async function fetchArticleById(id){
+      return await ArticleLog.findOne({_id: id}).lean().exec();
+    }
+
+    async function deleteArticleById(id){
+      return await ArticleLog.findOneAndDelete({_id: id}).exec();
+    }
+
   }
 
-  ArticleLog.findOneAndDelete({
-      _id: id
-    })
-    .then(article => {
 
-      let status = 404;
-
-      if (article == null) {
-        data.error = "Invalid request to delete";
-      } else {
-        data.log = article;
-        data.deleted = true;
-        status = 200;
-      }
-
-      res.status(status).json(data);
-    })
-    .catch(err => {
-      data.error = err;
-      res.status(501).json(data);
-    });
+  // let data = {
+  //   deleted: false
+  // };
+  //
+  // ArticleLog.findOneAndDelete({
+  //     _id: id
+  //   })
+  //   .then(article => {
+  //
+  //     let status = 404;
+  //
+  //     if (article == null) {
+  //       data.error = "Invalid request to delete";
+  //     } else {
+  //       data.log = article;
+  //       data.deleted = true;
+  //       status = 200;
+  //     }
+  //
+  //     res.status(status).json(data);
+  //   })
+  //   .catch(err => {
+  //     data.error = err;
+  //     res.status(501).json(data);
+  //   });
 }

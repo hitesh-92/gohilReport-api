@@ -30,6 +30,6 @@ router.patch("/switch", Authenticate, (req, res) => {
   Controller.switchPositions(req, res, ArticleLog)
 });
 
-router.delete("/", Authenticate, (req, res) => Controller.deleteArticle(req, res, ArticleLog));
+router.delete("/:id", Authenticate, Controller.deleteArticle(ArticleLog) );
 
 module.exports = router;

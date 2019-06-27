@@ -478,31 +478,31 @@ describe("/article/switch PATCH", () => {
 
 });
 
-describe("/article/ DELETE", () => {
+describe.only("/article/ DELETE", () => {
 
   it("delete exisitng article", async () => {
 
-    const data = { id: articles[1]._id };
+    const id = articles[1]._id;
 
     const {
       body: {
         deleted
       }
-    } = await delete_requestArticleRoute(data, 200);
+    } = await delete_requestArticleRoute(id, 200);
 
     assert.equal(deleted, true)
   });
 
   it("reject invaid id", async () => {
 
-    const data = { id: "!000000f7cad342ac046AAAA" };
+    const id = "!000000f7cad342ac046AAAA";
 
     const {
       body: {
         deleted,
         error
       }
-    } = await delete_requestArticleRoute(data, 404);
+    } = await delete_requestArticleRoute(id, 404);
 
     assert.equal(deleted, false);
     assert.equal(error, "Bad article id");
@@ -510,14 +510,14 @@ describe("/article/ DELETE", () => {
 
   it("not find article with non-existing id", async () => {
 
-    const data = { id: new ObjectId() };
+    const id = new ObjectId();
 
     const {
       body: {
         deleted,
         error
       }
-    } = await delete_requestArticleRoute(data, 404);
+    } = await delete_requestArticleRoute(id, 404);
 
     assert.equal(deleted, false);
     assert.equal(error, "Invalid request to delete");
@@ -661,10 +661,10 @@ describe("/article/archive/", () => {
 
 // -----
 
-it.skip('TESTING',async () => {
-  const {body} = await requestToArchiveRoute(articles[0]._id, 200);
-  console.log(body)
-})
+// it.skip('TESTING',async () => {
+//   const {body} = await requestToArchiveRoute(articles[0]._id, 200);
+//   console.log(body)
+// })
 
 async function get_requestArticleRoute(id, expectStatus) {
   return await request(app)
@@ -697,11 +697,10 @@ async function patch_switch_requestArticleRoute(sendData, expectedStatus){
   .expect(expectedStatus)
 };
 
-async function delete_requestArticleRoute(sendData, expectedStatus){
+async function delete_requestArticleRoute(id, expectedStatus){
   return await request(app)
-  .delete('/article/')
+  .delete(`/article/${id}`)
   .set("x-auth", logInToken)
-  .send(sendData)
   .expect(expectedStatus)
 };
 
