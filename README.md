@@ -25,7 +25,7 @@ PATCH | / | ✓ | { id, title, url, image   } | { status }
 PATCH | /switch | ✓ | { selectedId, moveToId } | { status }
 PATCH | /removeimage | ✓ | { id } | { status }
 PATCH | /archive/unarchive | ✓ | { id } | { unarchived }
-DELETE | / | ✓ | { id } | { deleted, log }
+DELETE | /:id | ✓ | - | { deleted, log }
 
 ##### /user
 Method | Path | Auth | Req. Body | Response
@@ -100,4 +100,3 @@ ___
 - [ ] Add in logger ( monitor activity )
 - [ ] Set up inital db structure ( migration )
 - [ ] Duplicate database folders /db & /mongo. Merge and reformat dockerfile
-- [ ] Rewrite logic for paths POST/PATCH /column
