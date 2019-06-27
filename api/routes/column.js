@@ -17,9 +17,7 @@ router.post('/', Authenticate, (req, res) => {
   Controller.saveNewColumn(req, res, Column)
 });
 
-router.patch('/', Authenticate, (req, res) => {
-  Controller.updateColumn(req, res, Column)
-});
+router.patch('/', Authenticate, Controller.updateColumn(Column) );
 
 router.delete('/', Authenticate, (req, res) => {
   Controller.deleteColumn(req, res, Column)

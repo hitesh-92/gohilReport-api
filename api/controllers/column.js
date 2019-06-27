@@ -192,65 +192,54 @@ function saveNewColumn(req, res, Column) {
     })
 };
 
-function updateColumn(req, res, Column) {
+function updateColumn(Column) {
+  return async function handleUpdateColumn(req, res){
 
-  let data = {}
+    { //tmp validations
+      let validColumnId = ObjectId.isValid(req.body.id);
+      if( validColumnId === false ) return res.status(400).json({error: 'Invalid id'});
+    }
+    {
+      let hasTitle = req.body.hasOwnProperty('title');
+      if( hasTitle === false ) return res.status(400).json({error: 'Invalid update title'});
+    }
+    {
+      let titleLength = req.body.title.trim().length;
+      if( titleLength < 4 ) return res.status(400).json({error: 'Invalid update title'});
+    }
 
-  const {
-    id: columnId,
-    title: updateTitle
-  } = req.body
+    const [validColumn, updateColumn] = await fetchColumnById(req.body);
 
-  const findColumn = async (_id) => await Column
-    .findOne({
-      _id
-    })
-    .select('_id title')
-    .lean()
-    .exec()
+    if( validColumn === false ) return res.status(400).json({error: 'No column with given id found'});
 
-  const updateColumn = async (_id, title) => await Column
-    .updateOne({
-      _id
-    }, {
-      $set: {
-        title
-      }
-    })
-    .exec()
+    const { nModified: updated } = await updateColumn();
 
-  if (ObjectId.isValid(columnId) == false) {
-    res.status(400).json({
-      error: 'Invalid id'
-    })
-    return
-  }
+    if( updated !== 1  ) return res.status(400).json({error: 'Update invalid'});
 
-  if (String(updateTitle).trim().length < 4) {
-    res.status(400).json({
-      error: 'Invalid update title'
-    })
-    return
-  }
+    res.json({updated: true});
 
-  findColumn(columnId)
-    .then(async (column) => {
+    // -----
 
-      if (!column) {
-        data.error = 'No column with given id found'
-        res.status(400).json(data)
-        return
+    async function fetchColumnById({id, title}){
+      var column = await Column.findOne({ _id: id }).select('title').lean().exec();
+
+      if( column === null ) return [false, null];
+      else return [true, updateColumn]
+
+      async function updateColumn(){
+        return await updateColumnTitle(id, title);
       }
 
-      const savedColumn = await updateColumn(columnId, updateTitle)
-      data.column = savedColumn
-      console.log(data)
-      res.status(200).json(data)
-    })
-    .catch(err => {
-      data.error = err
-      res.status(500).json(data)
-    })
+    };
+
+    async function updateColumnTitle(id, title){
+      return await Column.updateOne(
+        { _id: id },
+        { $set: { title } }
+      );
+    };
+
+  }
 };
 
 function deleteColumn(req, res, Column) {

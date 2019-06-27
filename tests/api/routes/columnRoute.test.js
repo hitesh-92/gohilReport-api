@@ -209,9 +209,10 @@ describe('column/ ', () => {
 
       const {
         body: {
-          column: {
-            nModified
-          }
+          // column: {
+          //   nModified
+          // }
+          updated
         }
       } = await request(app)
         .patch('/column/')
@@ -220,7 +221,7 @@ describe('column/ ', () => {
         .send(sendData)
         .expect(200)
 
-      assert.equal(nModified, 1)
+      assert.equal(updated, true)
 
       const {
         title,
@@ -260,7 +261,8 @@ describe('column/ ', () => {
     it('reject if no column found', async () => {
 
       const sendData = {
-        id: new ObjectId()
+        id: new ObjectId(),
+        title:'1234567'
       }
 
       const {
