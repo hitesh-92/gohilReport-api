@@ -13,10 +13,8 @@ router.get('/:title', Authenticate, (req, res) => {
   Controller.get_singleColumn(req, res, ArticleLog, Column)
 });
 
-router.post('/', Authenticate, (req, res) => {
-  Controller.saveNewColumn(req, res, Column)
-});
-
+// router.post('/', Authenticate, (req, res) => {  Controller.saveNewColumn(req, res, Column) });
+router.post('/', Authenticate, Controller.saveNewColumn(Column) );
 router.patch('/', Authenticate, Controller.updateColumn(Column) );
 
 router.delete('/', Authenticate, (req, res) => {

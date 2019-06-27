@@ -151,45 +151,34 @@ async function get_singleColumn(req, res, ArticleLog, Column) {
 
 };
 
-function saveNewColumn(req, res, Column) {
+function saveNewColumn(Column) {
+  return async function handleSavingNewColumn(req, res){
 
-  let data = {
-    title: req.body.title,
-    // error: {},
-    // createdColumn: {},
-    saved: false
+    { //tmp validations
+      let hasTitle = req.body.hasOwnProperty('title');
+      if( hasTitle === false ) return res.status(400).json({saved: false, error: 'Invalid title'});
+    }
+    {
+      req.body.title = req.body.title.trim();
+      let validTitle = req.body.title.length > 4;
+      if( validTitle === false ) return res.status(400).json({saved: false, error: 'Invalid title'});
+    }
+
+
+    var column = createColumn(req.body);
+    await column.save();
+    res.json({saved:true, column});
+
+    // -----
+
+    function createColumn({title}){
+      return new Column({
+        _id: new ObjectId(),
+        title
+      });
+    };
+
   }
-
-  if (data.title.trim().length < 4) {
-    data.error = 'Invalid title'
-    return res.status(400).json(data)
-  }
-
-  const column = new Column({
-    _id: new ObjectId(),
-    title: data.title.trim()
-  })
-
-  column.save()
-    .then(savedColumn => {
-
-      let status = 200
-      data.column = savedColumn
-
-      if (!savedColumn) {
-        stats = 400
-        data.message = 'Please check error to see further details'
-      } else {
-        data.saved = true
-        data.message = 'success'
-      }
-
-      res.status(status).json(data)
-    })
-    .catch(err => {
-      data.error = err
-      res.status(500).json(data)
-    })
 };
 
 function updateColumn(Column) {
@@ -206,9 +195,10 @@ function updateColumn(Column) {
     {
       let titleLength = req.body.title.trim().length;
       if( titleLength < 4 ) return res.status(400).json({error: 'Invalid update title'});
-    }
+    } // end validations
 
-    const [validColumn, updateColumn] = await fetchColumnById(req.body);
+
+    const [validColumn, updateColumn] = await fetchColumn(req.body);
 
     if( validColumn === false ) return res.status(400).json({error: 'No column with given id found'});
 
@@ -220,17 +210,21 @@ function updateColumn(Column) {
 
     // -----
 
-    async function fetchColumnById({id, title}){
-      var column = await Column.findOne({ _id: id }).select('title').lean().exec();
+    async function fetchColumn({id, title}){
+      var column = await fetchColumnById(id);
 
       if( column === null ) return [false, null];
-      else return [true, updateColumn]
+      else return [true, handleColumnUpdate];
 
-      async function updateColumn(){
+      async function handleColumnUpdate(){
         return await updateColumnTitle(id, title);
       }
 
     };
+
+    async function fetchColumnById(id){
+      return await Column.findOne({ _id: id }).select('title').lean().exec();
+    }
 
     async function updateColumnTitle(id, title){
       return await Column.updateOne(

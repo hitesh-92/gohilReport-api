@@ -133,7 +133,7 @@ describe('column/ ', () => {
 
   });
 
-  describe('POST /', () => {
+  describe.only('POST /', () => {
 
     it('save new column and find it', () => {
 
@@ -150,16 +150,12 @@ describe('column/ ', () => {
         .then(async ({
           body: {
             column,
-            title,
-            message,
             saved
           }
         }) => {
 
           const id = ObjectId.createFromHexString(column._id)
 
-          assert.equal(title, postColumnData.title)
-          assert.equal(message, 'success')
           assert.equal(saved, true)
 
           const {
@@ -176,7 +172,7 @@ describe('column/ ', () => {
     it('reject request with bad articleId', () => {
 
       const postColumnData = {
-        title: ''
+        title: '     '
       }
 
       return request(app)
