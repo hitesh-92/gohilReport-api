@@ -576,6 +576,42 @@ describe.only("/article/insert PATCH", () => {
 
   });
 
+  it('insert article into position 1 higher', async () => {
+
+    var articleToMove = extraArticles[0]; //position 3
+
+    const insertData = {
+      id: articleToMove._id,
+      position: 2
+    };
+
+    const {
+      body: {
+        inserted
+      }
+    } = await patch_insert_requestArticleRoute(insertData, 200);
+    assert.equal(inserted, true);
+
+    const [
+      second, third
+    ] = await ArticleLog.find({
+      column: leftColumnId,
+      position: {
+        $gte: 2,
+        $lte: 3
+      }
+    })
+    .sort({ position: 1 })
+    .select('title position')
+    .exec();
+
+    assert.equal(second.title, articleToMove.title);
+    assert.equal(second.position, 2);
+    assert.equal(third.title, articles[1].title);
+    assert.equal(third.position, 3);
+
+  });
+
 });
 
 describe("/article/ DELETE", () => {
