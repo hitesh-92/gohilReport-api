@@ -10,6 +10,7 @@ module.exports = {
   updateArticle,
   removeImage,
   switchPositions,
+  insertToPosition,
   deleteArticle
 }
 
@@ -430,49 +431,206 @@ async function switchPositions(req, res, ArticleLog) {
 
 };
 
+function insertToPosition(ArticleLog) {
+  return async function handleInsertPosition(req, res) { //console.log('12313213')
+
+    // update column article positions +/- 1 &&
+    // update relevent article positions
+
+    { // tmp validations
+      let hasId = req.body.hasOwnProperty('id');
+      if (hasId === false) return res.status(400).json('need id');
+    } {
+      let validId = ObjectId.isValid(req.body.id);
+      if (validId === false) return res.status(400).json('invalid id');
+    } {
+      let invalidPosition = Number.isNaN(parseInt(req.body.id));
+      if (invalidPosition) return res.status(400).json('error');
+    }
+
+
+    const [article, validateInsertPosition] = await findArticle(req.body);
+
+    if (article === null) return res.status(400).json({
+      error: 'Invalid Article'
+    });
+
+    const validInsertPosition = await validateInsertPosition();
+
+    if (validInsertPosition === false) return res.status(400).json('bad position');
+
+    const {
+      ok: updatedArticles
+    } = await updateColumnArticlePositions(article, req.body);
+
+    const {
+      nModified: inserted
+    } = await updateArticlePosition(req.body);
+
+    if (!inserted && !updatedArticles) res.status(500).json({
+      inserted: false
+    });
+    
+    res.json({
+      inserted: true
+    });
+
+    // const x = await ArticleLog.find({column:article.column}).sort({position:1}).select('title position')
+    // console.log(x)
+
+    // ----- insertArticleToPosition
+
+    async function findArticle({
+      id,
+      position
+    }) {
+      var article = await fetchArticleById(id);
+      let getColumnLength;
+
+      if (article === null) return [false, null];
+
+      getColumnLength = fetchColumnArticleCount(article.column);
+      return [article, handleVerifyInsertPosition];
+
+      async function handleVerifyInsertPosition() {
+        let columnLength = await getColumnLength;
+        const articleIsWithinRange = verifyInsertPosition(position, columnLength, article.position);
+        return articleIsWithinRange;
+      };
+    };
+
+    async function fetchArticleById(id) {
+      return await ArticleLog.findOne({
+        _id: id
+      }).lean().exec();
+    };
+
+    function verifyInsertPosition(n, max, current) {
+      return n >= 1 && n <= max && n !== max && n !== current
+    }
+
+    async function fetchColumnArticleCount(columnId) {
+      return ArticleLog.find({
+          column: columnId
+        })
+        .countDocuments().exec();
+    };
+
+    function updateColumnArticlePositions(article, {
+      position: insertPosition
+    }) {
+      const currentPosition = article.position;
+      const insertToHigherPosition = insertPosition < currentPosition;
+      // if insertToHigherPosition -> inc articles positions
+      // else dec articles positions
+
+      if (insertToHigherPosition) {
+        return incrementArticlePositionsWithinRange(article.column, insertPosition, currentPosition);
+      } else {
+        return decrementArticlePositionsWithinRange(article.column, currentPosition, insertPosition);
+      }
+    };
+
+    async function incrementArticlePositionsWithinRange(columnId, min, max) {
+      return await ArticleLog.updateMany({
+        column: columnId,
+        position: {
+          $gte: min,
+          $lte: max
+        }
+      }, {
+        $inc: {
+          position: 1
+        }
+      }).exec();
+    };
+
+    async function decrementArticlePositionsWithinRange(columnId, min, max) {
+      return await ArticleLog.updateMany({
+        column: columnId,
+        position: {
+          $gte: min,
+          $lte: max
+        }
+      }, {
+        $inc: {
+          position: -1
+        }
+      }).exec();
+    };
+
+    async function updateArticlePosition({
+      id,
+      position
+    }) {
+      return await ArticleLog.updateOne({
+        _id: id
+      }, {
+        $set: {
+          position
+        }
+      });
+    };
+
+  }
+};
+
 function deleteArticle(ArticleLog) {
-  return async function handleDeleteArtcile(req, res){
+  return async function handleDeleteArtcile(req, res) {
 
     { //tmp validations
       let hasId = req.params.hasOwnProperty('id');
-      if( hasId === false ) return res.status(404).json({deleted:false, error:'Bad article id'});
-    }
-    {
+      if (hasId === false) return res.status(404).json({
+        deleted: false,
+        error: 'Bad article id'
+      });
+    } {
       let validId = ObjectId.isValid(req.params.id);
-      if( validId === false ) return res.status(404).json({deleted:false, error:'Bad article id'});
+      if (validId === false) return res.status(404).json({
+        deleted: false,
+        error: 'Bad article id'
+      });
     } //end validations
 
 
     const [validArticle, deleteArticle] = await findArticle(req.params);
 
-    if( validArticle === false ) return res.status(404).json({
-      deleted:false,
-      error:'Invalid request to delete'
+    if (validArticle === false) return res.status(404).json({
+      deleted: false,
+      error: 'Invalid request to delete'
     });
 
     const deleted = await deleteArticle();
 
-    res.json({deleted: true});
+    res.json({
+      deleted: true
+    });
 
     // -----
 
-    async function findArticle({id}){
+    async function findArticle({
+      id
+    }) {
       var article = await fetchArticleById(id);
 
-      if( article === null ) return [false, null];
+      if (article === null) return [false, null];
       else return [true, handleDeleteArticle];
 
-      async function handleDeleteArticle(){
+      async function handleDeleteArticle() {
         return await deleteArticleById(id);
       }
     }
 
-    async function fetchArticleById(id){
-      return await ArticleLog.findOne({_id: id}).lean().exec();
+    async function fetchArticleById(id) {
+      return await ArticleLog.findOne({
+        _id: id
+      }).lean().exec();
     }
 
-    async function deleteArticleById(id){
-      return await ArticleLog.findOneAndDelete({_id: id}).exec();
+    async function deleteArticleById(id) {
+      return await ArticleLog.findOneAndDelete({
+        _id: id
+      }).exec();
     }
 
   }

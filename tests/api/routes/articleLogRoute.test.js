@@ -141,11 +141,15 @@ describe("/article/ POST", () => {
 
     const {
       body: {
-        createdArticle: { _id }
+        createdArticle: {
+          _id
+        }
       }
     } = await post_requestArticleRoute(data, 201);
 
-    const savedArticle = await ArticleLog.findOne({ _id }).lean().exec();
+    const savedArticle = await ArticleLog.findOne({
+      _id
+    }).lean().exec();
 
     assert.equal(savedArticle.title, data.title);
     assert.equal(savedArticle.position, 3);
@@ -173,11 +177,13 @@ describe("/article/ POST", () => {
     const [
       first, second, third
     ] = await ArticleLog.find({
-      column: leftColumnId
-    })
-    .select('title position')
-    .sort({ position: 1 })
-    .lean().exec();
+        column: leftColumnId
+      })
+      .select('title position')
+      .sort({
+        position: 1
+      })
+      .lean().exec();
 
     assert.equal(first.title, data.title);
     assert.equal(first.position, 1);
@@ -210,7 +216,9 @@ describe("/article/ POST", () => {
       title,
       url,
       position
-    } = await ArticleLog.findOne({ _id: savedArticleId }).select('title url position').exec();
+    } = await ArticleLog.findOne({
+      _id: savedArticleId
+    }).select('title url position').exec();
 
     assert.equal(title, data.title);
     assert.equal(url, data.url);
@@ -232,12 +240,14 @@ describe("/article/ POST", () => {
           _id: savedArticleId
         }
       }
-    } =  await post_requestArticleRoute(data, 201);
+    } = await post_requestArticleRoute(data, 201);
 
     const {
       title,
       position
-    } = await ArticleLog.findOne({ _id: savedArticleId }).select('position title').exec();
+    } = await ArticleLog.findOne({
+      _id: savedArticleId
+    }).select('position title').exec();
 
     assert.equal(title, data.title);
     assert.equal(position, 3);
@@ -274,7 +284,9 @@ describe("/article/ PATCH", () => {
     };
 
     const {
-      body: { status }
+      body: {
+        status
+      }
     } = await patch_requestArticleRoute(data, 200)
 
     assert.equal(status, true);
@@ -295,7 +307,9 @@ describe("/article/ PATCH", () => {
 
     const {
       title
-    } = await ArticleLog.findOne({ _id: data.id }).lean().exec();
+    } = await ArticleLog.findOne({
+      _id: data.id
+    }).lean().exec();
 
     assert.equal(status, true);
 
@@ -483,10 +497,6 @@ describe.only("/article/insert PATCH", () => {
 
   it('insert article into higher position', async () => {
 
-    // move an article from position 8 to 2
-    // test the article has position of 2
-    // test other articles from 2-7 have had their position incremented by 1
-
     var extraArticles = await insertExtraArticles(leftColumnId);
     var articleToMove = extraArticles[5];
 
@@ -503,12 +513,19 @@ describe.only("/article/insert PATCH", () => {
     assert.equal(inserted, true);
 
     const [
-      second, third,,,,,eigth
+      second, third, , , , , eigth
     ] = await ArticleLog.find({
-      position: { $gte: 2, $lte:8 }
-    })
-    .select('title')
-    .lean();
+        column: leftColumnId,
+        position: {
+          $gte: 2,
+          $lte: 8
+        }
+      })
+      .sort({
+        position: 1
+      })
+      .select('title')
+      .lean();
 
     assert.equal(second.title, articleToMove.title);
     assert.equal(third.title, articles[1].title);
@@ -674,7 +691,9 @@ describe("/article/archive/", () => {
 
       var article = articles[0];
 
-      var data = { id: article._id };
+      var data = {
+        id: article._id
+      };
 
       const {
         body: archivedResponse
@@ -684,7 +703,9 @@ describe("/article/archive/", () => {
         body: unarchivedResponse
       } = await requestToArchiveRoute('patch', data, 200);
 
-      var unarchivedArticle = await ArticleLog.findOne({ _id: data.id }).lean().exec();
+      var unarchivedArticle = await ArticleLog.findOne({
+        _id: data.id
+      }).lean().exec();
 
       assert.equal(archivedResponse.archived, true);
 
@@ -713,43 +734,43 @@ async function get_requestArticleRoute(id, expectStatus) {
     .expect(expectStatus);
 };
 
-async function post_requestArticleRoute(sendData, expectedStatus){
+async function post_requestArticleRoute(sendData, expectedStatus) {
   return await request(app)
-  .post('/article/')
-  .set("x-auth", logInToken)
-  .send(sendData)
-  .expect(expectedStatus)
+    .post('/article/')
+    .set("x-auth", logInToken)
+    .send(sendData)
+    .expect(expectedStatus)
 };
 
-async function patch_requestArticleRoute(sendData, expectedStatus){
+async function patch_requestArticleRoute(sendData, expectedStatus) {
   return await request(app)
-  .patch('/article/')
-  .set("x-auth", logInToken)
-  .send(sendData)
-  .expect(expectedStatus)
+    .patch('/article/')
+    .set("x-auth", logInToken)
+    .send(sendData)
+    .expect(expectedStatus)
 };
 
-async function patch_switch_requestArticleRoute(sendData, expectedStatus){
+async function patch_switch_requestArticleRoute(sendData, expectedStatus) {
   return await request(app)
-  .patch('/article/switch')
-  .set("x-auth", logInToken)
-  .send(sendData)
-  .expect(expectedStatus)
+    .patch('/article/switch')
+    .set("x-auth", logInToken)
+    .send(sendData)
+    .expect(expectedStatus)
 };
 
-async function patch_insert_requestArticleRoute(sendData, expectedStatus){
+async function patch_insert_requestArticleRoute(sendData, expectedStatus) {
   return await request(app)
-  .patch('/article/insert')
-  .set("x-auth", logInToken)
-  .send(sendData)
-  .expect(expectedStatus)
+    .patch('/article/insertposition')
+    .set("x-auth", logInToken)
+    .send(sendData)
+    .expect(expectedStatus)
 }
 
-async function delete_requestArticleRoute(id, expectedStatus){
+async function delete_requestArticleRoute(id, expectedStatus) {
   return await request(app)
-  .delete(`/article/${id}`)
-  .set("x-auth", logInToken)
-  .expect(expectedStatus)
+    .delete(`/article/${id}`)
+    .set("x-auth", logInToken)
+    .expect(expectedStatus)
 };
 
 async function requestToArchiveRoute(type, sendData, expectStatus) {
@@ -761,8 +782,7 @@ async function requestToArchiveRoute(type, sendData, expectStatus) {
       .set("x-auth", logInToken)
       .send(sendData)
       .expect(expectStatus);
-  }
-  else if (type === 'patch') {
+  } else if (type === 'patch') {
     return await request(app)
       .patch(url + 'unarchive')
       .set("x-auth", logInToken)
