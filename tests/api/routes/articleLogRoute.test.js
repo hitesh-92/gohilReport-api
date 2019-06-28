@@ -11,7 +11,8 @@ const {
 const {
   articles,
   logInToken,
-  columnIds: [leftColumnId, , , archiveColumnId]
+  columnIds: [leftColumnId, , , archiveColumnId],
+  insertExtraArticles
 } = require("../../seedData");
 
 const ArticleLog = require("../../../api/models/articleLog");
@@ -478,7 +479,24 @@ describe("/article/switch PATCH", () => {
 
 });
 
-describe.only("/article/ DELETE", () => {
+describe.only("/article/insert PATCH", () => {
+
+  it('insert article into higher position', async () => {
+
+    // move an article from position 8 to 2
+    // test the article has position of 2
+    // test other articles from 2-7 have had their position incremented by 1
+
+    var ids = await insertExtraArticles(leftColumnId);
+
+    console.log(ids[5])
+
+
+  });
+
+});
+
+describe("/article/ DELETE", () => {
 
   it("delete exisitng article", async () => {
 

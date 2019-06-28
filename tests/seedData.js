@@ -26,7 +26,8 @@ module.exports = {
   testDelete,
   testSeed,
   testSeedUsers,
-  logInToken: userData[0].tokens[0].token
+  logInToken: userData[0].tokens[0].token,
+  insertExtraArticles
 };
 
 function createColumnIds() {
@@ -112,4 +113,26 @@ function testSeedUsers(data) {
   const userOne = new User(data[0]).save();
   const userTwo = new User(data[1]).save();
   return Promise.all([userOne, userTwo])
+};
+
+async function insertExtraArticles(columnId){
+  var articles = [];
+  for(let i=0; i<10; i++) articles.push(createArticle(i, columnId));
+  return await ArticleLog.insertMany(articles);
+
+  function createArticle(i, column){
+    i = i+3
+    const title = `article-${i}`;
+    const even = i%2 === 0;
+
+    return new ArticleLog({
+      _id: new ObjectId(),
+      title,
+      url: `www.${title}.com`,
+      image: even ? `www.${title}-image.com` : null,
+      position: i,
+      column
+    });
+  };
+
 };
