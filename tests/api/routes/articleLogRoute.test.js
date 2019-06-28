@@ -493,7 +493,7 @@ describe("/article/switch PATCH", () => {
 
 });
 
-describe.only("/article/insert PATCH", () => {
+describe("/article/insert PATCH", () => {
 
   var extraArticles;
 
@@ -609,6 +609,40 @@ describe.only("/article/insert PATCH", () => {
     assert.equal(second.position, 2);
     assert.equal(third.title, articles[1].title);
     assert.equal(third.position, 3);
+
+  });
+
+  it('rejects request with position out of range', async () => {
+
+    const insertData = {
+      id: articles[0]._id,
+      position: 99
+    };
+
+    const {
+      body: {
+        error
+      }
+    } = await patch_insert_requestArticleRoute(insertData, 400);
+
+    assert.equal(error, 'bad position');
+
+  });
+
+  it('rejects request invalid article', async () => {
+
+    const insertData = {
+      id: new ObjectId(),
+      position: 2
+    };
+
+    const {
+      body: {
+        error
+      }
+    } = await patch_insert_requestArticleRoute(insertData, 400);
+
+    assert.equal(error, 'Invalid Article');
 
   });
 

@@ -457,7 +457,7 @@ function insertToPosition(ArticleLog) {
 
     const validInsertPosition = await validateInsertPosition();
 
-    if (validInsertPosition === false) return res.status(400).json('bad position');
+    if (validInsertPosition === false) return res.status(400).json({error: 'bad position'});
 
     const {
       ok: updatedArticles
@@ -470,7 +470,7 @@ function insertToPosition(ArticleLog) {
     if (!inserted && !updatedArticles) res.status(500).json({
       inserted: false
     });
-    
+
     res.json({
       inserted: true
     });
@@ -487,7 +487,7 @@ function insertToPosition(ArticleLog) {
       var article = await fetchArticleById(id);
       let getColumnLength;
 
-      if (article === null) return [false, null];
+      if (article === null) return [article, null];
 
       getColumnLength = fetchColumnArticleCount(article.column);
       return [article, handleVerifyInsertPosition];
