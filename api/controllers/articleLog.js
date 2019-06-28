@@ -121,12 +121,11 @@ function saveNewArticle(ArticleLog, Column) {
       let positionGiven = req.body.hasOwnProperty('position');
       if (positionGiven === false) req.body.position = 0;
     }
-
     // -----
 
     const validColumn = await validateColumnExists(req.body.column);
 
-    if (!validColumn) return console.log('\nINVALID COLUMN ID - saveNewArticle\N');
+    if (!validColumn) return res.status(400).json({error: 'Invalid Column'})
 
     const [disruptsColumnPositions, articlePosition] = await validateArticlePosition(req.body);
 
@@ -148,9 +147,20 @@ function saveNewArticle(ArticleLog, Column) {
     // -----
 
     async function validateColumnExists(columnId) {
-      var column = await fetchColumnById(columnId);
-      const columnExists = column != null;
-      return columnExists;
+      // var column = await fetchColumnById(columnId);
+      // const columnExists = column != null;
+      // return columnExists;
+
+      var [column, archiveColumn] = await Promise.all([
+        fetchColumnById(columnId),
+        fetchArchiveColumn()
+      ]);
+
+      const columnNotFound = column === null;
+      const archiveIdGiven = columnId === archiveColumn._id.toString();
+
+      if( columnNotFound || archiveIdGiven ) return false;
+      return true;
     };
 
     async function fetchColumnById(id) {
@@ -158,6 +168,10 @@ function saveNewArticle(ArticleLog, Column) {
         _id: id
       }).exec();
     };
+
+    async function fetchArchiveColumn(){
+      return await Column.findOne({ title: 'archive' }).lean().exec();
+    }
 
     async function validateArticlePosition({
       position,

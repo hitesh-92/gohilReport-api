@@ -271,6 +271,25 @@ describe("/article/ POST", () => {
     assert.equal(articleSaved, true);
   });
 
+  it('reject creating article in archive column', async () => {
+
+    const articleData = {
+      title: 'failMeTooo',
+      url: 'www.fail.com',
+      image: 'www.tonotsave.com',
+      position: 2,
+      column: archiveColumnId
+    };
+
+    const {
+      body: {
+        error
+      }
+    } = await post_requestArticleRoute(articleData, 400);
+
+    assert.equal(error, 'Invalid Column');
+  });
+
 });
 
 describe("/article/ PATCH", () => {
