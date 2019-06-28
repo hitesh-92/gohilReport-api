@@ -495,9 +495,14 @@ describe("/article/switch PATCH", () => {
 
 describe.only("/article/insert PATCH", () => {
 
-  it('insert article into higher position', async () => {
+  var extraArticles;
 
-    var extraArticles = await insertExtraArticles(leftColumnId);
+  beforeEach(async() => {
+    extraArticles = await insertExtraArticles(leftColumnId);
+  });
+
+  it('insert article into higher position', async () => {
+    // var extraArticles = await insertExtraArticles(leftColumnId);
     var articleToMove = extraArticles[5];
 
     const insertData = {
@@ -530,6 +535,44 @@ describe.only("/article/insert PATCH", () => {
     assert.equal(second.title, articleToMove.title);
     assert.equal(third.title, articles[1].title);
     assert.equal(eigth.title, extraArticles[4].title);
+
+  });
+
+  it('insert article into lower position', async () => {
+
+    var articleToMove = articles[1]; //2nd in left column
+
+    const insertData = {
+      id: articleToMove._id,
+      position: 5
+    };
+
+    const {
+      body: {
+        inserted
+      }
+    } = await patch_insert_requestArticleRoute(insertData, 200);
+    assert.equal(inserted, true);
+
+    const [
+      second, third, , fifth
+    ] = await ArticleLog.find({
+      column:leftColumnId,
+      position: {
+        $gte: 2,
+        $lte: 5
+      }
+    })
+    .sort({ position: 1 })
+    .select('title position')
+    .exec();
+
+    assert.equal(second.title, extraArticles[0].title);
+    assert.equal(second.position, 2);
+    assert.equal(third.title, extraArticles[1].title);
+    assert.equal(third.position, 3);
+    assert.equal(fifth.title, articleToMove.title);
+    assert.equal(fifth.position, 5);
 
   });
 
