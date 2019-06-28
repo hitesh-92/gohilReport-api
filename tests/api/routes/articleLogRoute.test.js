@@ -487,10 +487,32 @@ describe.only("/article/insert PATCH", () => {
     // test the article has position of 2
     // test other articles from 2-7 have had their position incremented by 1
 
-    var ids = await insertExtraArticles(leftColumnId);
+    var extraArticles = await insertExtraArticles(leftColumnId);
+    var articleToMove = extraArticles[5];
 
-    console.log(ids[5])
+    const insertData = {
+      id: articleToMove._id,
+      position: 2
+    };
 
+    const {
+      body: {
+        inserted
+      }
+    } = await patch_insert_requestArticleRoute(insertData, 200);
+    assert.equal(inserted, true);
+
+    const [
+      second, third,,,,,eigth
+    ] = await ArticleLog.find({
+      position: { $gte: 2, $lte:8 }
+    })
+    .select('title')
+    .lean();
+
+    assert.equal(second.title, articleToMove.title);
+    assert.equal(third.title, articles[1].title);
+    assert.equal(eigth.title, extraArticles[4].title);
 
   });
 
@@ -714,6 +736,14 @@ async function patch_switch_requestArticleRoute(sendData, expectedStatus){
   .send(sendData)
   .expect(expectedStatus)
 };
+
+async function patch_insert_requestArticleRoute(sendData, expectedStatus){
+  return await request(app)
+  .patch('/article/insert')
+  .set("x-auth", logInToken)
+  .send(sendData)
+  .expect(expectedStatus)
+}
 
 async function delete_requestArticleRoute(id, expectedStatus){
   return await request(app)
