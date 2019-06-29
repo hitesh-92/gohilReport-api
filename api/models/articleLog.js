@@ -212,7 +212,7 @@ articleLogSchema.statics
   .archive = async function archiveSingleArticle({
       _id,
       position,
-      column
+      column: columnId
     },
     archiveColumnId
   ) {
@@ -221,35 +221,28 @@ articleLogSchema.statics
 
     var ArticleLog = this;
 
-    const [{
-        nModified: articlesUpdated
-      },
-      {
-        nModified: hasArchived
-      }
-    ] = await Promise.all([
-      updateColumnArticles(column, position),
-      archiveArticle(_id, column, archiveColumnId)
+    const columnArticleCount = await fetchColumnArticlesCount(columnId);
+
+    const [positionsUpdated, articleArchived] = await Promise.all([
+      updateColumnArticlePositions(columnId, position, columnArticleCount),
+      archiveArticle(_id, columnId, archiveColumnId)
     ]);
 
-    const hasUpdated = articlesUpdated > 0;
-    const archived = hasArchived === 1;
-
-    if (hasUpdated && archived) return true;
-    return false;
+    if( positionsUpdated.ok !== 1 || articleArchived.ok !== 1 ) return false;
+    return true;
 
     // -----
 
-    async function updateColumnArticles(columnId, updateFrom) {
+    async function fetchColumnArticlesCount(columnId){
+      return await ArticleLog.find({'column': columnId}).countDocuments().exec();
+    }
+
+    async function updateColumnArticlePositions(columnId, min, max){
       return await ArticleLog.updateMany({
-        column: columnId,
-        position: {
-          $gt: parseInt(updateFrom)
-        }
+        'column': columnId,
+        position:{ $gte: min, $lte: max }
       }, {
-        $inc: {
-          position: -1
-        }
+        $inc: { position: -1 }
       });
     };
 

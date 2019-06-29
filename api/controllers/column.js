@@ -86,7 +86,7 @@ async function get_singleColumn(req, res, ArticleLog, Column) {
     return res.status(200).json(data);
   }
 
-  const [columnData, fetchColumnArticles] = await fetchColumn(title);
+  const [columnData, fetchArticles] = await fetchColumn(title);
 
   if (columnData == false) {
     data.message = 'Column not found'
@@ -94,7 +94,7 @@ async function get_singleColumn(req, res, ArticleLog, Column) {
   }
 
   data.columnData = columnData;
-  data.articles = await fetchColumnArticles();
+  data.articles = await fetchArticles();
   data.error = false;
 
   res.status(200).json(data);
@@ -103,6 +103,7 @@ async function get_singleColumn(req, res, ArticleLog, Column) {
 
   function validateTitle(title) {
     if (title === 'ids') return 'ids';
+    // if (title === 'archive') return 'archive';
 
     const validTitles = ['alert', 'archive', 'left', 'center', 'right'];
     for (let i of validTitles)
@@ -116,14 +117,27 @@ async function get_singleColumn(req, res, ArticleLog, Column) {
 
   async function fetchColumn(title) {
 
+    var fetchArticles;
+    let archives = title === 'archive';
+
     var column = await findColumnByTitle(title);
+
+    if( archives ){
+
+      fetchArticles = async function handleFetchArchives(){
+        return await fetchArchivesColumnArticles(column._id);
+      }
+
+    } else {
+
+      fetchArticles = async function handleFetchColumnArticles(){
+        return await fetchColumnArticles(column._id);
+      }
+
+    }
 
     if (column == null) return [false, false];
     else return [column, fetchArticles];
-
-    async function fetchArticles() {
-      return await findArticleByColumn(column._id);
-    };
 
   }
 
@@ -136,18 +150,36 @@ async function get_singleColumn(req, res, ArticleLog, Column) {
       .exec();
   }
 
-  async function findArticleByColumn(columnId) {
+  async function fetchArchivesColumnArticles(archiveColumnId){
     return await ArticleLog.find({
-        'column': {
-          $in: columnId
-        }
-      })
-      .sort({
-        position: 1
-      })
-      .lean()
-      .exec();
+      'column': archiveColumnId
+    })
+    .sort({ createdAt: -1 })
+    .lean()
+    .exec();
   }
+
+  async function fetchColumnArticles(columnId){
+    return await ArticleLog.find({
+      'column': { $in: columnId }
+    })
+    .sort({ position: 1 })
+    .lean()
+    .exec();
+  }
+
+  // async function findArticleByColumn(columnId) {
+  //   return await ArticleLog.find({
+  //       'column': {
+  //         $in: columnId
+  //       }
+  //     })
+  //     .sort({
+  //       position: 1
+  //     })
+  //     .lean()
+  //     .exec();
+  // }
 
 };
 

@@ -8,17 +8,21 @@ const {
   }
 } = require('mongoose');
 
+const moment = require('moment');
+
 const {
   articles,
   columnIds: [
     leftColumnId,
     centerColumnId,
-    rightColumnId
+    rightColumnId,
+    archiveColumnId
   ],
   logInToken
 } = require('../../seedData');
 
 const Column = require('../../../api/models/column');
+const ArticleLog = require('../../../api/models/articleLog');
 
 describe('column/ ', () => {
 
@@ -114,6 +118,35 @@ describe('column/ ', () => {
 
     it('returns archives in descending order form newest', async () => {
 
+      var dates = [
+        moment().add(1, 'm'),
+        moment().add(2, 'm')
+      ];
+
+      const x = await ArticleLog.create({
+        _id: new ObjectId(),
+        title: 'put me second',
+        url: 'www.Secondddd.com',
+        image: null,
+        column: archiveColumnId,
+        position: null,
+        createdAt: dates[0],
+        updatedAt: dates[0],
+        status: 0,
+        __v: 0
+      }, {
+        _id: new ObjectId(),
+        title: 'put me firsttt',
+        url: 'www.Firsttttt.com',
+        image: null,
+        column: archiveColumnId,
+        position: null,
+        createdAt: dates[1],
+        updatedAt: dates[1],
+        status: 0,
+        __v: 0
+      });
+
       const {
         body: {
           articles,
@@ -124,8 +157,30 @@ describe('column/ ', () => {
       .set('x-auth', logInToken)
       .expect(200)
 
-      assert.equal(articles[0].title, 'eight ate e8ght');
-      assert.equal(articles[1].title, 'seven vesen veenns');
+      assert.equal(articles[0].title, 'put me firsttt');
+      assert.equal(articles[1].title, 'put me second');
+    });
+
+    it('archiving article with highest position', async () => {
+
+      const sendData = {
+        title: 'testTitleeee',
+        url: 'www.testtt.com',
+        image: 'www.test-imagee.com',
+        column: leftColumnId,
+        position: 1
+      };
+
+      const { body: { createdArticle: article } } = await request(app).post('/article/').send(sendData).set('x-auth', logInToken).expect(201);
+
+      const preArchive = await ArticleLog.find({'column':leftColumnId}).sort({position: 1}).exec();
+
+      const { body } = await request(app).post('/article/archive').send({id: article._id}).set('x-auth', logInToken)//.expect(200);
+
+      const archives = await ArticleLog.find({'column':archiveColumnId}).sort({createdAt: -1}).exec();
+
+      const left = await ArticleLog.find({'column':leftColumnId}).sort({position: 1}).exec();
+
     });
 
   });
