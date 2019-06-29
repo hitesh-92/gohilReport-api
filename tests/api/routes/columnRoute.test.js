@@ -112,6 +112,22 @@ describe('column/ ', () => {
 
     });
 
+    it('returns archives in descending order form newest', async () => {
+
+      const {
+        body: {
+          articles,
+          error
+        }
+      } = await request(app)
+      .get('/column/archive')
+      .set('x-auth', logInToken)
+      .expect(200)
+
+      assert.equal(articles[0].title, 'eight ate e8ght');
+      assert.equal(articles[1].title, 'seven vesen veenns');
+    });
+
   });
 
   describe('GET /ids', () => {

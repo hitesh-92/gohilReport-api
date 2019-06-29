@@ -458,7 +458,7 @@ function insertToPosition(ArticleLog) {
       let validId = ObjectId.isValid(req.body.id);
       if (validId === false) return res.status(400).json('invalid id');
     } {
-      let invalidPosition = Number.isNaN(parseInt(req.body.id));
+      let invalidPosition = Number.isNaN(parseInt(req.body.position));
       if (invalidPosition) return res.status(400).json('error');
     }
 
@@ -481,7 +481,7 @@ function insertToPosition(ArticleLog) {
       nModified: inserted
     } = await updateArticlePosition(req.body);
 
-    if (!inserted && !updatedArticles) res.status(500).json({
+    if (!inserted && !updatedArticles) return res.status(500).json({
       inserted: false
     });
 
@@ -520,7 +520,7 @@ function insertToPosition(ArticleLog) {
     };
 
     function verifyInsertPosition(n, max, current) {
-      return n >= 1 && n <= max && n !== max && n !== current
+      return n >= 1 && n <= max && n !== current
     }
 
     async function fetchColumnArticleCount(columnId) {
