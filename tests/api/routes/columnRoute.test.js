@@ -202,6 +202,24 @@ describe('column/ ', () => {
       assert.equal(columns.length > 0, true);
     });
 
+    it.only('number of articles in each column included', async () => {
+
+      const {
+        body: {
+          columns: [ left, center, right, archive, alert ]
+        }
+      } = await request(app)
+      .get('/column/ids')
+      .set('x-auth', logInToken)
+      .expect(200);
+      // console.log(columns)
+
+      assert.equal(left.count, 2);
+      assert.equal(right.count, 2);
+      assert.equal(archive.count, 2);
+
+    });
+
   });
 
   describe('POST /', () => {
