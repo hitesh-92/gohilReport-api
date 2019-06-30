@@ -81,7 +81,9 @@ async function get_singleColumn(req, res, ArticleLog, Column) {
   }
 
   if (valid === 'ids') {
-    data.columns = await fetchAllColumnData();
+    // data.columns = await fetchAllColumnData();
+    var columns = await fetchAllColumnData();
+    data.columnData = await fetchAllColumnArticleCounts(columns);
     data.error = false;
     return res.status(200).json(data);
   }
@@ -113,7 +115,7 @@ async function get_singleColumn(req, res, ArticleLog, Column) {
 
   async function fetchAllColumnData() {
     return await Column.find({}).select('title').exec();
-  }
+  };
 
   async function fetchColumn(title) {
 
@@ -139,7 +141,7 @@ async function get_singleColumn(req, res, ArticleLog, Column) {
     if (column == null) return [false, false];
     else return [column, fetchArticles];
 
-  }
+  };
 
   async function findColumnByTitle(title) {
     return await Column.findOne({
@@ -148,7 +150,7 @@ async function get_singleColumn(req, res, ArticleLog, Column) {
       .select('title')
       .lean()
       .exec();
-  }
+  };
 
   async function fetchArchivesColumnArticles(archiveColumnId){
     return await ArticleLog.find({
@@ -157,7 +159,7 @@ async function get_singleColumn(req, res, ArticleLog, Column) {
     .sort({ createdAt: -1 })
     .lean()
     .exec();
-  }
+  };
 
   async function fetchColumnArticles(columnId){
     return await ArticleLog.find({
@@ -166,20 +168,32 @@ async function get_singleColumn(req, res, ArticleLog, Column) {
     .sort({ position: 1 })
     .lean()
     .exec();
+  };
+
+  async function fetchAllColumnArticleCounts(columns){
+    let updatedColumns = [];
+
+    var promises = columns.map(sendRequest);
+
+    for(let i in promises){
+      updatedColumns.push({
+        count: await promises[i],
+        _id: columns[i]._id,
+        title: columns[i].title
+      });
+    }
+
+    return updatedColumns;
+
+    function sendRequest({ _id }){
+      return fetchColumnArticleCount(_id);
+    };
+
   }
 
-  // async function findArticleByColumn(columnId) {
-  //   return await ArticleLog.find({
-  //       'column': {
-  //         $in: columnId
-  //       }
-  //     })
-  //     .sort({
-  //       position: 1
-  //     })
-  //     .lean()
-  //     .exec();
-  // }
+  function fetchColumnArticleCount(columnId){
+    return ArticleLog.find({ 'column': columnId }).countDocuments().exec();
+  };
 
 };
 

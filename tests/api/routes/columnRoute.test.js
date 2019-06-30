@@ -206,13 +206,12 @@ describe('column/ ', () => {
 
       const {
         body: {
-          columns: [ left, center, right, archive, alert ]
+          columnData: [ left, center, right, archive, alert ]
         }
       } = await request(app)
       .get('/column/ids')
       .set('x-auth', logInToken)
       .expect(200);
-      // console.log(columns)
 
       assert.equal(left.count, 2);
       assert.equal(right.count, 2);
