@@ -83,7 +83,7 @@ async function get_singleColumn(req, res, ArticleLog, Column) {
   if (valid === 'ids') {
     // data.columns = await fetchAllColumnData();
     var columns = await fetchAllColumnData();
-    data.columnData = await fetchAllColumnArticleCounts(columns);
+    data.columns = await fetchAllColumnArticleCounts(columns);
     data.error = false;
     return res.status(200).json(data);
   }

@@ -202,11 +202,19 @@ describe('column/ ', () => {
       assert.equal(columns.length > 0, true);
     });
 
-    it.only('number of articles in each column included', async () => {
+    it('number of articles in each column included', async () => {
+
+      await ArticleLog.create({
+        _id: new ObjectId(),
+        title: 'fooo',
+        url: 'barrr',
+        position: 3,
+        column: rightColumnId
+      });
 
       const {
         body: {
-          columnData: [ left, center, right, archive, alert ]
+          columns: [ left, center, right, archive, alert ]
         }
       } = await request(app)
       .get('/column/ids')
@@ -214,7 +222,7 @@ describe('column/ ', () => {
       .expect(200);
 
       assert.equal(left.count, 2);
-      assert.equal(right.count, 2);
+      assert.equal(right.count, 3);
       assert.equal(archive.count, 2);
 
     });
