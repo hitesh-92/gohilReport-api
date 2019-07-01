@@ -111,15 +111,17 @@ function saveNewArticle(ArticleLog, Column) {
 
     // validate user input through middleware
     // check string title, url. image is optional. trim, regex, etc...
-    { // tmp hack
+    {
       let hasTitle = req.body.hasOwnProperty('title');
       if (hasTitle && req.body.title.length < 8 || !hasTitle) return res.status(400).json(data);
     }
-    // valid column id
-    // if no position. default = 0
-    { // tmp hack
+    { // check if has position
       let positionGiven = req.body.hasOwnProperty('position');
       if (positionGiven === false) req.body.position = 0;
+    }
+    { // check if position is type number
+      let invalidPosition = Number.isNaN( parseInt(req.body.position) );
+      if( invalidPosition ) return res.status(400).json(data).end();
     }
     // -----
 

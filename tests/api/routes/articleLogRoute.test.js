@@ -290,6 +290,26 @@ describe("/article/ POST", () => {
     assert.equal(error, 'Invalid Column');
   });
 
+  it.only('rejects request if article position is not a valid number', async () => {
+
+    const sendData = {
+      position: 'abc',
+      tite: 'thisShouldReject',
+      url: 'www.wherhwerhwerc.com',
+      column: leftColumnId,
+      image: 'www.myimage.com'
+    };
+
+    const {
+      body: {
+        articleSaved
+      }
+    } = await post_requestArticleRoute(sendData, 400);
+
+    assert.equal(articleSaved, false);
+
+  });
+
 });
 
 describe("/article/ PATCH", () => {
