@@ -290,7 +290,7 @@ describe("/article/ POST", () => {
     assert.equal(error, 'Invalid Column');
   });
 
-  it.only('rejects request if article position is not a valid number', async () => {
+  it('rejects request if article position is not a valid number', async () => {
 
     const sendData = {
       position: 'abc',
@@ -355,6 +355,27 @@ describe("/article/ PATCH", () => {
     assert.equal(title, data.title)
   });
 
+  it('only updates article position', async () => {
+
+    const article = articles[0];
+
+    const sendData = {
+      id: article._id,
+      position: 2
+    };
+
+    const {
+      body: {
+        status
+      }
+    } = await patch_requestArticleRoute(sendData, 200);
+    assert.equal(status, true);
+
+    const updated = await ArticleLog.findOne({ '_id':article._id }).exec();
+    assert.equal(updated.position, 2);
+
+  });
+
   it("update article image link", async () => {
 
     const {
@@ -391,12 +412,12 @@ describe("/article/ PATCH", () => {
     const {
       body: {
         status,
-        message
+        error
       }
     } = await patch_requestArticleRoute(data, 400);
 
     assert.equal(status, false);
-    assert.equal(message, 'No title or url provided');
+    assert.equal(error, 'Invalid request');
   });
 
   it("rejects request with invalid article id", async () => {

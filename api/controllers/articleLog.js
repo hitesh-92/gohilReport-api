@@ -232,24 +232,37 @@ async function updateArticle(req, res, ArticleLog) {
     status: false
   };
 
-  const {
-    title = null,
-      url = null,
-      image = null,
-      id
-  } = req.body;
+  {
+    let hasId = req.body.hasOwnProperty('id');
+    if( hasId === false ){
+      data.error = "Bad article id";
+      return res.status(404).json(data).end();
+    } else {
+      let validId = ObjectId.isValid(req.body.id);
+      if( validId === false ){
+        data.error = "Bad article id";
+        return res.status(404).json(data).end();
+      }
+    }
+  }
+  {
+    let hasTitle = req.body.hasOwnProperty('title');
+    let hasUrl = req.body.hasOwnProperty('url');
+    let hasImage = req.body.hasOwnProperty('image');
+    let hasPosition = req.body.hasOwnProperty('position');
+    const validBody = hasTitle || hasUrl || hasImage || hasPosition;
 
-  // Validations
+    if( !validBody ){
+      data.error = 'Invalid request';
+      return res.status(400).json(data).end();
+    }
+  }
 
-  if (ObjectId.isValid(id) == false) {
-    data.error = "Bad article id";
-    return res.status(404).json(data);
-  } else if (!title && !url && !image) {
-    data.message = 'No title or url provided';
-    return res.status(400).json(data)
-  };
+  var  article = fetchArticle(req.body.id);
 
-  const article = await fetchArticle(id);
+  const updateBody = buildUpdateRequest(req.body);
+
+  article = await article;
 
   if (article == null) {
     data.error = {
@@ -260,7 +273,7 @@ async function updateArticle(req, res, ArticleLog) {
 
   const {
     nModified: patched = null
-  } = await updateArticle(id, title, url, image);
+  } = await updateArticle(req.body.id, updateBody);
 
   let status = 400;
 
@@ -294,19 +307,20 @@ async function updateArticle(req, res, ArticleLog) {
     }
   };
 
-  async function updateArticle(_id, title, url, image) {
-    let body = {};
-
-    if (title) body.title = title.trim();
-    if (url) body.url = url.trim();
-    if (image) body.image = image.trim();
-
-    return await ArticleLog.updateOne({
-      _id
-    }, {
-      $set: body
-    });
+  async function updateArticle(_id, requestBody) {
+    return await ArticleLog.updateOne({_id}, { $set: requestBody });
   };
+
+  function buildUpdateRequest({title = null, url = null, image = null, position = null}){
+    var body = {};
+
+    if( title !== null ) body = {title};
+    if( url !== null )   body = {...body, url};
+    if( image !== null ) body = {...body, image};
+    if( position !== null ) body = {...body, position};
+
+    return body;
+  }
 
 };
 
