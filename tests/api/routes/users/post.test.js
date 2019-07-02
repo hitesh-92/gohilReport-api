@@ -1,9 +1,15 @@
-const {
-  app
-} = require('../../../app')
+var path = require('path');
+const { app } = require(path.resolve() + '/app.js');
+
+const Column = require(path.resolve() + '/api/models/column');
+const ArticleLog = require(path.resolve() + '/api/models/articleLog');
+
+const { ObjectId } = require("mongoose").Types;
+const moment = require('moment');
+
 const {
   users
-} = require('../../seedData')
+} = require(path.resolve() + '/tests/seedData');
 
 describe("user/ Routes", () => {
 
