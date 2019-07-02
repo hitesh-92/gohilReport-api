@@ -258,8 +258,8 @@ async function updateArticle(req, res, ArticleLog) {
     }
   }
 
-  var  article = fetchArticle(req.body.id);
 
+  var article = fetchArticle(req.body.id);
   const updateBody = buildUpdateRequest(req.body);
 
   article = await article;
@@ -270,6 +270,9 @@ async function updateArticle(req, res, ArticleLog) {
     }
     return res.status(400).json(data)
   };
+
+  const toUpdateColumnArticlePositions = updateBody.hasOwnProperty('position');
+  if( toUpdateColumnArticlePositions ) await updateColumnArticlePositions(article, req.body);
 
   const {
     nModified: patched = null
@@ -297,7 +300,7 @@ async function updateArticle(req, res, ArticleLog) {
       article = await ArticleLog.findOne({
           _id
         })
-        .select('_id column')
+        .select('_id column position')
         .lean()
         .exec();
     } catch (error) {
@@ -320,6 +323,53 @@ async function updateArticle(req, res, ArticleLog) {
     if( position !== null ) body = {...body, position};
 
     return body;
+  };
+
+  function updateColumnArticlePositions(article, requestBody) {
+
+    const { position: insertPosition } = requestBody;
+    const currentPosition = article.position;
+    const insertToHigherPosition = insertPosition < currentPosition;
+    // if insertToHigherPosition -> inc articles positions
+    // else dec articles positions
+
+    if (insertToHigherPosition) {
+      return incrementArticlePositionsWithinRange(article.column, insertPosition, currentPosition);
+    } else {
+      return decrementArticlePositionsWithinRange(article.column, currentPosition, insertPosition);
+    }
+  };
+
+  async function incrementArticlePositionsWithinRange(columnId, min, max) {
+    return await ArticleLog.updateMany({
+      column: columnId,
+      position: {
+        $gte: min,
+        $lte: max
+      }
+    }, {
+      $inc: {
+        position: 1
+      }
+    }).exec();
+  };
+
+  async function decrementArticlePositionsWithinRange(columnId, min, max) {
+    return await ArticleLog.updateMany({
+      column: columnId,
+      position: {
+        $gte: min,
+        $lte: max
+      }
+    }, {
+      $inc: {
+        position: -1
+      }
+    }).exec();
+  };
+
+  async function fetchColumnArticlesCount(columnId){
+    return await ArticleLog.find({ '_id': columnId }).countDocuments().exec();
   }
 
 };
@@ -462,7 +512,7 @@ async function switchPositions(req, res, ArticleLog) {
 };
 
 function insertToPosition(ArticleLog) {
-  return async function handleInsertPosition(req, res) { //console.log('12313213')
+  return async function handleInsertPosition(req, res) {
 
     // update column article positions +/- 1 &&
     // update relevent article positions
@@ -665,30 +715,4 @@ function deleteArticle(ArticleLog) {
 
   }
 
-
-  // let data = {
-  //   deleted: false
-  // };
-  //
-  // ArticleLog.findOneAndDelete({
-  //     _id: id
-  //   })
-  //   .then(article => {
-  //
-  //     let status = 404;
-  //
-  //     if (article == null) {
-  //       data.error = "Invalid request to delete";
-  //     } else {
-  //       data.log = article;
-  //       data.deleted = true;
-  //       status = 200;
-  //     }
-  //
-  //     res.status(status).json(data);
-  //   })
-  //   .catch(err => {
-  //     data.error = err;
-  //     res.status(501).json(data);
-  //   });
-}
+};

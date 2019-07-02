@@ -74,12 +74,12 @@ describe("/article/ PATCH", () => {
 
   });
 
-  it.only('updates relevent column article positions when position updated', async () => {
-    console.log()
+  it('updates relevent column article positions when position updated', async () => {
+
     const insertedArticles = await insertExtraArticles(centerColumnId);
-    // const a = await ArticleLog.find({'column': centerColumnId}).exec();console.log(a);
+
     const article = insertedArticles[7]; // initial position: 10
-    // console.log(article)
+
 
     const sendData = { id: article._id, position: 1 };
 
@@ -88,7 +88,6 @@ describe("/article/ PATCH", () => {
         status
       }
     } = await patch_requestArticleRoute(sendData, 200);
-    // console.log(body);
 
     assert.equal(status, true);
 
@@ -99,11 +98,9 @@ describe("/article/ PATCH", () => {
     assert.equal(updatedArticles[1].title, 'three thrid triad train');
     assert.equal(updatedArticles[1].position, 2);
     assert.equal(updatedArticles[10].title, 'article-11');
-    assert.equal(updatedArticles[10].position, 12);
+    assert.equal(updatedArticles[10].position, 11);
     assert.equal(updatedArticles[11].title, 'article-12');
-    assert.equal(updatedArticles[11].position, 13);
-
-    // console.log(updatedArticles)
+    assert.equal(updatedArticles[11].position, 12);
 
   });
 
