@@ -44,6 +44,16 @@ describe.only('user/logout PATCH', () => {
 
   });
 
+  it('rejects if no email provided', async () => {
+
+    const {
+      body: { error }
+    } = await user_logout(logInToken, {}, 400);
+
+    assert.equal(error, 'Invalid Email');
+
+  });
+
 });
 
 async function user_logout(authToken, sendData, expect){

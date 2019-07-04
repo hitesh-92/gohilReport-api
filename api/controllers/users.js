@@ -85,7 +85,7 @@ function logout(User){
 
     { // validation
       const hasEmail = req.body.hasOwnProperty('email');
-      if( !hasEmail ) return;
+      if( !hasEmail ) return res.status(400).json({error: 'Invalid Email'}).end();
       req.body.email = req.body.email.trim();
     }
 
