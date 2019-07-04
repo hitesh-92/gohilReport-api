@@ -20,17 +20,36 @@ describe.only('user/logout PATCH', () => {
     assert.equal(loggedInUser.tokens.length, 1);
     assert.equal(loggedInUser.tokens[0].token, logInToken);
 
-    const logoutSendData = {
+    const logoutData = {
       email: users[0].email
     }
 
-    const { body: {loggedOut} } = await request(app)
-    .patch('/user/logout')
-    .set('x-auth', logInToken)
-    .send(logoutSendData)
-    .expect(200);
-
+    const {
+      body: { loggedOut }
+    } = await user_logout(logInToken, logoutData, 200);
     assert.equal(loggedOut, true);
   });
 
+  it('rejects if email not matched', async () => {
+
+    const logoutData = {
+      email: 'fakemail@mail.com'
+    };
+
+    const {
+      body: { loggedOut }
+    } = await user_logout(logInToken, logoutData, 400);
+
+    assert.equal(loggedOut, false);
+
+  });
+
 });
+
+async function user_logout(authToken, sendData, expect){
+  return request(app)
+  .patch('/user/logout')
+  .set('x-auth', authToken)
+  .send(sendData)
+  .expect(expect);
+}

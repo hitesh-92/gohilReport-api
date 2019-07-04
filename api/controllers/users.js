@@ -86,18 +86,19 @@ function logout(User){
     { // validation
       const hasEmail = req.body.hasOwnProperty('email');
       if( !hasEmail ) return;
+      req.body.email = req.body.email.trim();
     }
 
     const token = req.headers['x-auth'];
-    const email = req.body.email;
 
-    const [validUser, logoutUser] = await findUserByToken(token);
-    // console.log(validUser);
+    const [validUser, validateUserEmail, logoutUser] = await findUserByToken(token);
 
     if( !validUser ) return;
 
-    await logoutUser();
+    const validEmail = validateUserEmail(req.body.email);
+    if( !validEmail ) return res.status(400).json({ loggedOut: false }).end();
 
+    await logoutUser();
     return res.json({loggedOut: true});
 
     // -----
@@ -110,14 +111,21 @@ function logout(User){
       } catch (e) {
         user = null;
       } finally {
-        if( user === null ) return [false, null];
-        return [true, handleLogout];
+        if( user === null ) return [false, null, null];
+        return [true, handleEmailValidation, handleLogout];
       }
 
       // ----
+
+      function handleEmailValidation(input_email){
+        const { email } = user;
+        if( input_email !== email ) return false;
+        return true;
+      };
+
       async function handleLogout(){
         return await removeUserAuthToken(user);
-      }
+      };
 
     };
 
@@ -141,7 +149,7 @@ function logout(User){
         { '_id': id },
         { $set : { tokens: tokens } }
       );
-    }
+    };
 
   }
 };
