@@ -6,7 +6,8 @@ const {
 
 module.exports = {
   register,
-  login
+  login,
+  logout
 };
 
 function register(User) {
@@ -75,6 +76,72 @@ function login(User) {
         data.message = 'Unable to login. Contact'
         res.status(400).send(data)
       })
+
+  }
+};
+
+function logout(User){
+  return async function handleUserLogout(req, res){
+
+    { // validation
+      const hasEmail = req.body.hasOwnProperty('email');
+      if( !hasEmail ) return;
+    }
+
+    const token = req.headers['x-auth'];
+    const email = req.body.email;
+
+    const [validUser, logoutUser] = await findUserByToken(token);
+    // console.log(validUser);
+
+    if( !validUser ) return;
+
+    await logoutUser();
+
+    return res.json({loggedOut: true});
+
+    // -----
+
+    async function findUserByToken(token){
+      var user;
+
+      try {
+        user = await User.findByToken(token);
+      } catch (e) {
+        user = null;
+      } finally {
+        if( user === null ) return [false, null];
+        return [true, handleLogout];
+      }
+
+      // ----
+      async function handleLogout(){
+        return await removeUserAuthToken(user);
+      }
+
+    };
+
+    async function removeUserAuthToken (user){
+
+      const { tokens, _id } = user;
+      const updatedTokens = tokens.filter(filterAuthTokens);
+
+      // console.log(`update data ==> \nid:${_id}\ntokens:${updatedTokens}`)
+
+      const updated = await updateUserTokens(_id, updatedTokens);
+
+    };
+
+    function filterAuthTokens(token){
+      if( token.access !== 'auth' ) return token;
+    };
+
+    async function updateUserTokens(id, tokens){
+      return await User.updateOne(
+        { '_id': id },
+        { $set : { tokens: tokens } }
+      );
+    }
 
   }
 };
