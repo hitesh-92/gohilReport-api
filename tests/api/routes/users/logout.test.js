@@ -12,7 +12,7 @@ const {
   logInToken
 } = require(path.resolve() + '/tests/seedData');
 
-describe.only('user/logout PATCH', () => {
+describe('user/logout PATCH', () => {
 
   it('logouts user', async () => {
 

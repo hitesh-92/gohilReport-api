@@ -39,43 +39,83 @@ function register(User) {
 }
 
 function login(User) {
-  return function handleUserLogin(req, res) {
+  return async function handleUserLogin(req, res) {
 
-    let data = {
+    { // validattions
+      let hasEmail = req.body.hasOwnProperty('email');
+      if( !hasEmail ) return;
+      req.body.email = req.body.email.trim();
+      //add regex
+    }
+    {
+      let hasPassword = req.body.hasOwnProperty('password');
+      if( !hasPassword ) return;
+      req.body.password = req.body.password.trim();
+    }
+    {
+      if( req.body.password.length < 8 ) return;
+    }
+
+    //
+
+    var data = {
       email: req.body.email,
       loggedIn: false
+    };
+
+    const [foundUser, getToken] = await findUser(req.body);
+
+    if( !foundUser ){
+      data.message = 'Unable to find user';
+      return res.status(400).send(data).end();
     }
 
-    const findUser = async (email, password) => {
-      const user = await User.findByCredentials(email, password)
-      if (user === false) return false
-      else return user
+    const token = await getToken();
+
+    if( !token ){
+      data.message = 'Unable to authenticate user';
+      return res.status(404).send(data).end();
     }
 
-    findUser(data.email, req.body.password)
-      .then(async (user) => {
+    data.loggedIn = true;
+    data.token = token;
 
-        if (user === false) {
-          data.message = 'Unable to find user'
-          return res.status(404).send(data)
-        }
+    res.json(data).end();
 
-        const token = await user.createAuthToken()
+    // -----
 
-        if (!token) {
-          data.message = 'Unable to authenticate user'
-          res.status(401).send(data)
-        } else {
-          data.loggedIn = true
-          data.token = token;
-          res.status(200).send(data)
-        }
-      })
-      .catch(error => {
-        data.error = error
-        data.message = 'Unable to login. Contact'
-        res.status(400).send(data)
-      })
+    async function findUser({email, password}){
+      var user = await findByCredentials(email, password);
+
+      if( user === false ) return [false, null];
+      else return [true, handleCreateUserToken];
+
+      async function handleCreateUserToken(){
+        return await createUserToken(user);
+      }
+    };
+
+    async function findByCredentials(email, password){
+      var user;
+      try {
+        user = await User.findByCredentials(email, password);
+      } catch (e) {
+        user = false;
+      } finally {
+        return user;
+      }
+    };
+
+    async function createUserToken(user){
+      var token;
+      try {
+        token = await user.createAuthToken();
+      } catch (e) {
+        token = false;
+      } finally {
+        return token;
+      }
+    };
 
   }
 };
