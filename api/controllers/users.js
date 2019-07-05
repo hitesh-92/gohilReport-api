@@ -41,19 +41,24 @@ function register(User) {
 function login(User) {
   return async function handleUserLogin(req, res) {
 
+
+    // validate token in header - if not use req.body
+    // has token in header
+    // use token to findUser and createToken
+    //
+
     { // validattions
       let hasEmail = req.body.hasOwnProperty('email');
-      if( !hasEmail ) return;
-      req.body.email = req.body.email.trim();
-      //add regex
-    }
-    {
       let hasPassword = req.body.hasOwnProperty('password');
-      if( !hasPassword ) return;
-      req.body.password = req.body.password.trim();
-    }
-    {
-      if( req.body.password.length < 8 ) return;
+      let hasToken = req.headers.hasOwnProperty('x-auth');
+
+      if( !hasEmail && !hasToken ) return;
+
+      if( hasEmail ) req.body.email = req.body.email.trim();
+      if( hasPassword ){
+        if( req.body.password.length < 8 ) return;
+        req.body.password = req.body.password.trim();
+      }
     }
 
     //
@@ -63,14 +68,26 @@ function login(User) {
       loggedIn: false
     };
 
-    const [foundUser, getToken] = await findUser(req.body);
+    var processAuthentication = (function handleAuthType({headers, body}){
+      const hasToken = headers.hasOwnProperty('x-auth');
+      if( hasToken ){
+        let token = headers['x-auth'];
+        return findUserByToken(token);
+      } else {
+        return findUser(body);
+      }
+    })(req);
+
+    // console.log(await processAuthentication)
+
+    const [foundUser, createToken] = await processAuthentication;
 
     if( !foundUser ){
       data.message = 'Unable to find user';
       return res.status(400).send(data).end();
     }
 
-    const token = await getToken();
+    const token = await createToken();
 
     if( !token ){
       data.message = 'Unable to authenticate user';
@@ -79,6 +96,8 @@ function login(User) {
 
     data.loggedIn = true;
     data.token = token;
+
+    // console.log(data)
 
     res.json(data).end();
 
@@ -89,6 +108,22 @@ function login(User) {
 
       if( user === false ) return [false, null];
       else return [true, handleCreateUserToken];
+
+      async function handleCreateUserToken(){
+        return await createUserToken(user);
+      }
+    };
+
+    async function findUserByToken(token){
+      var user;
+      try {
+        user = await User.findByToken(token);
+      } catch (e) {
+        user = false;
+      } finally {
+        if( user === false ) return [false, null];
+        return [true, handleCreateUserToken];
+      }
 
       async function handleCreateUserToken(){
         return await createUserToken(user);
@@ -116,6 +151,8 @@ function login(User) {
         return token;
       }
     };
+
+
 
   }
 };

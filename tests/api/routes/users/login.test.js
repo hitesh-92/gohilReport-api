@@ -1,11 +1,13 @@
 var path = require('path');
 const { app } = require(path.resolve() + '/app.js');
 
+const User = require(path.resolve() + '/api/models/user');
 const Column = require(path.resolve() + '/api/models/column');
 const ArticleLog = require(path.resolve() + '/api/models/articleLog');
 
 const { ObjectId } = require("mongoose").Types;
 const moment = require('moment');
+const jwt = require('jsonwebtoken');
 
 const {
   users,
@@ -57,7 +59,7 @@ describe("/user/login POST", () => {
 
   });
 
-  it.only('refreshes token if user already logged in', async () => {
+  it('refreshes token if user already logged in', async () => {
 
     const {
       body: {
@@ -66,11 +68,17 @@ describe("/user/login POST", () => {
     } = await request(app)
     .post('/user/login')
     .set('x-auth', logInToken)
-    .expect(400)
+    .expect(200);
 
     assert.equal(typeof token, 'string');
 
+    const {
+      data: { _id }
+    } = jwt.verify(token, process.env.jwtSecret);
 
+    const user = await User.findOne({ '_id': _id }).exec();
+
+    assert.equal(user.tokens.length, 2);
   });
 
 });
