@@ -206,7 +206,7 @@ function saveNewColumn(Column) {
     }
     {
       req.body.title = req.body.title.trim();
-      let validTitle = req.body.title.length > 4;
+      let validTitle = req.body.title.length > 3;
       if( validTitle === false ) return res.status(400).json({saved: false, error: 'Invalid title'});
     }
 
